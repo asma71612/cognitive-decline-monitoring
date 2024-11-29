@@ -1,29 +1,18 @@
-import React from "react";
-import "./App.css"; // Ensure you're importing the updated CSS file
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import CalibrationPage from './pages/CalibrationPage';
+import './App.css'; // Global styles
 
-function App() {
+const App = () => {
   return (
-    <div className="welcome-container">
-      {/* Camera Position Rectangle */}
-      <div className="camera-position-rectangle"></div>
-      
-      {/* Title */}
-      <div className="title">How to Set Up Eye Tracking</div>
-      
-      {/* Instruction List */}
-      <ul className="instruction-list">
-        <li>1. Ensure your face is visible.</li>
-        <li>2. Ensure good lighting conditions.</li>
-        <li>3. Ensure there is no strong light behind your back.</li>
-        <li>4. Ensure there is no light reflections on glasses.</li>
-      </ul>
-
-      {/* Button */}
-      <button className="start-button" onClick={() => alert("Start Gaze Calibration")}>
-        Start Gaze Calibration
-      </button>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/calibration" element={<CalibrationPage />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;

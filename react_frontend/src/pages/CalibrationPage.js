@@ -1,11 +1,14 @@
 import React from 'react';
+import { Container, Typography } from '@mui/material';
 
-function CalibrationPage() {
-    return (
-        <div>
-            <h1>Calibration Phase</h1>
-        </div>
-    );
-}
+const CalibrationPage = () => {
+  return (
+    <Container>
+      <Typography variant="h4" align="center" gutterBottom>
+        Calibration Page
+      </Typography>
+    </Container>
+  );
+};
 
 export default CalibrationPage;

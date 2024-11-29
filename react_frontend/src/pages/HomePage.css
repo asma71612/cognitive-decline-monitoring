@@ -1,0 +1,41 @@
+/* Styling for the HomePage */
+.home-container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .camera-position-rectangle {
+    width: 60%;
+    height: 150px;
+    background-color: #F5C485; /* Light yellow rectangle */
+    margin: 20px auto;
+    border: 2px solid #d4c08d;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold; /* Ensure it's bold */
+    margin-top: 20px;
+  }
+  
+  .instruction-list {
+    list-style-type: none;
+    padding: 0;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
+  .instruction-list li {
+    margin-bottom: 10px;
+  }
+  
+  .start-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #9EC180 !important;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 30px;
+    cursor: pointer;
+  }
