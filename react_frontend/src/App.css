@@ -1,0 +1,93 @@
+/* General styling */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fff7d1; /* Pale yellow background */
+}
+
+/* Container for the Welcome Page */
+.welcome-container {
+  text-align: center;
+  padding: 50px;
+}
+
+.camera-position-rectangle {
+  width: 60%;
+  height: 150px;
+  background-color: #F5C485; /* Light yellow rectangle */
+  margin: 0 auto;
+  border: 2px solid #d4c08d;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.instruction-list {
+  list-style-type: none;
+  padding: 0;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.instruction-list li {
+  margin-bottom: 10px;
+}
+
+.start-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 30px;
+  cursor: pointer;
+}
+
+.start-button:hover {
+  background-color: #45a049;
+}
+
+/* Previous App styles */
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
