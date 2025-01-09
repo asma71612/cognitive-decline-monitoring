@@ -85,7 +85,7 @@ Run the backend: You can run the backend Spring Boot application using Maven:
 mvn spring-boot:run
 ```
 
-The backend server should now be running at http://localhost:8080.
+The backend server should now be running at http://localhost:8080. (Note: This port has nothing on it so it will not display anything)
 
 ## Step 6: Setup the Frontend
 Navigate to the frontend folder (react_frontend):
@@ -103,8 +103,23 @@ Run the frontend: After the installation is complete, you can start the React ap
 npm start
 ```
 
-The first time you set this up, it may take a few minutes to load and install everything. 
-The frontend should automaticall open and running at http://localhost:3000.
+The first time you set this up, it may take a few minutes to load and install everything. Usually, the frontend should automatically open and running at http://localhost:3000. You should see a message similar to this in your console:
+```bash
+Compiled successfully!
+
+You can now view react_frontend in the browser.
+
+  Local:            http://localhost:3000
+  On Your Network:  http://192.168.2.28:3000
+
+Note that the development build is not optimized.
+To create a production build, use npm run build.
+
+webpack compiled successfully
+```
+
+## Stopping the Server
+Simply do `Ctrl + C` or `Cmd + C` in the terminal to terminate the batch job
 
 ## Troubleshooting
 **Issue: Backend or Frontend not starting**
@@ -119,4 +134,4 @@ If you get errors like command not found, ensure that both Maven and Node.js are
 
 **Issues: Missing Maven Wrapper (mvnw)**
 
-f the Maven wrapper (mvnw) is missing or not working, you may need to regenerate it by running mvn wrapper:wrapper in the backend directory (assuming Maven is already installed).
+If the Maven wrapper (mvnw) is missing or not working, you may need to regenerate it by running mvn wrapper:wrapper in the backend directory (assuming Maven is already installed).
