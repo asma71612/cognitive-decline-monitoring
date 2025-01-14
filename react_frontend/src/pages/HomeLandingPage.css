@@ -1,4 +1,9 @@
-.home-landing-container {
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FFF3E3;
+  }
+
+  .home-landing-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -7,12 +12,27 @@
   }
   
   .home-title {
-    margin-bottom: 20px;
+    margin-bottom: 50px;
+    font-size: 40px;
+    font-weight: bold;
+  }
+
+  .user-code-prompt {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300; /* Sets font weight to light */
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .user-code-input {
+    margin-bottom: 40px;
+    width: 300px;
   }
   
-  .start-button {
-    position: absolute;
-    bottom: 20px;
+  .submit-button {
+    margin-top: 15px !important; /* Needs important flag because all content is justified center */
     padding: 10px 20px;
     font-size: 18px;
+    background-color: grey;
   }

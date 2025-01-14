@@ -1,23 +1,35 @@
-import React from 'react';
-import { Button, Container, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import { Button, Container, Typography, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import './HomeLandingPage.css';
 
 const HomeLandingPage = () => {
-  const navigate = useNavigate();
+  const [userCode, setUserCode] = useState('');
 
   return (
     <Container className="home-landing-container">
-      <Typography variant="h2" align="center" className="home-title">
-        Home Page
-      </Typography>
+      <h2 align="center" className="home-title">
+        Welcome to Cognify!
+      </h2>
+      
+      <h5 align="center" className="user-code-prompt">
+        Enter User Identification Code
+      </h5>
+      
+      <TextField
+        variant="outlined"
+        className="user-code-input"
+        value={userCode}
+        onChange={(e) => setUserCode(e.target.value)}
+      />
+      
       <Button
         variant="contained"
         color="primary"
-        className="start-button"
-        onClick={() => navigate('/lighting-calibration')}
+        className="submit-button"
+        disabled
       >
-        Go to Lighting Calibration
+        Submit
       </Button>
     </Container>
   );
