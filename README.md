@@ -139,6 +139,12 @@ If you get errors like command not found, ensure that both Maven and Node.js are
 If the Maven wrapper (mvnw) is missing or not working, you may need to regenerate it by running mvn wrapper:wrapper in the backend directory (assuming Maven is already installed).
 
 ## Git Basics
+Before you start working:
+- Make sure you pull all the latest changes from the main branch:
+```bash
+git pull origin main
+```
+
 Create a new branch:
 ```bash
 git checkout -b <branch-name>
@@ -146,7 +152,7 @@ git push -u origin <branch-name> # this will push it to github
 ```
 
 Commiting code:
-- the .gitignore file takes care of NOT commiting setup and build files but for a sanity check, ensure you are not commiting files such as node_modules, .git, etc.
+- The .gitignore file takes care of NOT commiting setup and build files but for a sanity check, ensure you are not commiting files such as node_modules, .git, etc.
 ```bash
 git add . # this will add all the modified files to staging
 git commit -m "Commit Message"
