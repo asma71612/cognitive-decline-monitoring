@@ -1,0 +1,18 @@
+.home-landing-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .home-title {
+    margin-bottom: 20px;
+  }
+  
+  .start-button {
+    position: absolute;
+    bottom: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+  }
