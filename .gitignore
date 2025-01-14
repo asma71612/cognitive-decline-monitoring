@@ -19,3 +19,6 @@ yarn-error.log
 
 # Ignore environment variables file
 .env
+
+# Ignore application.properties file
+src/main/resources/application.properties
