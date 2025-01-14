@@ -4,6 +4,8 @@ This repository contains the code for the **Cognitive Decline Monitoring** appli
 - **Backend**: A Spring Boot application to handle the logic and API endpoints.
 - **Frontend**: A React application for the user interface.
 
+*Please make sure you are working on a separate branch and not commiting to main - See 'Git Basics' below for instructions**
+
 ## Prerequisites
 
 Before you start, ensure you have the following installed on your system:
@@ -135,3 +137,22 @@ If you get errors like command not found, ensure that both Maven and Node.js are
 **Issues: Missing Maven Wrapper (mvnw)**
 
 If the Maven wrapper (mvnw) is missing or not working, you may need to regenerate it by running mvn wrapper:wrapper in the backend directory (assuming Maven is already installed).
+
+## Git Basics
+Create a new branch:
+```bash
+git checkout -b <branch-name>
+git push -u origin <branch-name> # this will push it to github
+```
+
+Commiting code:
+- the .gitignore file takes care of NOT commiting setup and build files but for a sanity check, ensure you are not commiting files such as node_modules, .git, etc.
+```bash
+git add . # this will add all the modified files to staging
+git commit -m "Commit Message"
+```
+
+Push code to remote branch:
+```bash
+git push -u origin <branch-name>
+```
