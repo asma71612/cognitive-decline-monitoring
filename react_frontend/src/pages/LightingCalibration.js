@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Button, Container, Typography } from '@mui/material';
-import './HomePage.css';
+import './LightingCalibration.css';
 
-const HomePage = () => {
+const LightingCalibration = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [cameraError, setCameraError] = useState(null); // State to handle errors
@@ -124,4 +124,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default LightingCalibration;

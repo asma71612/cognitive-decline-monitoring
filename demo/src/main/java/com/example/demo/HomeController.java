@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HomeController {
 
     @GetMapping("/home")
-    public String getHomePage() {
+    public String getLightingCalibration() {
         return "Welcome to The Game!";
     }
 
