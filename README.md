@@ -100,6 +100,12 @@ Install frontend dependencies: Run the following command to install all the requ
 npm install
 ```
 
+Install additional dependencies required for the backend to work:
+```bash
+npm install firebase
+npm install react-router-dom
+```
+
 Run the frontend: After the installation is complete, you can start the React application:
 ```bash
 npm start
@@ -119,6 +125,43 @@ To create a production build, use npm run build.
 
 webpack compiled successfully
 ```
+
+## Step 7: Firebase Setup
+The firebase project is located at: https://console.firebase.google.com/u/0/project/capstone-691d0/firestore/databases/-default-/data/~2Fusers~2Ftest
+
+Create a firebaseConfig.js file in `/react_frontend/src/firebaseConfig.js`. Placing it anywhere else will require you to symlink.
+```bash
+cd react_frontend/src
+touch firebaseConfig.js
+```
+
+Populate the config file with credentials. It will look something like this:
+```js
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+
+// The web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export { db };
+```
+
+*Replace the placeholder values (YOUR_API_KEY, YOUR_AUTH_DOMAIN, etc.) with your actual Firebase configuration values.**
+
+**Important: Do not commit the firebaseConfig.js file to the repository. Add it to your .gitignore file if it isnot already there.**
+
 
 ## Stopping the Server
 Simply do `Ctrl + C` or `Cmd + C` in the terminal to terminate the batch job
