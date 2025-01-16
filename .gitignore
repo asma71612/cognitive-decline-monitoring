@@ -36,3 +36,6 @@ yarn-error.log*
 
 # Ignore production build
 /build
+
+# Ignore Firebase configuration file
+react_frontend/src/firebaseConfig.js
