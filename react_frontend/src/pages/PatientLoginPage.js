@@ -24,7 +24,7 @@ const PatientLoginPage = () => {
       if (docSnap.exists()) {
         console.log('User data:', docSnap.data());
         setError(''); // Clear any previous error
-        navigate('/general-home-page'); // Redirect to General Home Page
+        navigate('/patient-home-page'); // Redirect to General Home Page
       } else {
         setError('ERROR: Invalid User Identification Code.');
       }

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomeLandingPage from './pages/HomeLandingPage';
 import PatientLoginPage from './pages/PatientLoginPage';
-import GeneralHomePage from './pages/GeneralHomePage';
+import PatientHomePage from './pages/PatientHomePage';
 import './App.css'; // Global styles
 
 const App = () => {
@@ -11,7 +11,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomeLandingPage />} />
         <Route path="/patient-login" element={<PatientLoginPage />} />
-        <Route path="/general-home-page" element={<GeneralHomePage />} />
+        <Route path="/patient-home-page" element={<PatientHomePage />} />
       </Routes>
     </Router>
   );

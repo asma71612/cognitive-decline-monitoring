@@ -1,0 +1,130 @@
+.patient-home-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.left-side {
+  width: 25%;
+  background-color: #ffe7e9;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 20px;
+  position: relative;
+}
+
+.right-side {
+  width: 75%;
+  background-color: #fff3e3;
+}
+
+.logo-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 50px;
+  font-weight: bold;
+  font-family: 'Avenir', sans-serif;
+  letter-spacing: 0.2em;
+  align-self: center;
+  margin-top: 20px;
+}
+
+.logo-title img {
+  margin-left: 5px;
+  margin-right: 5px;
+  width: 40px;
+  height: 40px;
+}
+
+.no-spacing {
+  letter-spacing: normal;
+}
+
+.with-spacing {
+  letter-spacing: 0.2em;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 170px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.menu-item img {
+  padding-left: 17px;
+  width: 35px;
+  height: 35px;
+}
+
+.logout {
+  display: flex;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  position: absolute;
+  bottom: 20px;
+}
+
+.logout img {
+  width: 30px;
+  height: 30px;
+  padding-left: 17px;
+  padding-bottom: 7px;
+}
+
+@media (max-width: 800px) {
+  .left-side {
+    width: 25%;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .right-side {
+    width: 75%;
+  }
+
+  .logo-title {
+    font-size: 25px;
+  }
+
+  .logo-title img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .menu {
+    width: 100%;
+    margin-left: 0px;
+  }
+
+  .menu-item {
+    font-size: 14px;
+  }
+
+  .menu-item img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .logout {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  .logout img {
+    width: 20px;
+    height: 20px;
+  }
+}
