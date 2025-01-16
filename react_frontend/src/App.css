@@ -1,9 +1,7 @@
 /* General styling */
 body {
   font-family: "Inter", sans-serif; /* Set font to Inter */
-  margin: 0;
-  padding: 0;
-  background-color: #fff3e3; /* Pale yellow background */
+  color: #2F3B66;
 }
 
 .App {

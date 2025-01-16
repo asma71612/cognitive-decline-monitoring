@@ -1,70 +1,32 @@
-import React, { useState } from "react";
-import { Button, Container, Typography, TextField } from "@mui/material";
-import axios from "axios";
-import "./HomeLandingPage.css";
+import React from 'react';
+import { Button, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import brainImage from '../assets/brain.png';
+import './HomeLandingPage.css';
 
 const HomeLandingPage = () => {
-  const [userCode, setUserCode] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-
-  const validateUserCode = (code) => {
-    const regex = /^[a-zA-Z0-9]*$/;
-    return regex.test(code);
-  };
-
-  const handleSubmit = async () => {
-    if (!validateUserCode(userCode)) {
-      setError("User code contains special characters.");
-      return;
-    }
-
-    try {
-      const response = await axios.post("/api/validateUserCode", userCode);
-      if (response.data) {
-        setSuccess(true);
-        setError("");
-      } else {
-        setError("Invalid user code.");
-      }
-    } catch (error) {
-      setError("An error occurred while validating the user code.");
-    }
-  };
+  const navigate = useNavigate();
 
   return (
     <Container className="home-landing-container">
-      <h2 align="center" className="home-title">
-        Welcome to Cognify!
-      </h2>
-
-      <h5 align="center" className="user-code-prompt">
-        Enter User Identification Code
-      </h5>
-
-      <TextField
-        variant="outlined"
-        className="user-code-input"
-        value={userCode}
-        onChange={(e) => setUserCode(e.target.value)}
-        error={!!error}
-        helperText={error}
-      />
-
-      <Button
-        variant="contained"
-        color="primary"
-        className="submit-button"
-        onClick={handleSubmit}
-        disabled={!userCode}
-      >
-        Submit
-      </Button>
-      {success && (
-        <Typography variant="h6" color="green">
-          User code is valid!
-        </Typography>
-      )}
+      <div className="home-title">
+        C
+        <img src={brainImage} alt="Brain" />
+        GNIFY
+      </div>
+      
+      <div className="small-description">
+        Small Description
+      </div>
+      
+      <div className="button-group">
+        <Button variant="contained" color="primary" onClick={() => navigate('/patient-login')}>
+          I am a patient
+        </Button>
+        <Button variant="contained" color="primary">
+          I am a healthcare administrator
+        </Button>
+      </div>
     </Container>
   );
 };
