@@ -3,5 +3,8 @@
     "axios": "^1.7.9",
     "firebase": "^11.1.0",
     "react-router-dom": "^6.28.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }
