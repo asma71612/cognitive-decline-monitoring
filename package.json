@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "react-router-dom": "^6.28.0"
+    "axios": "^1.7.9",
+    "firebase": "^11.1.0",
+    "react-router-dom": "^6.28.1"
   }
 }
