@@ -42,3 +42,20 @@ body {
     transform: rotate(360deg);
   }
 }
+
+button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  width: auto;
+  background-color: #576a7f;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 25px; /* Increase the border-radius for more rounded corners */
+}
+
+button:hover {
+  background-color: #8496aa;
+}

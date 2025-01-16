@@ -100,12 +100,12 @@ html {
 }
 
 .right-half .login-button {
-  padding: 10px 20px;
-  font-size: 18px;
+  padding: 14px 24px;
+  font-size: 17px;
   background-color: #576a7f;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 25px;
   cursor: pointer;
   margin-bottom: 20px;
   align-self: center;
@@ -168,11 +168,6 @@ html {
 
   .right-half .input-field {
     padding: 8px;
-  }
-
-  .right-half .login-button {
-    font-size: 16px;
-    padding: 8px 16px;
   }
 
   .right-half .forgot-text,

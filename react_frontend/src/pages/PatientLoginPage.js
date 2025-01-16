@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import brainImage from '../assets/brain.png';
+import brainImage from '../assets/brain.svg';
 import './PatientLoginPage.css';
 
 const PatientLoginPage = () => {
