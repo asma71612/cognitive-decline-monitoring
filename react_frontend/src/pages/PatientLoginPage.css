@@ -39,7 +39,6 @@ html {
   font-size: 60px;
   font-weight: bold;
   font-family: "Avenir", sans-serif;
-  letter-spacing: 0.2em;
   margin-left: 5%;
 }
 
@@ -48,6 +47,14 @@ html {
   margin-right: 10px;
   width: 50px;
   height: 50px;
+}
+
+.no-spacing {
+  letter-spacing: normal; /* Remove letter spacing for the "C" */
+}
+
+.with-spacing {
+  letter-spacing: 0.2em; /* Apply letter spacing for the rest of the title */
 }
 
 .login-description {

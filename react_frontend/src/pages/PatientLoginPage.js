@@ -34,28 +34,35 @@ const PatientLoginPage = () => {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="left-half">
         <div className="login-title">
-          C
+          <span className="no-spacing">C</span>
           <img src={brainImage} alt="Brain" />
-          GNIFY
+          <span className="with-spacing">GNIFY</span>
         </div>
-        <div className="login-description">
-          Small Description
-        </div>
+        <div className="login-description">Small Description</div>
       </div>
       <div className="right-half">
         <div className="welcome-text">Welcome to Cognify!</div>
         <div className="login-text">Log In</div>
-        <div className="instruction-text">Enter your user identification code to start.</div>
+        <div className="instruction-text">
+          Enter your user identification code to start.
+        </div>
         <div className="input-label">User Identification Code</div>
         <input
           type="text"
           className="input-field"
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         <button className="login-button" onClick={handleLogin}>Log In</button>
         {error && <div className="error-text">{error}</div>}
