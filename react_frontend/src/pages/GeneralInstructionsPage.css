@@ -10,8 +10,8 @@
 
 .logo-title-small {
   position: absolute;
-  top: 20px; 
-  left: 20px; 
+  top: 20px;
+  left: 20px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -80,9 +80,18 @@
 }
 
 .start-button {
-  font-size: 25px;
-  padding: 15px 35px;
+  font-weight: bold;
+  width: auto;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
   border-radius: 50px;
+  text-decoration: none;
+}
+
+.start-button:hover {
+  background-color: #8496aa;
 }
 
 @media (max-width: 1200px) {

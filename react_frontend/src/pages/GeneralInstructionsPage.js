@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import brainImage from '../assets/brain.svg'; // Adjust the path as necessary
 import './GeneralInstructionsPage.css';
 
@@ -24,7 +26,7 @@ const GeneralInstructionsPage = () => {
           Make sure you're in a quiet environment, free from distractions, so you can fully focus on your task!
         </p>
         <div className="start-button-container">
-          <button className="start-button">Start Calibration</button>
+          <Link to="/lighting-calibration" className="start-button">Start Calibration</Link>
         </div>
       </div>
     </div>

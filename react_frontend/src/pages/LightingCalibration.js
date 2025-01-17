@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Button, Container, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Container } from '@mui/material';
 import './LightingCalibration.css';
 
 const LightingCalibration = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const navigate = useNavigate();
   const [cameraError, setCameraError] = useState(null); // State to handle errors
   const [isLightingGood, setIsLightingGood] = useState(true); // State to track lighting condition
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // State to disable the button
@@ -35,7 +37,6 @@ const LightingCalibration = () => {
   }, []);
 
   useEffect(() => {
-    // Check lighting every second (or as needed)
     const checkLighting = () => {
       if (videoRef.current && canvasRef.current) {
         const context = canvasRef.current.getContext('2d');
@@ -72,12 +73,16 @@ const LightingCalibration = () => {
     return () => clearInterval(lightingInterval);
   }, []);
 
+  const handleStartCalibration = () => {
+    navigate('/gaze-calibration');
+  };
+
   return (
     <Container className="home-container">
       {/* Video Feed or Error Message */}
       <div className="camera-position-rectangle">
         {cameraError ? (
-          <Typography color="error">{cameraError}</Typography>
+          <p className="error-message">{cameraError}</p>
         ) : (
           <video
             ref={videoRef}
@@ -89,36 +94,33 @@ const LightingCalibration = () => {
         )}
       </div>
 
-      {/* Other UI Elements */}
-      <Typography variant="h3" align="center" sx={{ fontWeight: 'bold' }}>
-        How to Set Up Eye Tracking
-      </Typography>
+      <div className="instructions-container">
+        <h3 className="title">
+          How to Set Up Eye Tracking
+        </h3>
 
-      <ul className="instruction-list">
-        <li>1. Ensure your face is visible.</li>
-        <li>2. Ensure good lighting conditions.</li>
-        <li>3. Ensure there is no strong light behind your back.</li>
-        <li>4. Ensure there is no light reflections on glasses.</li>
-      </ul>
+        <ul className="instruction-list">
+          <li>1. Ensure your face is visible.</li>
+          <li>2. Ensure good lighting conditions.</li>
+          <li>3. Ensure there is no strong light behind your back.</li>
+          <li>4. Ensure there is no light reflections on glasses.</li>
+        </ul>
+      </div>
 
-      {/* Poor Lighting Message */}
       {!isLightingGood && (
         <p className='error-message'>
           Poor Lighting!
         </p>
       )}
 
-      <Button
-        variant="contained"
-        color="primary"
+      <button
         className="start-button"
-        onClick={() => window.location.href = '/calibration'}
+        onClick={handleStartCalibration}
         disabled={isButtonDisabled}
       >
         Start Gaze Calibration
-      </Button>
+      </button>
 
-      {/* Hidden canvas for brightness calculation */}
       <canvas ref={canvasRef} width="640" height="480" style={{ display: 'none' }}></canvas>
     </Container>
   );

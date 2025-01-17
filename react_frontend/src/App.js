@@ -6,6 +6,8 @@ import PatientHomePage from './pages/PatientHomePage';
 import PatientReportingLandingPage from './pages/PatientReportingLandingPage';
 import InfoPage from './pages/InfoPage';
 import GeneralInstructionsPage from './pages/GeneralInstructionsPage';
+import LightingCalibration from './pages/LightingCalibration';
+import GazeCalibration from './pages/GazeCalibration';
 import './App.css'; // Global styles
 
 const App = () => {
@@ -18,6 +20,8 @@ const App = () => {
         <Route path="/patient-reporting-landing-page" element={<PatientReportingLandingPage />} />
         <Route path="/info-page" element={<InfoPage />} />
         <Route path="/general-instructions" element={<GeneralInstructionsPage />} />
+        <Route path="/lighting-calibration" element={<LightingCalibration />} />
+        <Route path="/gaze-calibration" element={<GazeCalibration />} />
       </Routes>
     </Router>
   );
