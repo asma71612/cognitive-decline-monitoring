@@ -26,7 +26,6 @@
   flex-wrap: wrap;
   font-size: 50px;
   font-weight: bold;
-  font-family: 'Avenir', sans-serif;
   letter-spacing: 0.2em;
   align-self: center;
   margin-top: 20px;
@@ -60,6 +59,8 @@
   gap: 25px;
   font-size: 20px;
   font-weight: bold;
+  text-decoration: none;
+  color: inherit;
 }
 
 .menu-item img {
@@ -69,19 +70,88 @@
 }
 
 .logout {
-  display: flex;
-  gap: 10px;
-  font-size: 20px;
-  font-weight: bold;
   position: absolute;
   bottom: 20px;
 }
 
-.logout img {
-  width: 30px;
-  height: 30px;
-  padding-left: 17px;
-  padding-bottom: 7px;
+.right-side {
+  width: 75%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.home-content {
+  margin-top: 100px;
+  margin-left: 80px;
+  max-width: 600px;
+  text-align: left;
+}
+
+.home-content h1 {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.home-content p {
+  font-size: 18px;
+  margin-bottom: 50px;
+}
+
+.home-content p:first-of-type {
+  font-size: 22px;
+}
+
+.home-content p:last-of-type {
+  font-size: 18px;
+  margin-bottom: 50px;
+}
+
+.tasks-left {
+  color: #ff6f6f;
+  font-weight: bold;
+}
+
+.complete-task-button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #576a7f;
+  color: white;
+  transition: background-color 0.3s;
+  border-radius: 25px;
+  text-decoration: none;
+  margin-bottom: 30px;
+}
+
+.complete-task-button:hover {
+  background-color: #8496aa;
+}
+
+.task-progress {
+  margin-top: 50px;
+}
+
+.task-progress h3 {
+  font-size: 20px;
+  color: #2d2d2d;
+  margin-bottom: 17px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #d9d9d9; /* Base color of the progress bar */
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #f8727b; /* Filled color of the progress bar */
+  border-radius: 5px 0 0 5px;
 }
 
 @media (max-width: 800px) {
@@ -120,11 +190,15 @@
 
   .logout {
     width: 100%;
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .logout img {
     width: 20px;
     height: 20px;
+  }
+
+  .home-content {
+    margin-left: 20px;
   }
 }
