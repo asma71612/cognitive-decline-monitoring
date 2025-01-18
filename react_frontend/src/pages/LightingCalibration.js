@@ -37,6 +37,7 @@ const LightingCalibration = () => {
   }, []);
 
   useEffect(() => {
+    // Check lighting every second (or as needed)
     const checkLighting = () => {
       if (videoRef.current && canvasRef.current) {
         const context = canvasRef.current.getContext('2d');
@@ -103,13 +104,13 @@ const LightingCalibration = () => {
           <li>1. Ensure your face is visible.</li>
           <li>2. Ensure good lighting conditions.</li>
           <li>3. Ensure there is no strong light behind your back.</li>
-          <li>4. Ensure there is no light reflections on glasses.</li>
+          <li>4. Ensure there are no light reflections on glasses.</li>
         </ul>
       </div>
 
       {!isLightingGood && (
         <p className='error-message'>
-          Poor Lighting!
+          Please sit in a well lit room!
         </p>
       )}
 
