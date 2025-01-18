@@ -61,10 +61,19 @@ const PatientLoginPage = () => {
           type="text"
           className="input-field"
           value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          onChange={(e) => {
+            setUserId(e.target.value);
+            setError(''); // Clear error when user starts typing
+          }}
           onKeyDown={handleKeyDown}
         />
-        <button className="login-button" onClick={handleLogin}>Log In</button>
+        <button
+          className={`login-button ${error ? 'error' : ''}`}
+          onClick={handleLogin}
+          disabled={!!error}
+        >
+          Log In
+        </button>
         {error && <div className="error-text">{error}</div>}
         <div className="forgot-text">Forgot your user identification code?</div>
         <div className="contact-text">Contact your healthcare administrator.</div>

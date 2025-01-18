@@ -110,12 +110,21 @@ html {
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  margin-bottom: 20px;
+  margin-bottom: 17px;
   align-self: center;
+  transition: background-color 0.3s;
 }
 
 .right-half .login-button:hover {
   background-color: #8496aa;
+}
+
+.right-half .login-button.error {
+  background-color: #f8727b;
+}
+
+.right-half .login-button.error:hover {
+  background-color: #f69aa1;
 }
 
 .right-half .forgot-text {
