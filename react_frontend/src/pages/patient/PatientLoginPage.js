@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import titleImage from '../assets/title.svg';
+import { db } from '../../firebaseConfig.js';
+import titleImage from '../../assets/title.svg';
 import './PatientLoginPage.css';
 
 const PatientLoginPage = () => {
