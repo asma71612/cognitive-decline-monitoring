@@ -2,7 +2,6 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #fbe7e9;
 }
 
 .home-landing-container {
@@ -11,7 +10,11 @@ body, html {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #fbe7e9;
+  background: hsla(355, 100%, 95%, 1);
+  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
+  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
+  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#FFE7E9", endColorstr="#DFE5FB", GradientType=1);
 }
 
 .home-title {
