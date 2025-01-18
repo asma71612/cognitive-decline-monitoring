@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: flex-start; /* Left align items */
   padding: 20px;
   position: relative;
   background: hsla(355, 100%, 95%, 1);
@@ -24,37 +24,24 @@
   background-color: #fff3e3;
 }
 
-.logo-title {
+.title-container {
+  width: 100%;
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  font-size: 50px;
-  font-weight: bold;
-  letter-spacing: 0.2em;
-  align-self: center;
+  justify-content: center;
+  margin-top: 0px;
+}
+
+.title-image {
   margin-top: 20px;
-}
-
-.logo-title img {
-  margin-left: 5px;
-  margin-right: 5px;
-  width: 40px;
-  height: 40px;
-}
-
-.no-spacing {
-  letter-spacing: normal;
-}
-
-.with-spacing {
-  letter-spacing: 0.2em;
+  width: 75%;
+  height: auto;
 }
 
 .menu {
   display: flex;
   flex-direction: column;
   gap: 30px;
-  margin-top: 170px;
+  margin-top: 175px;
 }
 
 .menu-item {
@@ -169,13 +156,12 @@
     width: 75%;
   }
 
-  .logo-title {
-    font-size: 25px;
+  .title-container {
+    justify-content: center;
   }
 
-  .logo-title img {
-    width: 25px;
-    height: 25px;
+  .title-image {
+    width: 100px; /* Adjust the width for smaller screens */
   }
 
   .menu {
@@ -184,7 +170,7 @@
   }
 
   .menu-item {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .menu-item img {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import brainImage from '../assets/brain.svg';
+import titleImage from '../assets/title.svg';
 import './PatientLoginPage.css';
 
 const PatientLoginPage = () => {
@@ -43,12 +43,8 @@ const PatientLoginPage = () => {
   return (
     <div className="login-container">
       <div className="left-half">
-        <div className="login-title">
-          <span className="no-spacing">C</span>
-          <img src={brainImage} alt="Brain" />
-          <span className="with-spacing">GNIFY</span>
-        </div>
-        <div className="login-description">Small Description</div>
+        <img src={titleImage} alt="Title" className="title-image-login" />
+        <div className="login-description">Bringing clarity to cognitive health.</div>
       </div>
       <div className="right-half">
         <div className="welcome-text">Welcome to Cognify!</div>

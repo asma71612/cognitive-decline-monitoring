@@ -1,16 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import brainImage from '../assets/brain.svg'; // Adjust the path as necessary
+import titleImage from '../assets/title.svg';
 import './GeneralInstructionsPage.css';
 
 const GeneralInstructionsPage = () => {
   return (
     <div className="general-instructions-container">
-      <div className="logo-title-small">
-        <span className="no-spacing-small">C</span>
-        <img src={brainImage} alt="Brain" />
-        <span className="with-spacing-small">GNIFY</span>
+      <div className="title-container-instructions">
+        <img src={titleImage} alt="Title" className="title-image-small" />
       </div>
       <div className="instructions-content">
         <h1 className="instructions-title">Task Instructions</h1>

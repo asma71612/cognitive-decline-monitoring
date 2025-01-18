@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import brainImage from '../assets/brain.svg';
+import titleImage from '../assets/title.svg';
 import homeIcon from '../assets/home.svg';
 import reportIcon from '../assets/reports.svg';
 import infoIcon from '../assets/information.svg';
@@ -30,10 +30,8 @@ const PatientHomePage = () => {
   return (
     <div className="patient-home-container">
       <div className="left-side">
-        <div className="logo-title">
-          <span className="no-spacing">C</span>
-          <img src={brainImage} alt="Brain" />
-          <span className="with-spacing">GNIFY</span>
+        <div className="title-container">
+          <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
           <Link to="/patient-home-page" className="menu-item link">
