@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDoc, doc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import brainImage from '../assets/brain.svg';
+import { db } from '../../firebaseConfig.js';
+import titleImage from '../../assets/title.svg';
 import './PatientLoginPage.css';
 
 const PatientLoginPage = () => {
@@ -24,7 +24,7 @@ const PatientLoginPage = () => {
       if (docSnap.exists()) {
         console.log('User data:', docSnap.data());
         setError(''); // Clear any previous error
-        navigate('/general-home-page'); // Redirect to General Home Page
+        navigate('/patient-home-page'); // Redirect to General Home Page
       } else {
         setError('ERROR: Invalid User Identification Code.');
       }
@@ -43,12 +43,8 @@ const PatientLoginPage = () => {
   return (
     <div className="login-container">
       <div className="left-half">
-        <div className="login-title">
-          <span className="no-spacing">C</span>
-          <img src={brainImage} alt="Brain" />
-          <span className="with-spacing">GNIFY</span>
-        </div>
-        <div className="login-description">Small Description</div>
+        <img src={titleImage} alt="Title" className="title-image-login" />
+        <div className="login-description">Bringing clarity to cognitive health.</div>
       </div>
       <div className="right-half">
         <div className="welcome-text">Welcome to Cognify!</div>
@@ -61,10 +57,19 @@ const PatientLoginPage = () => {
           type="text"
           className="input-field"
           value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          onChange={(e) => {
+            setUserId(e.target.value);
+            setError(''); // Clear error when user starts typing
+          }}
           onKeyDown={handleKeyDown}
         />
-        <button className="login-button" onClick={handleLogin}>Log In</button>
+        <button
+          className={`login-button ${error ? 'error' : ''}`}
+          onClick={handleLogin}
+          disabled={!!error}
+        >
+          Log In
+        </button>
         {error && <div className="error-text">{error}</div>}
         <div className="forgot-text">Forgot your user identification code?</div>
         <div className="contact-text">Contact your healthcare administrator.</div>

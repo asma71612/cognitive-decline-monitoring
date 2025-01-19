@@ -1,0 +1,12 @@
+.patient-reporting-landing-container {
+  padding: 20px;
+}
+
+.patient-reporting-landing-container h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.patient-reporting-landing-container p {
+  font-size: 18px;
+}

@@ -2,41 +2,34 @@ body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #fbe7e9;
+  background: hsla(355, 100%, 95%, 1);
+  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
+  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
+  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#FFE7E9", endColorstr="#DFE5FB", GradientType=1);
 }
 
 .home-landing-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.title-container-home {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 0px;
+  margin-left: 20px;
+}
+
+.title-image-home {
+  width: 550px; 
+  height: auto; 
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #fbe7e9;
-}
-
-.home-title {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  font-size: 60px;
-  font-weight: bold;
-  font-family: 'Avenir', sans-serif;
-  letter-spacing: 0.2em;
-}
-
-.home-title img {
-  margin-left: 10px;
-  margin-right: 10px;
-  width: 60px;
-  height: 60px;
-}
-
-.no-spacing {
-  letter-spacing: normal; /* Remove letter spacing for the "C" */
-}
-
-.with-spacing {
-  letter-spacing: 0.2em; /* Apply letter spacing for the rest of the title */
 }
 
 .small-description {
@@ -52,3 +45,33 @@ body, html {
   margin-top: 40px;
 }
 
+.button-group button {
+  padding: 14px 24px;
+  font-size: 17px;
+  background-color: #576a7f;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.button-group button:hover {
+  background-color: #8496aa;
+}
+
+@media (max-width: 768px) {
+  .title-image {
+    width: 40px; /* Adjust the width for smaller screens */
+  }
+
+  .small-description {
+    font-size: 16px;
+  }
+
+  .button-group button {
+    font-size: 15px;
+    padding: 12px 20px;
+  }
+}

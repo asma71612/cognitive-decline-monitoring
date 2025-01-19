@@ -23,7 +23,11 @@ html {
 }
 
 .left-half {
-  background-color: #ffe7e9;
+  background: hsla(355, 100%, 95%, 1);
+  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFE7E9", endColorstr="#FFF3E3", GradientType=1 );
 }
 
 .right-half {
@@ -31,30 +35,11 @@ html {
   padding: 50px;
 }
 
-.login-title {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+.title-image-login {
+  width: 60%;
+  height: auto;
   margin-top: 250px;
-  font-size: 60px;
-  font-weight: bold;
-  font-family: "Avenir", sans-serif;
   margin-left: 5%;
-}
-
-.login-title img {
-  margin-left: 10px;
-  margin-right: 10px;
-  width: 50px;
-  height: 50px;
-}
-
-.no-spacing {
-  letter-spacing: normal; /* Remove letter spacing for the "C" */
-}
-
-.with-spacing {
-  letter-spacing: 0.2em; /* Apply letter spacing for the rest of the title */
 }
 
 .login-description {
@@ -107,12 +92,21 @@ html {
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  margin-bottom: 20px;
+  margin-bottom: 17px;
   align-self: center;
+  transition: background-color 0.3s;
 }
 
 .right-half .login-button:hover {
   background-color: #8496aa;
+}
+
+.right-half .login-button.error {
+  background-color: #f8727b;
+}
+
+.right-half .login-button.error:hover {
+  background-color: #f69aa1;
 }
 
 .right-half .forgot-text {
@@ -131,14 +125,9 @@ html {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .login-title {
-    font-size: 40px;
+  .title-image {
+    width: 80%;
     margin-top: 150px;
-  }
-
-  .login-title img {
-    width: 40px;
-    height: 40px;
   }
 
   .login-description {

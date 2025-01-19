@@ -1,0 +1,50 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #fff3e3;
+}
+
+.gaze-calibration-container {
+  padding: 20px;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gaze-calibration-container h1 {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.instructions-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  text-align: left;
+}
+
+.instructions-box p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.instructions-list {
+  list-style-type: none;
+  padding: 20px;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.instructions-list li {
+  margin-bottom: 10px;
+}

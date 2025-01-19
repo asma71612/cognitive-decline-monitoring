@@ -1,0 +1,12 @@
+.info-page-container {
+  padding: 20px;
+}
+
+.info-page-container h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.info-page-container p {
+  font-size: 18px;
+}

@@ -1,0 +1,206 @@
+.patient-home-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.left-side {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start; /* Left align items */
+  padding: 20px;
+  position: relative;
+  background: hsla(355, 100%, 95%, 1);
+  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFE7E9", endColorstr="#FFF3E3", GradientType=1 );
+}
+
+.right-side {
+  width: 75%;
+  background-color: #fff3e3;
+}
+
+.title-container {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  margin-top: 0px;
+  margin-left: 20px;
+}
+
+.title-image {
+  margin-top: 20px;
+  width: 75%;
+  height: auto;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 175px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 10px;
+}
+
+.menu-item img {
+  padding-left: 17px;
+  width: 35px;
+  height: 35px;
+}
+
+.menu-item.link span {
+  color: inherit;
+}
+
+.menu-item.link[href="/patient-reporting-landing-page"] span,
+.menu-item.link[href="/info-page"] span,
+.logout span {
+  color: #516A80 !important;
+}
+
+.logout {
+  position: absolute;
+  bottom: 20px;
+}
+
+.right-side {
+  width: 75%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.home-content {
+  margin-top: 100px;
+  margin-left: 80px;
+  max-width: 600px;
+  text-align: left;
+}
+
+.home-content h1 {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.home-content p {
+  font-size: 18px;
+  margin-bottom: 50px;
+}
+
+.home-content p:first-of-type {
+  font-size: 22px;
+}
+
+.home-content p:last-of-type {
+  font-size: 18px;
+  margin-bottom: 50px;
+}
+
+.tasks-left {
+  color: #ff6f6f;
+  font-weight: bold;
+}
+
+.complete-task-button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #576a7f;
+  color: white;
+  transition: background-color 0.3s;
+  border-radius: 25px;
+  text-decoration: none;
+  margin-bottom: 30px;
+}
+
+.complete-task-button:hover {
+  background-color: #8496aa;
+}
+
+.task-progress {
+  margin-top: 50px;
+}
+
+.task-progress h3 {
+  font-size: 20px;
+  color: #2d2d2d;
+  margin-bottom: 17px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #d9d9d9; /* Base color of the progress bar */
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #f8727b; /* Filled color of the progress bar */
+  border-radius: 5px 0 0 5px;
+}
+
+@media (max-width: 800px) {
+  .left-side {
+    width: 25%;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .right-side {
+    width: 75%;
+  }
+
+  .title-container {
+    justify-content: center;
+  }
+
+  .title-image {
+    width: 100px; /* Adjust the width for smaller screens */
+  }
+
+  .menu {
+    width: 100%;
+    margin-left: 0px;
+  }
+
+  .menu-item {
+    font-size: 10px;
+  }
+
+  .menu-item img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .logout {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .logout img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .home-content {
+    margin-left: 20px;
+  }
+}

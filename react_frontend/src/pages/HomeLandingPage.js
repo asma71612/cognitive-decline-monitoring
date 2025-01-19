@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import brainImage from "../assets/brain.svg";
+import titleImage from "../assets/title.svg";
 import "./HomeLandingPage.css";
 
 const HomeLandingPage = () => {
@@ -8,13 +8,11 @@ const HomeLandingPage = () => {
 
   return (
     <div className="home-landing-container">
-      <div className="home-title">
-        <span className="no-spacing">C</span>
-        <img src={brainImage} alt="Brain" />
-        <span className="with-spacing">GNIFY</span>
+      <div className="title-container-home">
+        <img src={titleImage} alt="Title" className="title-image-home" />
       </div>
 
-      <div className="small-description">Small Description</div>
+      <div className="small-description">Bringing clarity to cognitive health.</div>
 
       <div className="button-group">
         <button onClick={() => navigate("/patient-login")}>
