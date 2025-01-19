@@ -13,10 +13,10 @@
   padding: 20px;
   position: relative;
   background: hsla(355, 100%, 95%, 1);
-  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
-  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
-  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(227, 78%, 93%, 1) 100%);
-  filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#FFE7E9", endColorstr="#DFE5FB", GradientType=1);
+  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFE7E9", endColorstr="#FFF3E3", GradientType=1 );
 }
 
 .right-side {
@@ -27,8 +27,9 @@
 .title-container {
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   margin-top: 0px;
+  margin-left: 20px;
 }
 
 .title-image {
@@ -52,12 +53,23 @@
   font-weight: bold;
   text-decoration: none;
   color: inherit;
+  margin-bottom: 10px;
 }
 
 .menu-item img {
   padding-left: 17px;
   width: 35px;
   height: 35px;
+}
+
+.menu-item.link span {
+  color: inherit;
+}
+
+.menu-item.link[href="/patient-reporting-landing-page"] span,
+.menu-item.link[href="/info-page"] span,
+.logout span {
+  color: #516A80 !important;
 }
 
 .logout {
@@ -170,7 +182,7 @@
   }
 
   .menu-item {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .menu-item img {

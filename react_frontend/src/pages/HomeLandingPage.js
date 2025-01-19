@@ -8,7 +8,7 @@ const HomeLandingPage = () => {
 
   return (
     <div className="home-landing-container">
-      <div className="title-container">
+      <div className="title-container-home">
         <img src={titleImage} alt="Title" className="title-image-home" />
       </div>
 

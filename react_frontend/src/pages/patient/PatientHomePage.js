@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import titleImage from '../../assets/title.svg';
-import homeIcon from '../../assets/home.svg';
-import reportIcon from '../../assets/reports.svg';
-import infoIcon from '../../assets/information.svg';
-import profileIcon from '../../assets/profile.svg';
+import homeIcon from '../../assets/home-dark.svg';
+import reportIcon from '../../assets/reports-light.svg';
+import infoIcon from '../../assets/information-light.svg';
+import profileIcon from '../../assets/profile-light.svg';
 import './PatientHomePage.css';
 
 const PatientHomePage = () => {

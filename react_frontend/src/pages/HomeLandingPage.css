@@ -17,15 +17,19 @@ body, html {
   height: 100vh;
 }
 
-.title-container {
+.title-container-home {
+  width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  margin-top: 0px;
+  margin-left: 20px;
 }
 
 .title-image-home {
   width: 550px; 
   height: auto; 
+  justify-content: center;
+  align-items: center;
 }
 
 .small-description {
