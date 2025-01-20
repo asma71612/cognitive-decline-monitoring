@@ -18,7 +18,7 @@ const HomeLandingPage = () => {
         <button onClick={() => navigate("/patient-login")}>
           I am a patient
         </button>
-        <button>
+        <button onClick={() => navigate("/physician-login")}>
           I am a healthcare administrator
         </button>
       </div>

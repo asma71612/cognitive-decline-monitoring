@@ -10,6 +10,9 @@ import LightingCalibration from './pages/patient/LightingCalibration';
 import GazeCalibration from './pages/patient/GazeCalibration';
 import ProsaccadeInstructions from './pages/games/prosaccade/ProsaccadeInstructions';
 import ProsaccadeGame from './pages/games/prosaccade/ProsaccadeGame';
+import PhysicianLoginPage from './pages/physician/PhysicianLoginPage';
+import PhysicianSignUp from './pages/physician/PhysicianSignUp';
+import PhysicianHomePage from './pages/physician/PhysicianHomePage';
 import './App.css'; // Global styles
 
 const App = () => {
@@ -26,6 +29,9 @@ const App = () => {
         <Route path="/gaze-calibration" element={<GazeCalibration />} />
         <Route path="/prosaccade-instructions" element={<ProsaccadeInstructions />} />
         <Route path="/prosaccade-game" element={<ProsaccadeGame />} />
+        <Route path="/physician-login" element={<PhysicianLoginPage />} />
+        <Route path="/physician-signup" element={<PhysicianSignUp />} />
+        <Route path="/physician-home-page" element={<PhysicianHomePage />} />
       </Routes>
     </Router>
   );

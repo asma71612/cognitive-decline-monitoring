@@ -1,0 +1,152 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent overflow */
+}
+
+.signup-container-physician {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.left-half-physician,
+.right-half-physician {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.left-half-physician {
+  background-color: #dfe5fb;
+}
+
+.right-half-physician {
+  background-color: #fff3e3;
+  padding: 50px;
+}
+
+.title-image-signup-physician {
+  width: 60%;
+  height: auto;
+  margin-top: 250px;
+  margin-left: 5%;
+}
+
+.signup-description-physician {
+  font-size: 18px;
+  margin-top: 20px;
+  font-family: "Inter", sans-serif;
+  margin-left: 5.5%;
+}
+
+.right-half-physician .welcome-text-physician {
+  font-size: 20px;
+  color: #2f3b66;
+  margin-top: 150px;
+}
+
+.right-half-physician .signup-text-physician {
+  font-size: 30px;
+  color: #2f3b66;
+  font-weight: bold;
+  margin-top: 30px;
+}
+
+.right-half-physician .instruction-text-physician {
+  font-size: 18px;
+  color: #2f3b66;
+  margin-top: 35px;
+}
+
+.right-half-physician .input-label-physician {
+  font-size: 18px;
+  color: #2f3b66;
+  margin-top: 35px;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.right-half-physician .input-field-physician {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.right-half-physician .signup-button-physician {
+  padding: 14px 24px;
+  font-size: 17px;
+  background-color: #576a7f;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: 40px;
+  align-self: center;
+  transition: background-color 0.3s;
+}
+
+.right-half-physician .signup-button-physician:hover {
+  background-color: #8496aa;
+}
+
+.right-half-physician .signup-button-physician.error {
+  background-color: #f8727b;
+}
+
+.right-half-physician .signup-button-physician.error:hover {
+  background-color: #f69aa1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .title-image-physician {
+    width: 80%;
+    margin-top: 150px;
+  }
+
+  .signup-description-physician {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .welcome-text-physician {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .signup-text-physician {
+    font-size: 20px;
+    margin-top: 20px;
+  }
+
+  .right-half-physician .instruction-text-physician {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .input-label-physician {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .input-field-physician {
+    padding: 8px;
+  }
+}
+
+.error-text-physician-signup {
+  color: red;
+  margin-top: 5px;
+  align-self: center;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-weight: bold;
+}

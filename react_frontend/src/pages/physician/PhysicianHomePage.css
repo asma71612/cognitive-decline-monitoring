@@ -1,0 +1,12 @@
+.physician-home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+}
+
+.physician-home-container h1 {
+  font-size: 36px;
+  color: #333;
+}
