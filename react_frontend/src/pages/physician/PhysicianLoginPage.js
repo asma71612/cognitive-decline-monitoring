@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../firebaseConfig.js';
 import titleImage from '../../assets/title.svg';
+import googleIcon from '../../assets/google.svg';
 import './PhysicianLoginPage.css';
 
 const PhysicianLoginPage = () => {
@@ -25,7 +26,7 @@ const PhysicianLoginPage = () => {
       navigate('/physician-home-page'); // Redirect to Physician Home Page
     } catch (error) {
       console.error('Error logging in:', error);
-      setError('Invalid email or password.');
+      setError('Error: Incorrect email or password.');
     }
   };
 
@@ -101,17 +102,21 @@ const PhysicianLoginPage = () => {
         <div className="forgot-text-physician">
           <a href="#" onClick={handlePasswordReset}>Forgot your password?</a>
         </div>
+        {error && <div className="error-text-physician-login">{error}</div>}
         <button
           className={`login-button-physician ${error ? 'error' : ''}`}
           onClick={handleLogin}
         >
           Log In
         </button>
-        {error && <div className="error-text-physician-login">{error}</div>}
-        {message && <div className="message-text-physician">{message}</div>}
-        <button className="google-login-button" onClick={handleGoogleLogin}>
+        <button
+          className={`google-login-button ${error ? 'error' : ''}`}
+          onClick={handleGoogleLogin}
+        >
+        <img src={googleIcon} alt="Google" className="google-icon" />
           Sign in with Google
         </button>
+        {message && <div className="message-text-physician">{message}</div>}
         <div className="signup-text-physician-login">
           Don’t have an account? <a href="/physician-signup">Sign up here</a>
         </div>

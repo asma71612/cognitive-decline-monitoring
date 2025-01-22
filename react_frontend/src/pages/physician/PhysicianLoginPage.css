@@ -76,19 +76,19 @@ html {
 .right-half-physician .input-field-physician {
   width: 100%;
   padding: 10px;
-  margin-bottom: -10px !important; /* Reduce the margin-bottom to decrease spacing */
+  margin-bottom: -10px !important; 
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 .right-half-physician .password-input-field-physician {
-  margin-bottom: 20px !important; /* Add margin-bottom to maintain spacing */
+  margin-bottom: 20px !important; 
 }
 
 .right-half-physician .login-button-physician {
   padding: 14px 24px;
   font-size: 17px;
-  background-color: #576a7f;
+  background-color: #516A80;
   color: white;
   border: none;
   border-radius: 25px;
@@ -120,25 +120,25 @@ html {
 
 .right-half-physician .forgot-text-physician a {
   color: #2f3b66;
-  text-decoration: underline;
 }
 
 .right-half-physician .signup-text-physician-login {
   font-size: 16px;
-  font-weight: bold;
   margin-top: 10px;
   align-self: center;
 }
 
 .right-half-physician .signup-text-physician a {
   color: #2f3b66;
-  text-decoration: underline;
 }
 
 .google-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 14px 24px;
   font-size: 17px;
-  background-color: #db4437;
+  background-color: #2F3B66;
   color: white;
   border: none;
   border-radius: 25px;
@@ -148,8 +148,14 @@ html {
   transition: background-color 0.3s;
 }
 
-.google-login-button:hover {
-  background-color: #c33d2e;
+.google-login-button.error {
+  margin-top: 3px; 
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px; 
 }
 
 .message-text-physician {
