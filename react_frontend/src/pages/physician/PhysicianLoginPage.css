@@ -159,10 +159,17 @@ html {
 }
 
 .message-text-physician {
-  color: #F8727B;
-  margin-top: 5px;
+  color: red;
   align-self: center;
-  margin-bottom: 25px;
+  justify-content: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.error-text-physician-login {
+  color: red;
+  align-self: center;
+  margin-bottom: 15px;
   font-weight: bold;
 }
 
@@ -206,11 +213,4 @@ html {
   .right-half-physician .signup-text-physician {
     font-size: 12px;
   }
-}
-
-.error-text-physician-login {
-  color: red;
-  align-self: center;
-  margin-bottom: 15px;
-  font-weight: bold;
 }

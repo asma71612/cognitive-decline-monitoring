@@ -85,6 +85,7 @@ const PhysicianLoginPage = () => {
           onChange={(e) => {
             setEmail(e.target.value);
             setError(''); // Clear error when user starts typing
+            setMessage(''); // Clear message when user starts typing
           }}
           onKeyDown={handleKeyDown}
         />
@@ -96,6 +97,7 @@ const PhysicianLoginPage = () => {
           onChange={(e) => {
             setPassword(e.target.value);
             setError(''); // Clear error when user starts typing
+            setMessage(''); // Clear message when user starts typing
           }}
           onKeyDown={handleKeyDown}
         />
@@ -103,6 +105,7 @@ const PhysicianLoginPage = () => {
           <a href="#" onClick={handlePasswordReset}>Forgot your password?</a>
         </div>
         {error && <div className="error-text-physician-login">{error}</div>}
+        {message && <div className="message-text-physician">{message}</div>}
         <button
           className={`login-button-physician ${error ? 'error' : ''}`}
           onClick={handleLogin}
@@ -113,10 +116,9 @@ const PhysicianLoginPage = () => {
           className={`google-login-button ${error ? 'error' : ''}`}
           onClick={handleGoogleLogin}
         >
-        <img src={googleIcon} alt="Google" className="google-icon" />
+          <img src={googleIcon} alt="Google" className="google-icon" />
           Sign in with Google
         </button>
-        {message && <div className="message-text-physician">{message}</div>}
         <div className="signup-text-physician-login">
           Don’t have an account? <a href="/physician-signup">Sign up here</a>
         </div>
