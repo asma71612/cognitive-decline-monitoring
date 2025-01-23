@@ -8,12 +8,18 @@ import './PhysicianSignUp.css';
 const PhysicianSignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
-    if (!email || !password) {
-      setError('Please enter both email and password.');
+    if (!email || !password || !confirmPassword) {
+      setError('Please enter all fields.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
       return;
     }
 
@@ -68,13 +74,27 @@ const PhysicianSignUp = () => {
           }}
           onKeyDown={handleKeyDown}
         />
+        <div className="input-label-physician">Confirm Password</div>
+        <input
+          type="password"
+          className="input-field-physician"
+          value={confirmPassword}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            setError(''); // Clear error when user starts typing
+          }}
+          onKeyDown={handleKeyDown}
+        />
+        {error && <div className="error-text-physician-signup">{error}</div>}
         <button
           className={`signup-button-physician ${error ? 'error' : ''}`}
           onClick={handleSignUp}
         >
           Sign Up
         </button>
-        {error && <div className="error-text-physician">{error}</div>}
+        <div className="login-text-physician-signup">
+          Already have an account? <a href="/physician-login">Log in here</a>
+        </div>
       </div>
     </div>
   );

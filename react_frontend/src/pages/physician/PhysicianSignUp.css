@@ -105,6 +105,25 @@ html {
   background-color: #f69aa1;
 }
 
+.error-text-physician-signup {
+  color: red;
+  align-self: center;
+  margin-top: 30px;
+  margin-bottom: -25px;
+  font-weight: bold;
+}
+
+.login-text-physician-signup {
+  font-size: 16px;
+  margin-top: 10px;
+  align-self: center;
+}
+
+.login-text-physician-signup a {
+  color: #2f3b66;
+  text-decoration: underline;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .title-image-physician {
@@ -140,13 +159,4 @@ html {
   .right-half-physician .input-field-physician {
     padding: 8px;
   }
-}
-
-.error-text-physician-signup {
-  color: red;
-  margin-top: 5px;
-  align-self: center;
-  margin-top: 10px;
-  margin-bottom: 15px;
-  font-weight: bold;
 }
