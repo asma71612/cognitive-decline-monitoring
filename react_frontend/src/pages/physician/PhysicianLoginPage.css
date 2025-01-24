@@ -1,0 +1,216 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Prevent overflow */
+}
+
+.login-container-physician {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.left-half-physician,
+.right-half-physician {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.left-half-physician {
+  background-color: #dfe5fb;
+}
+
+.right-half-physician {
+  background-color: #fff3e3;
+  margin-top: -40px;
+  padding: 50px;
+}
+
+.title-image-login-physician {
+  width: 60%;
+  height: auto;
+  margin-top: 250px;
+  margin-left: 5%;
+}
+
+.login-description-physician {
+  font-size: 18px;
+  margin-top: 20px;
+  font-family: "Inter", sans-serif;
+  margin-left: 5.5%;
+}
+
+.right-half-physician .welcome-text-physician {
+  font-size: 20px;
+  color: #2f3b66;
+  margin-top: 150px;
+}
+
+.right-half-physician .login-text-physician {
+  font-size: 30px;
+  color: #2f3b66;
+  font-weight: bold;
+  margin-top: 30px;
+}
+
+.right-half-physician .instruction-text-physician {
+  font-size: 18px;
+  color: #2f3b66;
+  margin-top: 35px;
+}
+
+.right-half-physician .input-label-physician {
+  font-size: 18px;
+  color: #2f3b66;
+  margin-top: 35px;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.right-half-physician .input-field-physician {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: -10px !important; 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.right-half-physician .password-input-field-physician {
+  margin-bottom: 20px !important; 
+}
+
+.right-half-physician .login-button-physician {
+  padding: 14px 24px;
+  font-size: 17px;
+  background-color: #516A80;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-bottom: 17px;
+  align-self: center;
+  transition: background-color 0.3s;
+}
+
+.right-half-physician .login-button-physician:hover {
+  background-color: #8496aa;
+}
+
+.right-half-physician .login-button-physician.error {
+  background-color: #f8727b;
+  margin-bottom: 10px;
+}
+
+.right-half-physician .login-button-physician.error:hover {
+  background-color: #f69aa1;
+}
+
+.right-half-physician .forgot-text-physician {
+  font-size: 16px;
+  color: #2f3b66;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.right-half-physician .forgot-text-physician a {
+  color: #2f3b66;
+}
+
+.right-half-physician .signup-text-physician-login {
+  font-size: 16px;
+  margin-top: 10px;
+  align-self: center;
+}
+
+.right-half-physician .signup-text-physician a {
+  color: #2f3b66;
+}
+
+.google-login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
+  font-size: 17px;
+  background-color: #2F3B66;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-top: -5px;
+  align-self: center;
+  transition: background-color 0.3s;
+}
+
+.google-login-button.error {
+  margin-top: 3px; 
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px; 
+}
+
+.message-text-physician {
+  color: red;
+  align-self: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.error-text-physician-login {
+  color: red;
+  align-self: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .title-image-physician {
+    width: 80%;
+    margin-top: 150px;
+  }
+
+  .login-description-physician {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .welcome-text-physician {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .login-text-physician {
+    font-size: 20px;
+    margin-top: 20px;
+  }
+
+  .right-half-physician .instruction-text-physician {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .input-label-physician {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .right-half-physician .input-field-physician {
+    padding: 8px;
+  }
+
+  .right-half-physician .forgot-text-physician,
+  .right-half-physician .signup-text-physician {
+    font-size: 12px;
+  }
+}

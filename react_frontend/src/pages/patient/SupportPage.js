@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import titleImage from '../../assets/title.svg';
-import homeIcon from '../../assets/home-dark.svg';
+import homeIcon from '../../assets/home-light.svg';
 import reportIcon from '../../assets/reports-light.svg';
-import supportIcon from '../../assets/support-light.svg';
+import supportIcon from '../../assets/support-dark.svg';
 import profileIcon from '../../assets/profile-light.svg';
-import './PatientHomePage.css';
+import './SupportPage.css';
 
-const PatientHomePage = () => {
+const SupportPage = () => {
   const getCurrentDateInEST = () => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const estDate = new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York', ...options });
@@ -36,7 +36,7 @@ const PatientHomePage = () => {
         <div className="menu">
           <Link to="/patient-home-page" className="menu-item link">
             <img src={homeIcon} alt="Home" />
-            <span>Home</span>
+            <span className="home-text">Home</span>
           </Link>
           <Link to="/patient-reporting-landing-page" className="menu-item link">
             <img src={reportIcon} alt="My Reports" />
@@ -44,7 +44,7 @@ const PatientHomePage = () => {
           </Link>
           <Link to="/support-page" className="menu-item link">
             <img src={supportIcon} alt="Support" />
-            <span>Support</span>
+            <span className="support-text">Support</span>
           </Link>
         </div>
         <Link to="/patient-login" className="menu-item link logout">
@@ -53,21 +53,28 @@ const PatientHomePage = () => {
         </Link>
       </div>
       <div className="right-side">
-        <div className="home-content">
-          <h1>Home</h1>
-          <p>{`Today is ${getCurrentDateInEST()}.`}</p>
-          <p className="tasks-left">You have 7 tasks left to complete this week.</p>
-          <Link to="/general-instructions" className="complete-task-button">Complete My Task</Link>
-          <div className="task-progress">
-            <h3>This Week's Task Progress</h3>
-            <div className="progress-bar">
-              <div className="progress-bar-fill" style={{ width: '0%' }}></div>
-            </div>
-          </div>
+        <div className="home-content-support">
+          <h1>Support</h1>
+          <h2 className="subheading-support">Need Help?</h2>
+          <p>
+            If you have questions, feedback, or encounter issues, here’s how you can reach us:
+          </p>
+          <ul>
+            <li>
+              <strong>Contact Support:</strong> Email us at <span className="underline">patientsupport@cognify.ca</span>
+            </li>
+            <li>
+              <strong>Live Chat:</strong> Access live chat support from 9 am - 9 pm EST at 1-(800)-123-4567
+            </li>
+          </ul>
+          <h2 className="subheading-support disclaimer-subheading">Disclaimer</h2>
+          <p className="disclaimer-text">
+            Cognify is designed to support physicians in their clinical decision-making process. It provides a platform to collect and present data for evaluation but does not independently diagnose or offer medical advice. All results should be interpreted by qualified healthcare professionals within the context of their clinical expertise and the patient’s specific circumstances. To ensure accurate data collection, the platform should be used in an appropriate and distraction-free environment. We are committed to protecting your information, and all data is managed securely in accordance with our <span className="underline">Privacy Policy</span>. By using this platform, you acknowledge and agree to these terms.
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default PatientHomePage;
+export default SupportPage;
