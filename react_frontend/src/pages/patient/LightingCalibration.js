@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Container } from '@mui/material';
-import './LightingCalibration.css';
+import React, { useRef, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import titleImage from "../../assets/title.svg";
+import "./LightingCalibration.css";
 
 const LightingCalibration = () => {
   const videoRef = useRef(null);
@@ -15,12 +15,16 @@ const LightingCalibration = () => {
     // Request access to the camera
     const startCamera = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
         if (videoRef.current) {
           videoRef.current.srcObject = stream; // Attach the stream to the video element
         }
       } catch (error) {
-        setCameraError('Unable to access camera. Please check your permissions.');
+        setCameraError(
+          "Unable to access camera. Please check your permissions."
+        );
       }
     };
 
@@ -40,10 +44,21 @@ const LightingCalibration = () => {
     // Check lighting every second (or as needed)
     const checkLighting = () => {
       if (videoRef.current && canvasRef.current) {
-        const context = canvasRef.current.getContext('2d');
-        context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+        const context = canvasRef.current.getContext("2d");
+        context.drawImage(
+          videoRef.current,
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
 
-        const imageData = context.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
+        );
         const pixels = imageData.data;
 
         let totalBrightness = 0;
@@ -75,11 +90,11 @@ const LightingCalibration = () => {
   }, []);
 
   const handleStartCalibration = () => {
-    navigate('/gaze-calibration');
+    navigate("/gaze-calibration");
   };
 
   return (
-    <Container className="home-container">
+    <div className="lighting-container">
       {/* Video Feed or Error Message */}
       <div className="camera-position-rectangle">
         {cameraError ? (
@@ -96,9 +111,10 @@ const LightingCalibration = () => {
       </div>
 
       <div className="instructions-container">
-        <h3 className="title">
-          How to Set Up Eye Tracking
-        </h3>
+        <div className="title-container-lighting-calibration">
+          <img src={titleImage} alt="Title" className="title-image-small" />
+        </div>
+        <h3 className="title">Lighting Calibration</h3>
 
         <ul className="instruction-list">
           <li>1. Ensure your face is visible.</li>
@@ -108,10 +124,10 @@ const LightingCalibration = () => {
         </ul>
       </div>
 
-      {!isLightingGood && (
-        <p className='error-message'>
-          Please sit in a well lit room!
-        </p>
+      {!isLightingGood ? (
+        <p className="error-message">PLEASE SIT IN A WELL LIT ROOM.</p>
+      ) : (
+        <p className="success-message">GOOD LIGHTING CONDITIONS.</p>
       )}
 
       <button
@@ -122,8 +138,13 @@ const LightingCalibration = () => {
         Start Gaze Calibration
       </button>
 
-      <canvas ref={canvasRef} width="640" height="480" style={{ display: 'none' }}></canvas>
-    </Container>
+      <canvas
+        ref={canvasRef}
+        width="640"
+        height="480"
+        style={{ display: "none" }}
+      ></canvas>
+    </div>
   );
 };
 
