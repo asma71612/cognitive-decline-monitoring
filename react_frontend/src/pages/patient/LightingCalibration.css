@@ -94,3 +94,8 @@
 .start-button:hover {
   background-color: #8496aa;
 }
+
+.start-button:disabled {
+  background-color: #D3D3D3;
+  cursor: not-allowed;
+}
