@@ -168,6 +168,14 @@ export { db, auth };
 ## Stopping the Server
 Simply do `Ctrl + C` or `Cmd + C` in the terminal to terminate the batch job
 
+## Running Tests
+Navigate to the react_frontend folder and run the following command:
+```bash
+npm test -- --testPathPattern=src/__tests__/pathToTest/TestName.test.js --watchAll=false
+```
+
+Note: The flag ensures that the console exists after running the test and is not on watch mode.
+
 ## Troubleshooting
 **Issue: Backend or Frontend not starting**
 
