@@ -1,0 +1,27 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.20.5
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: react_frontend
+
+      - name: Run all tests
+        run: npm test -- --watchAll=false
+        working-directory: react_frontend
