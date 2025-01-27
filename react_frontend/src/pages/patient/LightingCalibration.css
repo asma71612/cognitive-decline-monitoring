@@ -1,11 +1,25 @@
-.home-container {
-  padding: 20px;
+.lighting-container {
+  width: 100%;
+  height: 100vh;
+  padding: 20px 0;
   text-align: center;
+  justify-content: center;
   background-color: #FFF3E3;
 }
 
+.title-container-lighting-calibration {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  justify-content: left;
+}
+
+.title-image-small {
+  width: 175px;
+}
+
 .camera-position-rectangle {
-  width: 50%;
+  width: 40%;
   height: auto;
   margin: 20px auto;
   position: relative;
@@ -22,7 +36,8 @@
 }
 
 .instructions-container {
-  width: 50%;
+  background-color: #FFF3E3;
+  width: 40%;
   margin: 0 auto;
 }
 
@@ -36,7 +51,7 @@
 .instruction-list {
   list-style-type: none;
   padding: 0;
-  font-size: 18px;
+  font-size: 20px;
   margin-top: 40px;
   margin-bottom: 40px;
   text-align: left;
@@ -48,6 +63,14 @@
 
 .error-message {
   color: red;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #9EC180;
   font-size: 20px;
   font-weight: bold;
   text-align: center;
@@ -70,4 +93,9 @@
 
 .start-button:hover {
   background-color: #8496aa;
+}
+
+.start-button:disabled {
+  background-color: #D3D3D3;
+  cursor: not-allowed;
 }
