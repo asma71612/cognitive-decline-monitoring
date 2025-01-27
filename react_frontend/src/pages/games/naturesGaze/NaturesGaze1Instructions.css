@@ -1,0 +1,64 @@
+body {
+  margin: 0;
+}
+
+.instructions-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.instruction-card {
+  background-color: #fff3e3;
+  border-radius: 45px;
+  padding: 20px 60px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 650px;
+  line-height: 1.6;
+}
+
+.instruction-card h1 {
+  font-size: 35px;
+  margin-bottom: 5px;
+}
+
+.instruction-card h2 {
+  font-size: 20px;
+  color: #516A80;
+  margin-bottom: 25px;
+  margin-top: 5px;
+}
+
+.instruction-card ol {
+  text-align: left;
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.instruction-card p {
+  font-size: 17px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.start-button {
+  padding: 14px 40px;
+  font-size: 20px;
+  background-color: #576a7f;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-bottom: 17px;
+  align-self: center;
+  transition: background-color 0.3s;
+}
+
+.start-button:hover {
+  background-color: #7F96AB;
+}

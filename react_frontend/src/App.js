@@ -8,8 +8,8 @@ import SupportPage from './pages/patient/SupportPage';
 import GeneralInstructionsPage from './pages/patient/GeneralInstructionsPage';
 import LightingCalibration from './pages/patient/LightingCalibration';
 import GazeCalibration from './pages/patient/GazeCalibration';
-import ProsaccadeInstructions from './pages/games/prosaccade/ProsaccadeInstructions';
-import ProsaccadeGame from './pages/games/prosaccade/ProsaccadeGame';
+import NaturesGaze1Instructions from './pages/games/naturesGaze/NaturesGaze1Instructions';
+import NaturesGaze1 from './pages/games/naturesGaze/NaturesGaze1';
 import PhysicianLoginPage from './pages/physician/PhysicianLoginPage';
 import PhysicianSignUp from './pages/physician/PhysicianSignUp';
 import PhysicianHomePage from './pages/physician/PhysicianHomePage';
@@ -27,8 +27,8 @@ const App = () => {
         <Route path="/general-instructions" element={<GeneralInstructionsPage />} />
         <Route path="/lighting-calibration" element={<LightingCalibration />} />
         <Route path="/gaze-calibration" element={<GazeCalibration />} />
-        <Route path="/prosaccade-instructions" element={<ProsaccadeInstructions />} />
-        <Route path="/prosaccade-game" element={<ProsaccadeGame />} />
+        <Route path="/natures-gaze-1-instructions" element={<NaturesGaze1Instructions />} />
+        <Route path="/natures-gaze-1-game" element={<NaturesGaze1 />} />
         <Route path="/physician-login" element={<PhysicianLoginPage />} />
         <Route path="/physician-signup" element={<PhysicianSignUp />} />
         <Route path="/physician-home-page" element={<PhysicianHomePage />} />
