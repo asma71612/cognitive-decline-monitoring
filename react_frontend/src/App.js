@@ -10,6 +10,8 @@ import LightingCalibration from './pages/patient/LightingCalibration';
 import GazeCalibration from './pages/patient/GazeCalibration';
 import NaturesGaze1Instructions from './pages/games/naturesGaze/NaturesGaze1Instructions';
 import NaturesGaze1 from './pages/games/naturesGaze/NaturesGaze1';
+import NaturesGaze2Instructions from './pages/games/naturesGaze/NaturesGaze2Instructions';
+import NaturesGaze2 from './pages/games/naturesGaze/NaturesGaze2';
 import PhysicianLoginPage from './pages/physician/PhysicianLoginPage';
 import PhysicianSignUp from './pages/physician/PhysicianSignUp';
 import PhysicianHomePage from './pages/physician/PhysicianHomePage';
@@ -29,6 +31,8 @@ const App = () => {
         <Route path="/gaze-calibration" element={<GazeCalibration />} />
         <Route path="/natures-gaze-1-instructions" element={<NaturesGaze1Instructions />} />
         <Route path="/natures-gaze-1-game" element={<NaturesGaze1 />} />
+        <Route path="/natures-gaze-2-instructions" element={<NaturesGaze2Instructions />} />
+        <Route path="/natures-gaze-2-game" element={<NaturesGaze2 />} />
         <Route path="/physician-login" element={<PhysicianLoginPage />} />
         <Route path="/physician-signup" element={<PhysicianSignUp />} />
         <Route path="/physician-home-page" element={<PhysicianHomePage />} />

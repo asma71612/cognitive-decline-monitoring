@@ -29,7 +29,7 @@ body {
 
 .game-instruction-card h2 {
   font-size: 20px;
-  color: #516A80;
+  color: #516a80;
   margin-bottom: 25px;
   margin-top: 5px;
 }
@@ -60,5 +60,5 @@ body {
 }
 
 .start-button:hover {
-  background-color: #7F96AB;
+  background-color: #7f96ab;
 }

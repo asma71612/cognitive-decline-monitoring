@@ -7,7 +7,7 @@ const NaturesGaze1Instructions = () => {
   const navigate = useNavigate();
   return (
     <div className="instructions-page" style={{ backgroundImage: `url(${naturesGazeBackgroundDark})` }}>
-      <div className="instruction-card">
+      <div className="game-instruction-card">
         <h1>Nature's Gaze I</h1>
         <h2>How to Play</h2>
         <ol>
