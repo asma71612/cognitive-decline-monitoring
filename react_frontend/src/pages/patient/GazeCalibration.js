@@ -9,7 +9,7 @@ const GazeCalibration = () => {
     <div className="gaze-calibration-container">
       <h1>Gaze Calibration</h1>
       <p>Follow the instructions to calibrate your gaze.</p>
-      <button className="next-button" onClick={() => navigate('/prosaccade-instructions')}>
+      <button className="next-button" onClick={() => navigate('/natures-gaze-1-instructions')}>
         Next
       </button>
     </div>
