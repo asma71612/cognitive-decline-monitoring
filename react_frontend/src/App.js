@@ -7,7 +7,6 @@ import PatientReportingLandingPage from './pages/patient/PatientReportingLanding
 import SupportPage from './pages/patient/SupportPage';
 import GeneralInstructionsPage from './pages/patient/GeneralInstructionsPage';
 import LightingCalibration from './pages/patient/LightingCalibration';
-import HeadCalibration from './pages/patient/HeadCalibration';
 import GazeCalibrationInstructions from './pages/patient/GazeCalibrationInstructions';
 import GazeCalibration from './pages/patient/GazeCalibration';
 import NaturesGaze1Instructions from './pages/games/naturesGaze/NaturesGaze1Instructions';
@@ -30,7 +29,6 @@ const App = () => {
         <Route path="/support-page" element={<SupportPage />} />
         <Route path="/general-instructions" element={<GeneralInstructionsPage />} />
         <Route path="/lighting-calibration" element={<LightingCalibration />} />
-        <Route path="/head-calibration" element={<HeadCalibration />} />
         <Route path="/gaze-calibration-instructions" element={<GazeCalibrationInstructions />} />
         <Route path="/gaze-calibration" element={<GazeCalibration />} />
         <Route path="/natures-gaze-1-instructions" element={<NaturesGaze1Instructions />} />
