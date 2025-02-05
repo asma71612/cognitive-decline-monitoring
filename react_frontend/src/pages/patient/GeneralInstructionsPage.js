@@ -17,7 +17,7 @@ const GeneralInstructionsPage = () => {
         <ol className="instructions-list">
           <li>You will be guided through an ambient light calibration test and an eye gaze calibration test to ensure data capture is as effective as possible.</li>
           <li>Each game instruction will appear before its subsequent game. Read each instruction carefully before starting.</li>
-          <li>There are a total of __ games, each taking up to 1 minute to complete. All games must be completed in one sitting, back-to-back.</li>
+          <li>There are a total of 4 games, each taking up to 1 minute to complete. All games must be completed in one sitting, back-to-back.</li>
         </ol>
         <p className="instructions-note">
           Make sure you're in a quiet environment, free from distractions, so you can fully focus on your task!
