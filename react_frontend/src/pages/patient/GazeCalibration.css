@@ -7,13 +7,16 @@ body {
 }
 
 .gaze-calibration-container {
-  padding: 20px;
+  width: 100%;
+  height: 100vh;
+  padding: 20px 0;
   text-align: center;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  background-color: #FFF3E3;
+}
+
+.gaze-calibration-container.dimmed {
+  background-color: #807A72;
 }
 
 .gaze-calibration-container h1 {
@@ -32,6 +35,11 @@ body {
   text-align: left;
 }
 
+.instructions-container {
+  text-align: center;
+  justify-content: center;
+}
+
 .instructions-box p {
   font-size: 18px;
   line-height: 1.6;
@@ -47,4 +55,135 @@ body {
 
 .instructions-list li {
   margin-bottom: 10px;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.italics {
+  font-style: italic;
+  font-size: 20px;
+}
+
+.webcam-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.calibration-point {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #F8727B;
+  border-radius: 50%;
+  transition: all 0.5s ease-in-out;
+  cursor: pointer;
+}
+
+.calibration-counter {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  font-size: 20px;
+  font-weight: bold;
+  background: #576a7f;
+  padding: 15px 35px;
+  color: white;
+  border-radius: 30px;
+  padding: 18px 28px;
+  border-style: solid;
+  border-color: #2F3B66;
+  border-width: 5px;
+}
+
+.gaze-calibration-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #FFF3E3;
+}
+
+.counter {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2F3B66;
+}
+
+.next-button:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #FFF3E3;
+  padding: 75px;
+  border-radius: 30px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.recalibrate-button {
+  transition: background-color 0.3s;
+  font-size: 25px;
+  padding: 15px 35px;
+  border-radius: 50px;
+  background-color: #576a7f;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 0 10px;
+}
+
+.continue-button {
+  background-color: #4CAF50;
+  transition: background-color 0.3s;
+  font-size: 25px;
+  padding: 15px 35px;
+  border-radius: 50px;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 0 10px;
+}
+
+.continue-button:hover {
+  background-color: #AECF91;
+  color: white;
+}
+
+.calibration-error {
+  color: #F8727B;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 10px 0;
+}
+
+.calibration-success {
+  color: #AECF91;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 10px 0;
+}
+
+.calibration-accuracy h1{
+  padding: 30px 0;
 }
