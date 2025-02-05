@@ -15,10 +15,6 @@
   background-color: #dfe5fb !important;
 }
 
-.right-side {
-  width: 75%;
-}
-
 .title-container {
   width: 100%;
   display: flex;
@@ -70,13 +66,17 @@
   bottom: 20px;
 }
 
-.right-side {
+.right-side-physician {
   width: 75%;
   padding: 40px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #fff3e3;
+  padding-bottom: 50px;
 }
 
 .physician-home-content {
@@ -84,6 +84,7 @@
   margin-left: 80px;
   margin-right: 80px;
   text-align: left;
+  padding-bottom: 50px;
 }
 
 .physician-home-content h1 {
@@ -159,12 +160,19 @@
 @media (max-width: 800px) {
   .left-side-physician {
     width: 25%;
-    align-items: center;
-    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
     background-color: #dfe5fb !important;
   }
 
-  .right-side {
+  .right-side-physician {
     width: 75%;
   }
 

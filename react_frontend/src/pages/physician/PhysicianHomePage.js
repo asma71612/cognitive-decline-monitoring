@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../../firebaseConfig.js";
 import { collection, getDocs } from "firebase/firestore";
+import AddPatientsModal from "../../components/AddPatientsModal";
 import titleImage from "../../assets/title.svg";
 import patientsIcon from "../../assets/my-patients.svg";
 import dailyReportsIcon from "../../assets/daily-reports.svg";
@@ -14,11 +15,13 @@ import "./PhysicianHomePage.css";
 
 const PhysicianHomePage = () => {
   const [patients, setPatients] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Track the search input
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "users")); // Get all patient documents inside "users"
+        const querySnapshot = await getDocs(collection(db, "users")); 
 
         if (querySnapshot.empty) {
           console.log("No patients found in Firestore.");
@@ -34,9 +37,7 @@ const PhysicianHomePage = () => {
           enrolmentDate: doc.data().enrolmentDate,
         }));
 
-        // Sort patients by last name alphabetically
         patientsData.sort((a, b) => a.lastName.localeCompare(b.lastName));
-
         setPatients(patientsData);
       } catch (error) {
         console.error("Error fetching patients:", error);
@@ -45,6 +46,27 @@ const PhysicianHomePage = () => {
 
     fetchPatients();
   }, []);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const formatDateForDisplay = (isoString) => {
+    if (!isoString) return "N/A";
+    const date = new Date(isoString);
+    return `${(date.getMonth() + 1).toString().padStart(2, "0")}/${date
+      .getDate()
+      .toString()
+      .padStart(2, "0")}/${date.getFullYear()}`;
+  };
+
+  const filteredPatients = patients.filter((patient) =>
+    patient.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="physician-home-container">
@@ -86,15 +108,22 @@ const PhysicianHomePage = () => {
         </Link>
       </div>
 
-      <div className="right-side">
+      <div className="right-side-physician">
         <div className="physician-home-content">
           <h1>My Patients</h1>
 
           {/* Search and Add Patient Buttons */}
           <div className="search-add-container">
-            <button className="add-patient-btn">Add Patient</button>
+            <button className="add-patient-btn-homepage" onClick={openModal}>
+              Add Patient
+            </button>
             <div className="search-bar">
-              <input type="text" placeholder="Search..." />
+              <input
+                type="text"
+                placeholder="Search by first name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
               <img src={searchIcon} alt="Search" className="search-icon" />
             </div>
           </div>
@@ -111,25 +140,28 @@ const PhysicianHomePage = () => {
               </tr>
             </thead>
             <tbody>
-              {patients.length > 0 ? (
-                patients.map((patient) => (
+              {filteredPatients.length > 0 ? (
+                filteredPatients.map((patient) => (
                   <tr key={patient.id}>
                     <td>{patient.lastName || "N/A"}</td>
                     <td>{patient.firstName || "N/A"}</td>
                     <td>{patient.sex || "N/A"}</td>
-                    <td>{patient.dob || "N/A"}</td>
-                    <td>{patient.enrolmentDate || "N/A"}</td>{" "}
+                    <td>{formatDateForDisplay(patient.dob)}</td>
+                    <td>{formatDateForDisplay(patient.enrolmentDate)}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5">No patients found</td>{" "}
+                  <td colSpan="5">No patients found</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       </div>
+      {isModalOpen && (
+        <AddPatientsModal closeModal={closeModal} setPatients={setPatients} />
+      )}
     </div>
   );
 };
