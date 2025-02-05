@@ -79,24 +79,6 @@ const PhysicianHomePage = () => {
             <img src={patientsIcon} alt="My Patients" />
             <span>My Patients</span>
           </Link>
-          <Link to="/physician-daily-report" className="menu-item link colored">
-            <img src={dailyReportsIcon} alt="Daily Reports" />
-            <span>Daily Reports</span>
-          </Link>
-          <Link
-            to="/physician-weekly-report"
-            className="menu-item link colored"
-          >
-            <img src={weeklyReportsIcon} alt="Weekly Reports" />
-            <span>Weekly Reports</span>
-          </Link>
-          <Link
-            to="/physician-all-time-trends"
-            className="menu-item link colored"
-          >
-            <img src={trendsIcon} alt="All-Time Trends" />
-            <span>All-Time Trends</span>
-          </Link>
           <Link to="/physician-support" className="menu-item link colored">
             <img src={supportIcon} alt="Support" />
             <span>Support</span>
