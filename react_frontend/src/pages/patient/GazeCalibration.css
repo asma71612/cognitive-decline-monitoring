@@ -1,4 +1,127 @@
-html,
+#plotting-canvas {
+  position: absolute;
+}
+
+.calibration-container {
+  background-color: #FFF3E3;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.Calibration:disabled {
+  background-color: #7F96AB !important;
+}
+
+.accuracy-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.accuracy-text {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+button {
+  margin-top: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.calibrationDiv {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-template-rows: repeat(3, 1fr);    /* 3 rows */
+  gap: 10px;                             /* Space between the buttons */
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Ensure it takes the full screen */
+  justify-content: center;
+  align-items: center;
+}
+
+.calibration-button {
+  height: 20px;
+  width: 20px;
+  background-color: #AECF91;
+  border-radius: 70%;
+  padding: 20px 20px;
+  display: flex;
+  justify-content: center;
+  margin-left: 45%;
+  align-items: center;
+}
+
+.calibration-button:hover {
+  background-color: #C5E3AB;
+}
+
+.calibration-button-last {
+  padding: 25px 25px;
+  background-color: #F8727B;
+  border-radius: 50%;
+  opacity: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.popup {
+  background-color: #FFF3E3;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.popup-title {
+  margin: 10px 0;
+}
+
+.popup-confirm-button {
+  background-color: #4CAF50;
+  transition: background-color 0.3s;
+  font-size: 25px;
+  padding: 15px 35px;
+  border-radius: 50px;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px 10px;
+  font-weight: bold
+}
+
+.popup-confirm-button:hover {
+  background-color: #C5E3AB;
+}
+
+.popup-cancel-button {
+  transition: background-color 0.3s;
+  font-size: 25px;
+  padding: 15px 35px;
+  border-radius: 50px;
+  background-color: #576a7f;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px 10px;
+  font-weight: bold
+}
+
+/* html,
 body {
   height: 100%;
   margin: 0;
@@ -186,4 +309,4 @@ body {
 
 .calibration-accuracy h1{
   padding: 30px 0;
-}
+} */
