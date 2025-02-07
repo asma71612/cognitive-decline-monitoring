@@ -39,5 +39,5 @@ jobs:
         working-directory: react_frontend
 
       - name: Run all tests
-        run: npm test -- --testPathPattern=src/__tests__/ --watchAll=false --clearCache
+        run: npm test -- --testPathPattern=src/__tests__/ --watchAll=false --verbose
         working-directory: react_frontend
