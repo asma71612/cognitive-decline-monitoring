@@ -1,10 +1,11 @@
 import React from "react";
-import "./PhysicianSupportPage.css";
 import { Link } from "react-router-dom";
 import titleImage from "../../assets/title.svg";
 import patientsIcon from "../../assets/my-patients.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
+import termsAndConditions from "../../assets/TermsAndConditions.pdf";
+import "./PhysicianSupportPage.css";
 
 const PhysicianSupportPage = () => {
   return (
@@ -66,7 +67,7 @@ const PhysicianSupportPage = () => {
             to adhere to all applicable professional and ethical standards. For
             additional support, please refer to our{" "}
             <a
-              href={require("../../assets/TermsAndConditions.pdf")}
+              href={termsAndConditions}
               target="_blank"
               rel="noopener noreferrer"
               className="underline"

@@ -5,6 +5,7 @@ import homeIcon from "../../assets/home-light.svg";
 import reportIcon from "../../assets/reports-light.svg";
 import supportIcon from "../../assets/support-dark.svg";
 import profileIcon from "../../assets/profile-light.svg";
+import privacyPolicy from "../../assets/PrivacyPolicy.pdf";
 import "./SupportPage.css";
 
 const SupportPage = () => {
@@ -68,7 +69,7 @@ const SupportPage = () => {
             protecting your information, and all data is managed securely in
             accordance with our{" "}
             <a
-              href={require("../../assets/PrivacyPolicy.pdf")}
+              href={privacyPolicy}
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
