@@ -13,13 +13,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.20.5
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          rm -rf node_modules
+          npm install
+        working-directory: react_frontend
+        
+      - name: Install missing Babel plugin
+        run: npm install @babel/plugin-proposal-private-property-in-object
         working-directory: react_frontend
 
       - name: Run all tests
