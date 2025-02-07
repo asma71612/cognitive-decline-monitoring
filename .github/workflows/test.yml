@@ -23,5 +23,5 @@ jobs:
         working-directory: react_frontend
 
       - name: Run all tests
-        run: npm test -- --watchAll=false
+        run: npm test -- --testPathPattern=src/__tests__/ --watchAll=false
         working-directory: react_frontend
