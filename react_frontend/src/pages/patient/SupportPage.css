@@ -13,9 +13,21 @@
   padding: 20px;
   position: relative;
   background: hsla(355, 100%, 95%, 1);
-  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
-  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
-  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
+  background: linear-gradient(
+    135deg,
+    hsla(355, 100%, 95%, 1) 0%,
+    hsla(34, 100%, 95%, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    135deg,
+    hsla(355, 100%, 95%, 1) 0%,
+    hsla(34, 100%, 95%, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    135deg,
+    hsla(355, 100%, 95%, 1) 0%,
+    hsla(34, 100%, 95%, 1) 100%
+  );
   filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFE7E9", endColorstr="#FFF3E3", GradientType=1 );
 }
 
@@ -24,6 +36,8 @@
   background-color: #fff3e3;
   padding: 40px;
   display: flex;
+  min-height: 100vh;
+  overflow-y: auto;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -72,11 +86,11 @@
 }
 
 .menu-item.link[href="/patient-home-page"] span.home-text {
-  color: #516A80 !important;
+  color: #516a80 !important;
 }
 
 .menu-item.link[href="/support-page"] span.support-text {
-  color: #2F3B66 !important;
+  color: #2f3b66 !important;
 }
 
 .logout {
@@ -109,16 +123,17 @@
 }
 
 .home-content-support ul {
-  list-style-type: disc; 
-  padding-left: 40px; 
+  list-style-type: disc;
+  padding-left: 40px;
 }
 
 .underline {
-  text-decoration: underline; /* Underline the specific texts */
+  text-decoration: underline;
+  color: #2F3B66;
 }
 
 .disclaimer-subheading {
-  margin-top: 50px !important; 
+  margin-top: 50px !important;
 }
 
 @media (max-width: 800px) {
