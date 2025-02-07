@@ -73,7 +73,6 @@ const SupportPage = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
-              color="black"
             >
               Privacy Policy{""}
             </a>
