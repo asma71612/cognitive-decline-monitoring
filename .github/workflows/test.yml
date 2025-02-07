@@ -24,13 +24,20 @@ jobs:
       - name: Install dependencies
         run: |
           rm -rf node_modules
-          npm install
+          npm ci
         working-directory: react_frontend
-        
+
       - name: Install missing Babel plugin
-        run: npm install @babel/plugin-proposal-private-property-in-object
+        run: npm install @babel/plugin-proposal-private-property-in-object --save-dev
+        working-directory: react_frontend
+
+      - name: Check Node.js version
+        run: node -v
+
+      - name: List installed Firebase package
+        run: ls node_modules/firebase
         working-directory: react_frontend
 
       - name: Run all tests
-        run: npm test -- --testPathPattern=src/__tests__/ --watchAll=false
+        run: npm test -- --testPathPattern=src/__tests__/ --watchAll=false --clearCache
         working-directory: react_frontend
