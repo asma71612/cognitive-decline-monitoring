@@ -1,0 +1,100 @@
+.daily-reports-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.left-side-physician {
+  width: 25%;
+  background-color: #dfe5fb !important;
+  padding: 20px;
+  position: relative;
+}
+
+.title-container {
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  margin-top: 0;
+  margin-left: 20px;
+}
+
+.title-image {
+  margin-top: 20px;
+  width: 75%;
+  height: auto;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 125px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+  color: inherit;
+  margin-bottom: 10px;
+}
+
+.menu-item img {
+  padding-left: 17px;
+  width: 35px;
+  height: 35px;
+}
+
+.menu-item.link span {
+  color: inherit;
+}
+
+.menu-item.link.colored span {
+  color: #516a80 !important;
+}
+
+.logout {
+  position: absolute;
+  bottom: 20px;
+}
+
+.right-side-physician {
+  width: 75%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: #fff3e3;
+  padding-bottom: 50px;
+}
+
+.daily-reports-content {
+  margin-top: 100px;
+  margin-left: 80px;
+  margin-right: 80px;
+  text-align: left;
+  padding-bottom: 50px;
+  width: -webkit-fill-available;
+}
+
+.daily-reports-content h1 {
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.patient-info-box {
+  border: 4px solid #516A80; 
+  background-color: #E7EAF8; 
+  color: black;
+  padding: 20px;
+  border-radius: 22px;
+  margin-bottom: 20px;
+}
+
+.patient-info-box h2 {
+  margin-top: 0;
+}

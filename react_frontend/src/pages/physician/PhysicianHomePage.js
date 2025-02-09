@@ -18,7 +18,7 @@ const PhysicianHomePage = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "users")); 
+        const querySnapshot = await getDocs(collection(db, "users"));
 
         if (querySnapshot.empty) {
           console.log("No patients found in Firestore.");
@@ -116,6 +116,7 @@ const PhysicianHomePage = () => {
                 <th>Sex</th>
                 <th>Date of Birth</th>
                 <th>Enrolment Date</th>
+                <th>Reports</th>
               </tr>
             </thead>
             <tbody>
@@ -127,6 +128,15 @@ const PhysicianHomePage = () => {
                     <td>{patient.sex || "N/A"}</td>
                     <td>{formatDateForDisplay(patient.dob)}</td>
                     <td>{formatDateForDisplay(patient.enrolmentDate)}</td>
+                    <td>
+                      {/* Link passes the patient.id via the URL */}
+                      <Link
+                        to={`/physician-daily-report/${patient.id}`}
+                        className="view-reports-btn"
+                      >
+                        View Reports
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (

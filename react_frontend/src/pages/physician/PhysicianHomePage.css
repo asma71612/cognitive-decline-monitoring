@@ -157,6 +157,24 @@
   background-color: #ddd;
 }
 
+.view-reports-btn {
+  padding: 7px 15px;
+  font-size: 14px;
+  background-color: #8C9FB0;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-bottom: 17px;
+  align-self: center;
+  transition: background-color 0.3s;
+  text-decoration: none;
+}
+
+.view-reports-btn:hover {
+  background-color: #7f96ab;
+}
+
 @media (max-width: 800px) {
   .left-side-physician {
     width: 25%;
