@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import titleImage from "../../assets/title.svg";
-import patientsIcon from "../../assets/my-patients.svg";
+import patientsIcon from "../../assets/my-patients-light.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import termsAndConditions from "../../assets/TermsAndConditions.pdf";

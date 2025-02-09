@@ -32,7 +32,7 @@
   margin-top: 125px;
 }
 
-.menu-item {
+.menu-item-daily-reports {
   display: flex;
   align-items: center;
   gap: 25px;
@@ -43,17 +43,25 @@
   margin-bottom: 10px;
 }
 
-.menu-item img {
+.menu-item-daily-reports img {
   padding-left: 17px;
   width: 35px;
   height: 35px;
 }
 
-.menu-item.link span {
+.menu-item-daily-reports.link span {
   color: inherit;
 }
 
-.menu-item.link.colored span {
+.menu-item-daily-reports.link:not(.daily):not(.logout) span {
+  color: #516a80 !important;
+}
+
+.menu-item-daily-reports.link.daily span {
+  color: #2f3b66 !important;
+}
+
+.menu-item-daily-reports.link.colored span {
   color: #516a80 !important;
 }
 
@@ -87,14 +95,98 @@
 }
 
 .patient-info-box {
-  border: 4px solid #516A80; 
-  background-color: #E7EAF8; 
+  border: 4px solid #516a80;
+  background-color: #e7eaf8;
   color: black;
   padding: 20px;
+  padding-bottom: 10px;
   border-radius: 22px;
-  margin-bottom: 20px;
 }
 
 .patient-info-box h2 {
   margin-top: 0;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-filter {
+  text-align: center;
+}
+
+.date-filter select {
+  border-radius: 20px;
+  font-size: 18px;
+  padding: 8px 12px;
+  border: 2px solid #516a80;
+  background-color: #e7eaf8;
+  color: #333;
+}
+
+.test-results-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.test-result-box {
+  border: 3px solid #516a80;
+  background-color: #e7eaf8;
+  padding: 15px;
+  border-radius: 15px;
+  width: calc(50% - 10px);
+  text-align: left;
+}
+
+.test-result-box h3 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.game-title {
+  text-align: left;
+  font-size: 30px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.game-box {
+  padding-left: 0px;
+  margin-bottom: 40px;
+}
+
+.game-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+}
+
+.metric-box {
+  background-color: #e7eaf8;
+  border: 2px solid #2f3b66;
+  margin-top: 20px;
+  margin-bottom: 0px;
+  padding: 10px;
+  border-radius: 40px;
+  text-align: center;
+  width: 150px;
+  box-shadow: 10px 10px 1px #2f3b66;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.metric-box h4 {
+  font-size: 16px;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.metric-box p {
+  font-size: 16px;
+  font-weight: bold;
 }

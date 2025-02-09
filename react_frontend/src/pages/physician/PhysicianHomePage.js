@@ -4,7 +4,7 @@ import { db } from "../../firebaseConfig.js";
 import { collection, getDocs } from "firebase/firestore";
 import AddPatientsModal from "../../components/AddPatientsModal";
 import titleImage from "../../assets/title.svg";
-import patientsIcon from "../../assets/my-patients.svg";
+import patientsIcon from "../../assets/my-patients-dark.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import searchIcon from "../../assets/search.svg";
@@ -72,7 +72,7 @@ const PhysicianHomePage = () => {
           <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
-          <Link to="/physician-home-page" className="menu-item link">
+          <Link to="/physician-home-page" className="menu-item-my-patients link patients">
             <img src={patientsIcon} alt="My Patients" />
             <span>My Patients</span>
           </Link>
