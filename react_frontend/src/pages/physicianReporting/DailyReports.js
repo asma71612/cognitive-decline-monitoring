@@ -6,12 +6,11 @@ import titleImage from "../../assets/title.svg";
 import patientsIcon from "../../assets/my-patients-light.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
-
-// New icon imports for the additional menu items
 import dailyReportsIcon from "../../assets/daily-reports-dark.svg";
 import weeklyReportsIcon from "../../assets/weekly-reports.svg";
 import allTimeReportsIcon from "../../assets/all-time-reports.svg";
-
+import upArrow from "../../assets/up-arrow.svg";
+import downArrow from "../../assets/down-arrow.svg";
 import "./DailyReports.css";
 
 const gameNames = {
@@ -21,9 +20,7 @@ const gameNames = {
   sceneDetective: "Scene Detective",
 };
 
-const formatMetricName = (name) => {
-  return name.replace(/([a-z])([A-Z])/g, "$1 $2");
-};
+const formatMetricName = (name) => name.replace(/([a-z])([A-Z])/g, "$1 $2");
 
 const formatSelectedDate = (dateStr) => {
   const [month, day, year] = dateStr.split("-");
@@ -32,52 +29,24 @@ const formatSelectedDate = (dateStr) => {
     parseInt(month, 10) - 1,
     parseInt(day, 10)
   );
-  const options = { month: "long", day: "numeric", year: "numeric" };
-  return dateObj.toLocaleDateString("en-US", options);
+  return dateObj.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 };
 
-const formatDate = (dateStr) => {
-  const parts = dateStr.split("-");
-  if (parts.length === 3) {
-    let year, month, day;
-    if (parts[0].length === 4) {
-      // Format: YYYY-MM-DD
-      year = parseInt(parts[0], 10);
-      month = parseInt(parts[1], 10);
-      day = parseInt(parts[2], 10);
-    } else {
-      // Format: MM-DD-YYYY
-      month = parseInt(parts[0], 10);
-      day = parseInt(parts[1], 10);
-      year = parseInt(parts[2], 10);
-    }
-    const dateObj = new Date(year, month - 1, day);
-    return `${
-      dateObj.getMonth() + 1
-    }/${dateObj.getDate()}/${dateObj.getFullYear()}`;
-  }
-  const dateObj = new Date(dateStr);
-  return `${
-    dateObj.getMonth() + 1
-  }/${dateObj.getDate()}/${dateObj.getFullYear()}`;
-};
-
-// Helper function to calculate age from a date of birth string.
-// Supports both "YYYY-MM-DD" and "MM-DD-YYYY" formats.
 const calculateAge = (dob) => {
   const birthDate = new Date(dob);
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDifference = today.getMonth() - birthDate.getMonth();
-
-  // If the birthday hasn't occurred yet this year, subtract 1 from age
   if (
-    monthDifference < 0 ||
-    (monthDifference === 0 && today.getDate() < birthDate.getDate())
+    today.getMonth() < birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() &&
+      today.getDate() < birthDate.getDate())
   ) {
     age--;
   }
-
   return age;
 };
 
@@ -87,17 +56,13 @@ const DailyReports = () => {
   const [dates, setDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [gameResults, setGameResults] = useState(null);
+  const [previousGameResults, setPreviousGameResults] = useState(null);
 
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const patientDocRef = doc(db, "users", patientId);
-        const patientDoc = await getDoc(patientDocRef);
-        if (patientDoc.exists()) {
-          setPatientData(patientDoc.data());
-        } else {
-          console.error("Patient not found.");
-        }
+        const patientDoc = await getDoc(doc(db, "users", patientId));
+        if (patientDoc.exists()) setPatientData(patientDoc.data());
       } catch (error) {
         console.error("Error fetching patient data:", error);
       }
@@ -105,12 +70,13 @@ const DailyReports = () => {
 
     const fetchAvailableDates = async () => {
       try {
-        const dailyReportsRef = collection(
-          db,
-          `users/${patientId}/dailyReports`
+        const snapshot = await getDocs(
+          collection(db, `users/${patientId}/dailyReports`)
         );
-        const snapshot = await getDocs(dailyReportsRef);
-        const fetchedDates = snapshot.docs.map((doc) => doc.id);
+        const fetchedDates = snapshot.docs
+          .map((doc) => doc.id)
+          .sort()
+          .reverse();
         setDates(fetchedDates);
       } catch (error) {
         console.error("Error fetching available dates:", error);
@@ -123,24 +89,29 @@ const DailyReports = () => {
 
   const fetchGameResults = async (date) => {
     setSelectedDate(date);
+    setPreviousGameResults(null);
+
     try {
-      const gamesRef = collection(
-        db,
-        `users/${patientId}/dailyReports/${date}/games`
+      const gamesSnapshot = await getDocs(
+        collection(db, `users/${patientId}/dailyReports/${date}/games`)
       );
-      const gamesSnapshot = await getDocs(gamesRef);
+      let fetchedGames = {};
+      gamesSnapshot.forEach((doc) => (fetchedGames[doc.id] = doc.data()));
+      setGameResults(fetchedGames);
 
-      if (!gamesSnapshot.empty) {
-        let fetchedGames = {};
-        gamesSnapshot.forEach((doc) => {
-          fetchedGames[doc.id] = doc.data();
-        });
-
-        console.log("Fetched game results:", fetchedGames);
-        setGameResults(fetchedGames);
-      } else {
-        console.log("No game data found for this date.");
-        setGameResults(null);
+      // Find the previous date
+      const currentIndex = dates.indexOf(date);
+      if (currentIndex < dates.length - 1) {
+        const previousDate = dates[currentIndex + 1];
+        const prevSnapshot = await getDocs(
+          collection(
+            db,
+            `users/${patientId}/dailyReports/${previousDate}/games`
+          )
+        );
+        let prevGames = {};
+        prevSnapshot.forEach((doc) => (prevGames[doc.id] = doc.data()));
+        setPreviousGameResults(prevGames);
       }
     } catch (error) {
       console.error("Error fetching game results:", error);
@@ -149,7 +120,7 @@ const DailyReports = () => {
 
   return (
     <div className="daily-reports-container">
-      {/* Left Side Menu */}
+      {/* Left Menu */}
       <div className="left-side-physician">
         <div className="title-container">
           <img src={titleImage} alt="Title" className="title-image" />
@@ -194,15 +165,14 @@ const DailyReports = () => {
         </Link>
       </div>
 
-      {/* Right Side Content */}
+      {/* Right Side */}
       <div className="right-side-physician">
         <div className="daily-reports-content">
           <div className="header-container">
             <h1>
-              Daily Reports
-              {selectedDate && ` for ${formatSelectedDate(selectedDate)}`}
+              Daily Reports{" "}
+              {selectedDate && `for ${formatSelectedDate(selectedDate)}`}
             </h1>
-            {/* Date Filter */}
             <div className="date-filter">
               <select
                 onChange={(e) => fetchGameResults(e.target.value)}
@@ -218,7 +188,7 @@ const DailyReports = () => {
             </div>
           </div>
 
-          {patientData ? (
+          {patientData && (
             <div className="patient-info-box">
               <h2>
                 {patientData.firstName} {patientData.lastName}{" "}
@@ -232,11 +202,9 @@ const DailyReports = () => {
                 <strong>User ID:</strong> {patientId}
               </p>
               <p>
-                <strong>Date of Birth:</strong> {formatDate(patientData.dob)}
+                <strong>Date of Birth:</strong> {patientData.dob}
               </p>
             </div>
-          ) : (
-            <p>Loading patient data...</p>
           )}
 
           {selectedDate && gameResults && (
@@ -248,12 +216,54 @@ const DailyReports = () => {
                     <h3 className="game-title">{gameName}</h3>
                     <div className="game-metrics">
                       {Object.entries(gameResults[gameKey]).map(
-                        ([metric, value]) => (
-                          <div key={metric} className="metric-box">
-                            <h4>{formatMetricName(metric)}</h4>
-                            <p>{value}</p>
-                          </div>
-                        )
+                        ([metric, value]) => {
+                          let percentageChange = null;
+                          if (
+                            previousGameResults &&
+                            previousGameResults[gameKey] &&
+                            previousGameResults[gameKey][metric]
+                          ) {
+                            const previousValue =
+                              previousGameResults[gameKey][metric];
+                            percentageChange =
+                              previousValue !== 0
+                                ? ((value - previousValue) / previousValue) *
+                                  100
+                                : null;
+                          }
+
+                          return (
+                            <div key={metric} className="metric-box">
+                              <h4>{formatMetricName(metric)}</h4>
+                              <p>{value}</p>
+                              {percentageChange !== null && (
+                                <div className="comparison">
+                                  <div className="comparison-top">
+                                    <img
+                                      src={
+                                        percentageChange > 0
+                                          ? upArrow
+                                          : downArrow
+                                      }
+                                      alt={
+                                        percentageChange > 0
+                                          ? "Increase"
+                                          : "Decrease"
+                                      }
+                                      className="arrow-icon"
+                                    />
+                                    <span className="percentage-change">
+                                      {Math.abs(percentageChange.toFixed(0))}%
+                                    </span>
+                                  </div>
+                                  <p2 className="comparison-text">
+                                    from previous session
+                                  </p2>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        }
                       )}
                     </div>
                   </div>

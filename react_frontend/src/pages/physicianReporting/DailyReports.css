@@ -99,6 +99,7 @@
   background-color: #e7eaf8;
   color: black;
   padding: 20px;
+  margin-top: -10px;
   padding-bottom: 10px;
   border-radius: 22px;
 }
@@ -162,7 +163,7 @@
 .game-metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 25px;
+  gap: 35px;
   justify-content: center;
 }
 
@@ -174,7 +175,7 @@
   padding: 10px;
   border-radius: 40px;
   text-align: center;
-  width: 150px;
+  width: 175px;
   box-shadow: 10px 10px 1px #2f3b66;
   white-space: normal;
   word-wrap: break-word;
@@ -187,6 +188,37 @@
 }
 
 .metric-box p {
-  font-size: 16px;
+  font-size: 35px;
   font-weight: bold;
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+.comparison {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.comparison-top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.arrow-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.percentage-change {
+  font-weight: bold;
+}
+
+.comparison-text {
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
