@@ -2,6 +2,7 @@
   display: flex;
   height: 100vh;
   width: 100vw;
+  overflow: hidden;
 }
 
 .left-side-physician {
@@ -11,7 +12,6 @@
   justify-content: flex-start;
   align-items: flex-start;
   padding: 20px;
-  position: relative;
   background-color: #dfe5fb !important;
 }
 
@@ -73,88 +73,22 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  height: 100vh;
+  min-height: 100vh;
   overflow-y: auto;
   background-color: #fff3e3;
-  padding-bottom: 50px;
 }
 
-.physician-home-content {
-  margin-top: 100px;
-  margin-left: 80px;
-  margin-right: 80px;
-  text-align: left;
-  padding-bottom: 50px;
+.disclaimer-subheading {
+  margin-top: 50px !important;
 }
 
-.physician-home-content h1 {
-  font-size: 50px;
-  font-weight: bold;
+.disclaimer-text {
+  margin-bottom: 50px;
 }
 
-.search-add-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-  gap: 15px;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px 10px;
-  background-color: white;
-}
-
-.search-bar input {
-  border: none;
-  outline: none;
-  font-size: 16px;
-  padding: 5px;
-  width: 180px;
-}
-
-.search-icon {
-  width: 20px;
-  height: 20px;
-  margin-left: 10px;
-}
-
-.patients-table {
-  width: 100%;
-  border-collapse: separate;
-  background-color: white;
-  table-layout: fixed;
-  border: 2px solid #516a80;
-  border-radius: 10px;
-  overflow: hidden;
-  text-align: center;
-}
-
-.patients-table th,
-.patients-table td {
-  padding: 10px;
-  text-align: center;
-  word-wrap: break-word;
-  white-space: normal;
-}
-
-.patients-table th {
-  background-color: #e7eaf8;
-  color: black;
-  font-weight: bold;
-}
-
-.patients-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.patients-table tr:hover {
-  background-color: #ddd;
+.underline {
+  text-decoration: underline;
+  color: #2F3B66;
 }
 
 @media (max-width: 800px) {
@@ -206,9 +140,5 @@
   .logout img {
     width: 20px;
     height: 20px;
-  }
-
-  .physician-home-content {
-    margin-left: 20px;
   }
 }

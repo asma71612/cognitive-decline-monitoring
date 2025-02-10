@@ -13,15 +13,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18.20.5
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          rm -rf node_modules
+          npm ci
+        working-directory: react_frontend
+
+      - name: Install missing Babel plugin
+        run: npm install @babel/plugin-proposal-private-property-in-object --save-dev
+        working-directory: react_frontend
+
+      - name: Check Node.js version
+        run: node -v
+
+      - name: List installed Firebase package
+        run: ls node_modules/firebase
         working-directory: react_frontend
 
       - name: Run all tests
-        run: npm test -- --watchAll=false
+        run: npm test -- --testPathPattern=src/__tests__/ --watchAll=false --verbose
         working-directory: react_frontend

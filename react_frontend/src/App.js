@@ -16,6 +16,10 @@ import NaturesGaze2 from './pages/games/naturesGaze/NaturesGaze2';
 import PhysicianLoginPage from './pages/physician/PhysicianLoginPage';
 import PhysicianSignUp from './pages/physician/PhysicianSignUp';
 import PhysicianHomePage from './pages/physician/PhysicianHomePage';
+import PhysicianSupportPage from './pages/physician/PhysicianSupportPage';
+import PhysicianDailyReports from './pages/physicianReporting/DailyReports';
+import PhysicianWeeklyReports from './pages/physicianReporting/WeeklyReports';
+import PhysicianAllTimeTrends from './pages/physicianReporting/AllTimeTrends';
 import './App.css'; // Global styles
 
 const App = () => {
@@ -38,6 +42,10 @@ const App = () => {
         <Route path="/physician-login" element={<PhysicianLoginPage />} />
         <Route path="/physician-signup" element={<PhysicianSignUp />} />
         <Route path="/physician-home-page" element={<PhysicianHomePage />} />
+        <Route path="/physician-daily-report" element={<PhysicianDailyReports />} />
+        <Route path="/physician-weekly-report" element={<PhysicianWeeklyReports />} />
+        <Route path="/physician-all-time-trends" element={<PhysicianAllTimeTrends />} />
+        <Route path="/physician-support" element={<PhysicianSupportPage />} />
       </Routes>
     </Router>
   );

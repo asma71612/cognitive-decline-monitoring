@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, MemoryRouter } from "react-router-dom";
 import SupportPage from "../../pages/patient/SupportPage";
 
 describe("SupportPage", () => {
@@ -36,20 +36,26 @@ describe("SupportPage", () => {
   });
 
   test("correctly renders the menu links with icons", () => {
-    renderWithRouter(<SupportPage />);
+    render(
+      <MemoryRouter>
+        <SupportPage />
+      </MemoryRouter>
+    );
 
-    expect(screen.getByRole("link", { name: /Home/i })).toBeInTheDocument();
-    expect(
-      screen.getByRole("link", { name: /My Reports/i })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Support/i })).toBeInTheDocument();
+    const allSupportLinks = screen.getAllByRole("link", { name: /Support/i });
+
+    const supportMenuLink = allSupportLinks.find(
+      (link) => link.getAttribute("href") === "/support-page"
+    );
+
+    expect(supportMenuLink).toBeInTheDocument();
   });
 
   test("navigates to correct page when clicking on menu links", () => {
     renderWithRouter(<SupportPage />);
 
     fireEvent.click(screen.getByRole("link", { name: /Home/i }));
-    expect(window.location.pathname).toBe("/patient-home-page"); 
+    expect(window.location.pathname).toBe("/patient-home-page");
 
     fireEvent.click(screen.getByRole("link", { name: /My Reports/i }));
     expect(window.location.pathname).toBe("/patient-reporting-landing-page");
