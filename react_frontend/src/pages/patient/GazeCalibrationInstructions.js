@@ -19,21 +19,15 @@ const GazeCalibrationInstructions = () => {
         <ul className="instruction-list">
           <li><span className="bold">1. Sit comfortably:</span> Position yourself at eye level with the screen. Maintain a distance of approximately 50–70 cm from the screen.</li>
           <li><span className="bold">2. Stay still:</span> Keep your head as steady as possible.</li>
-          <li><span className="bold">3. Follow the targets:</span> One at a time, 9 targets will appear on the screen and move to different locations. Focus on each target as it appears and click on it to move it to its next position.</li>
+          <li><span className="bold">3. Follow the targets:</span> 9 labelled targets will appear on the screen in a 3x3 grid. In order, click on each target 5 times to disable it before moving onto the next target.</li>
         </ul>
 
-        <p className="italics">Note that there is a 10 second delay between a target being clicked and moving to the next location. Ensure you're focused on the target the entire time.</p>
+        <p className="italics">To maintain accurate data capture, ensure you are staring at each target the entire time while disabling it.</p>
 
         <button className="start-button" onClick={() => navigate('/gaze-calibration')}>
           Next
         </button>
       </div>
-
-      {/* <button className="next-button" onClick={() => navigate('/natures-gaze-1-instructions')}>
-        Next
-      </button> */}
-
-
 
     </div>
   );
