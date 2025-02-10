@@ -239,19 +239,21 @@ const DailyReports = () => {
                               {percentageChange !== null && (
                                 <div className="comparison">
                                   <div className="comparison-top">
-                                    <img
-                                      src={
-                                        percentageChange > 0
-                                          ? upArrow
-                                          : downArrow
-                                      }
-                                      alt={
-                                        percentageChange > 0
-                                          ? "Increase"
-                                          : "Decrease"
-                                      }
-                                      className="arrow-icon"
-                                    />
+                                    {percentageChange !== 0 && (
+                                      <img
+                                        src={
+                                          percentageChange > 0
+                                            ? upArrow
+                                            : downArrow
+                                        }
+                                        alt={
+                                          percentageChange > 0
+                                            ? "Increase"
+                                            : "Decrease"
+                                        }
+                                        className="arrow-icon"
+                                      />
+                                    )}
                                     <span className="percentage-change">
                                       {Math.abs(percentageChange.toFixed(0))}%
                                     </span>
