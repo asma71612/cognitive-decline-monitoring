@@ -50,6 +50,20 @@ const calculateAge = (dob) => {
   return age;
 };
 
+// Helper function to format field values with units where applicable
+const formatFieldValue = (metric, value) => {
+  if (typeof value === "number") {
+    const lowerMetric = metric.toLowerCase();
+    if (lowerMetric.includes("percent")) {
+      return `${value}%`;
+    }
+    if (lowerMetric.includes("duration") || lowerMetric.includes("time")) {
+      return `${value} ms`;
+    }
+  }
+  return value;
+};
+
 const DailyReports = () => {
   const { patientId } = useParams();
   const [patientData, setPatientData] = useState(null);
@@ -235,7 +249,7 @@ const DailyReports = () => {
                           return (
                             <div key={metric} className="metric-box">
                               <h4>{formatMetricName(metric)}</h4>
-                              <p>{value}</p>
+                              <p>{formatFieldValue(metric, value)}</p>
                               {percentageChange !== null && (
                                 <div className="comparison">
                                   <div className="comparison-top">
