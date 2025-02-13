@@ -4,7 +4,7 @@ import { db } from "../../firebaseConfig.js";
 import { collection, getDocs } from "firebase/firestore";
 import AddPatientsModal from "../../components/AddPatientsModal";
 import titleImage from "../../assets/title.svg";
-import patientsIcon from "../../assets/my-patients.svg";
+import patientsIcon from "../../assets/my-patients-dark.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import searchIcon from "../../assets/search.svg";
@@ -18,7 +18,7 @@ const PhysicianHomePage = () => {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "users")); 
+        const querySnapshot = await getDocs(collection(db, "users"));
 
         if (querySnapshot.empty) {
           console.log("No patients found in Firestore.");
@@ -72,13 +72,16 @@ const PhysicianHomePage = () => {
           <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
-          <Link to="/physician-home-page" className="menu-item link">
+          <Link
+            to="/physician-home-page"
+            className="menu-item-my-patients link patients"
+          >
             <img src={patientsIcon} alt="My Patients" />
-            <span>My Patients</span>
+            <span style={{ color: "#2F3B66" }}>My Patients</span>
           </Link>
           <Link to="/physician-support" className="menu-item link colored">
             <img src={supportIcon} alt="Support" />
-            <span>Support</span>
+            <span style={{ color: "#516A80" }}>Support</span>
           </Link>
         </div>
         <Link to="/physician-login" className="menu-item link logout">
@@ -116,6 +119,7 @@ const PhysicianHomePage = () => {
                 <th>Sex</th>
                 <th>Date of Birth</th>
                 <th>Enrolment Date</th>
+                <th>Reports</th>
               </tr>
             </thead>
             <tbody>
@@ -127,6 +131,15 @@ const PhysicianHomePage = () => {
                     <td>{patient.sex || "N/A"}</td>
                     <td>{formatDateForDisplay(patient.dob)}</td>
                     <td>{formatDateForDisplay(patient.enrolmentDate)}</td>
+                    <td>
+                      {/* Link passes the patient.id via the URL */}
+                      <Link
+                        to={`/physician-daily-report/${patient.id}`}
+                        className="view-reports-btn"
+                      >
+                        View Reports
+                      </Link>
+                    </td>
                   </tr>
                 ))
               ) : (

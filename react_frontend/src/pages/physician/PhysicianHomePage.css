@@ -36,7 +36,7 @@
   margin-top: 125px;
 }
 
-.menu-item {
+.menu-item-my-patients {
   display: flex;
   align-items: center;
   gap: 25px;
@@ -47,18 +47,10 @@
   margin-bottom: 10px;
 }
 
-.menu-item img {
+.menu-item-my-patients img {
   padding-left: 17px;
   width: 35px;
   height: 35px;
-}
-
-.menu-item.link span {
-  color: inherit;
-}
-
-.menu-item.link.colored span {
-  color: #516a80 !important;
 }
 
 .logout {
@@ -145,7 +137,7 @@
 
 .patients-table th {
   background-color: #e7eaf8;
-  color: black;
+  color: #2F3B66;
   font-weight: bold;
 }
 
@@ -155,6 +147,24 @@
 
 .patients-table tr:hover {
   background-color: #ddd;
+}
+
+.view-reports-btn {
+  padding: 7px 15px;
+  font-size: 14px;
+  background-color: #8c9fb0;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  margin-bottom: 17px;
+  align-self: center;
+  transition: background-color 0.3s;
+  text-decoration: none;
+}
+
+.view-reports-btn:hover {
+  background-color: #7f96ab;
 }
 
 @media (max-width: 800px) {
