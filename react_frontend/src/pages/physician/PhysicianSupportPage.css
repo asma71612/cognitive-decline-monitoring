@@ -57,10 +57,6 @@
   color: inherit;
 }
 
-.menu-item.link.colored span {
-  color: #516a80 !important;
-}
-
 .logout {
   position: absolute;
   bottom: 20px;

@@ -53,14 +53,6 @@
   height: 35px;
 }
 
-.menu-item-my-patients.link.patients span {
-  color: #2f3b66 !important;
-}
-
-.menu-item-my-patients.link:not(.patients) span {
-  color: #516a80 !important;
-}
-
 .logout {
   position: absolute;
   bottom: 20px;
@@ -145,7 +137,7 @@
 
 .patients-table th {
   background-color: #e7eaf8;
-  color: black;
+  color: #2F3B66;
   font-weight: bold;
 }
 

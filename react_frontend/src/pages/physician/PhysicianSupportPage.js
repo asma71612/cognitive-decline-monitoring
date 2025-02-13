@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import titleImage from "../../assets/title.svg";
 import patientsIcon from "../../assets/my-patients-light.svg";
-import supportIcon from "../../assets/support-light.svg";
+import supportIcon from "../../assets/support-dark.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import termsAndConditions from "../../assets/TermsAndConditions.pdf";
 import "./PhysicianSupportPage.css";
@@ -17,11 +17,11 @@ const PhysicianSupportPage = () => {
         <div className="menu">
           <Link to="/physician-home-page" className="menu-item link">
             <img src={patientsIcon} alt="My Patients" />
-            <span>My Patients</span>
+            <span style={{ color: "#516A80" }}>My Patients</span>
           </Link>
           <Link to="/physician-support" className="menu-item link colored">
             <img src={supportIcon} alt="Support" />
-            <span>Support</span>
+            <span style={{ color: "#2F3B66" }}>Support</span>
           </Link>
         </div>
         <Link to="/physician-login" className="menu-item link logout">

@@ -72,13 +72,16 @@ const PhysicianHomePage = () => {
           <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
-          <Link to="/physician-home-page" className="menu-item-my-patients link patients">
+          <Link
+            to="/physician-home-page"
+            className="menu-item-my-patients link patients"
+          >
             <img src={patientsIcon} alt="My Patients" />
-            <span>My Patients</span>
+            <span style={{ color: "#2F3B66" }}>My Patients</span>
           </Link>
           <Link to="/physician-support" className="menu-item link colored">
             <img src={supportIcon} alt="Support" />
-            <span>Support</span>
+            <span style={{ color: "#516A80" }}>Support</span>
           </Link>
         </div>
         <Link to="/physician-login" className="menu-item link logout">
