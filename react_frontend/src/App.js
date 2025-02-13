@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomeLandingPage from './pages/HomeLandingPage';
 import PatientLoginPage from './pages/patient/PatientLoginPage';
 import PatientHomePage from './pages/patient/PatientHomePage';
-import PatientReportingLandingPage from './pages/patient/PatientReportingLandingPage';
+import PatientReportPage from './pages/patient/PatientReportPage';
 import SupportPage from './pages/patient/SupportPage';
 import GeneralInstructionsPage from './pages/patient/GeneralInstructionsPage';
 import LightingCalibration from './pages/patient/LightingCalibration';
@@ -28,7 +28,7 @@ const App = () => {
         <Route path="/" element={<HomeLandingPage />} />
         <Route path="/patient-login" element={<PatientLoginPage />} />
         <Route path="/patient-home-page" element={<PatientHomePage />} />
-        <Route path="/patient-reporting-landing-page" element={<PatientReportingLandingPage />} />
+        <Route path="/patient-report-page" element={<PatientReportPage />} />
         <Route path="/support-page" element={<SupportPage />} />
         <Route path="/general-instructions" element={<GeneralInstructionsPage />} />
         <Route path="/lighting-calibration" element={<LightingCalibration />} />

@@ -12,11 +12,7 @@
   align-items: flex-start; /* Left align items */
   padding: 20px;
   position: relative;
-  background: hsla(355, 100%, 95%, 1);
-  background: linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
-  background: -moz-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
-  background: -webkit-linear-gradient(135deg, hsla(355, 100%, 95%, 1) 0%, hsla(34, 100%, 95%, 1) 100%);
-  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#FFE7E9", endColorstr="#FFF3E3", GradientType=1 );
+  background: #FFE7E9 !important;
 }
 
 .right-side {

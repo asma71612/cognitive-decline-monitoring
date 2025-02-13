@@ -38,9 +38,9 @@ const PatientHomePage = () => {
             <img src={homeIcon} alt="Home" />
             <span>Home</span>
           </Link>
-          <Link to="/patient-reporting-landing-page" className="menu-item link">
+          <Link to="/patient-report-page" className="menu-item link">
             <img src={reportIcon} alt="My Reports" />
-            <span>My Reports</span>
+            <span style={{ color: "#516A80" }}>My Reports</span>
           </Link>
           <Link to="/support-page" className="menu-item link">
             <img src={supportIcon} alt="Support" />
