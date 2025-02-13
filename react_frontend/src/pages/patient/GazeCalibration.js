@@ -32,6 +32,9 @@ const GazeCalibration = () => {
     webgazer.showVideoPreview(false).showPredictionPoints(true);
 
     return () => {
+
+      webgazer.clearGazeListener();
+      
       webgazer.end();
       if (canvas && canvas.parentNode) {
         canvas.parentNode.removeChild(canvas);
@@ -62,6 +65,8 @@ const GazeCalibration = () => {
       ...prev,
       [id]: [],
     }));
+
+    webgazer.clearGazeListener();
   
     webgazer.setGazeListener((data) => {
       if (data) {

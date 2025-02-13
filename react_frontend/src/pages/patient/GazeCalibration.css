@@ -27,12 +27,6 @@
   font-weight: bold;
 }
 
-button {
-  margin-top: 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
 .calibrationDiv {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -55,6 +49,9 @@ button {
   justify-content: center;
   margin-left: 45%;
   align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
 }
 
 .calibration-button:hover {
