@@ -29,7 +29,7 @@ describe("PatientHomePage", () => {
     expect(homeMenuItem).toHaveTextContent("Home");
 
     const reportsLink = screen
-      .getByTestId("link-/patient-reporting-landing-page")
+      .getByTestId("link-/patient-report-page")
       .querySelector("span");
     expect(reportsLink).toHaveTextContent("My Reports");
 

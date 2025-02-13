@@ -58,7 +58,7 @@ describe("SupportPage", () => {
     expect(window.location.pathname).toBe("/patient-home-page");
 
     fireEvent.click(screen.getByRole("link", { name: /My Reports/i }));
-    expect(window.location.pathname).toBe("/patient-reporting-landing-page");
+    expect(window.location.pathname).toBe("/patient-report-page");
 
     fireEvent.click(screen.getByRole("link", { name: /Log Out/i }));
     expect(window.location.pathname).toBe("/patient-login");
