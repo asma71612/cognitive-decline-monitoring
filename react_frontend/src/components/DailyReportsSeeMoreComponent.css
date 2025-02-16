@@ -39,43 +39,93 @@
 
 .report-button {
   flex: 1;
-  margin: 10px 10px;
+  margin: 10px;
   padding: 17px 20px;
-  background-color: #516A80;
-  color: #FFFFFF;
+  background-color: #516a80;
+  color: #ffffff;
   border-radius: 20px;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  border: none;
 }
 
 .report-button:hover {
-  background-color: #2F3B66;
+  background-color: #2f3b66;
+}
+
+.report-button.active {
+  background-color: #2f3b66;
+  cursor: default;
 }
 
 .scene-detective-section {
   margin-top: 20px;
 }
 
-.scene-detective-section h2 {
-  font-size: 30px;
-  margin-bottom: 20px;
-}
-
 .scene-detective-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 25px;
+  grid-column-gap: 45px;
 }
 
 .scene-box {
   margin-top: 20px;
   border: 3px solid #2f3b66;
   background-color: #e7eaf8;
-  border-radius: 30px;
-  height: 250px;
+  border-radius: 40px;
+  padding: 10px;
+  height: auto;
 }
 
-.scene-box.span-2 {
-  align-items: center;
+.scene-box h3 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.fields {
+  margin-bottom: 20px;
+}
+
+.fields p {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+
+.table-container {
+  background-color: #c6cadd;
+  padding: 10px;
+  border-radius: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.table-header {
+  display: flex;
+  font-weight: bold;
+  border-bottom: 1px solid #2f3b66;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.table-header span {
+  flex: 1;
+  text-align: center;
+}
+
+.table-row {
+  display: flex;
+  padding: 4px 0;
+}
+
+.table-row span {
+  flex: 1;
+  text-align: center;
 }
