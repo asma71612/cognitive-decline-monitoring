@@ -55,8 +55,7 @@ const formatFieldValue = (metric, value) => {
   return value;
 };
 
-const DailyReportComponent = ({ patientId }) => {
-  // Use the passed-in patientId or fall back to localStorage
+const DailyReportComponent = ({ patientId, onSeeMore }) => {
   const effectivePatientId = patientId || localStorage.getItem("userId");
 
   const [patientData, setPatientData] = useState(null);
@@ -227,6 +226,17 @@ const DailyReportComponent = ({ patientId }) => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {selectedDate && onSeeMore && (
+        <div className="see-more-container">
+          <span
+            className="see-more-link"
+            onClick={() => onSeeMore(selectedDate)}
+          >
+            See More
+          </span>
         </div>
       )}
     </div>
