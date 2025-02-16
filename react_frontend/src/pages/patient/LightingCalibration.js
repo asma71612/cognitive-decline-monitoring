@@ -90,7 +90,7 @@ const LightingCalibration = () => {
   }, []);
 
   const handleStartCalibration = () => {
-    navigate("/gaze-calibration");
+    navigate("/gaze-calibration-instructions");
   };
 
   return (
@@ -114,6 +114,7 @@ const LightingCalibration = () => {
         <div className="title-container-lighting-calibration">
           <img src={titleImage} alt="Title" className="title-image-small" />
         </div>
+        <h5 className="subtitle">Step 1</h5>
         <h3 className="title">Lighting Calibration</h3>
 
         <ul className="instruction-list">

@@ -1,50 +1,119 @@
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background-color: #fff3e3;
+#plotting-canvas {
+  position: absolute;
 }
 
-.gaze-calibration-container {
-  padding: 20px;
-  text-align: center;
-  height: 100%;
+.calibration-container {
+  background-color: #FFF3E3;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.Calibration:disabled {
+  background-color: #7F96AB !important;
+}
+
+.accuracy-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.accuracy-text {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.calibrationDiv {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);  
+  gap: 10px;                            
+  position: relative;
+  width: 100%;
+  height: 100vh;
   justify-content: center;
   align-items: center;
 }
 
-.gaze-calibration-container h1 {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 20px;
+.calibration-button {
+  height: 20px;
+  width: 20px;
+  background-color: #AECF91;
+  border-radius: 70%;
+  padding: 20px 20px;
+  display: flex;
+  justify-content: center;
+  margin-left: 45%;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
 }
 
-.instructions-box {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
+.calibration-button:hover {
+  background-color: #C5E3AB;
+}
+
+.calibration-button-last {
+  padding: 25px 25px;
+  background-color: #F8727B;
+  border-radius: 50%;
+  opacity: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.popup {
+  background-color: #FFF3E3;
+  padding: 40px;
+  border-radius: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  width: 100%;
-  text-align: left;
+  text-align: center;
 }
 
-.instructions-box p {
-  font-size: 18px;
-  line-height: 1.6;
-  margin-bottom: 10px;
+.popup-title {
+  margin: 10px 0;
 }
 
-.instructions-list {
-  list-style-type: none;
-  padding: 20px;
-  font-size: 18px;
-  line-height: 1.8;
+.popup-confirm-button {
+  background-color: #4CAF50;
+  transition: background-color 0.3s;
+  font-size: 25px;
+  padding: 15px 35px;
+  border-radius: 50px;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px 10px;
+  font-weight: bold
 }
 
-.instructions-list li {
-  margin-bottom: 10px;
+.popup-confirm-button:hover {
+  background-color: #C5E3AB;
+}
+
+.popup-cancel-button {
+  transition: background-color 0.3s;
+  font-size: 25px;
+  padding: 15px 35px;
+  border-radius: 50px;
+  background-color: #576a7f;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px 10px;
+  font-weight: bold
 }
