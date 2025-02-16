@@ -1,21 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
 import "./DailyReportsSeeMoreComponent.css";
-
-const formatSelectedDate = (dateStr) => {
-  const [month, day, year] = dateStr.split("-");
-  const dateObj = new Date(
-    parseInt(year, 10),
-    parseInt(month, 10) - 1,
-    parseInt(day, 10)
-  );
-  return dateObj.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-};
 
 const formatMetricName = (name) => {
   return name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
@@ -30,11 +17,27 @@ const metricTitles = {
 };
 
 const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
-  const formattedDate = selectedDate ? formatSelectedDate(selectedDate) : "";
   const [selectedGame, setSelectedGame] = useState("");
   const [sceneData, setSceneData] = useState(null);
+  const [memoryVaultData, setMemoryVaultData] = useState(null);
+  const [patientData, setPatientData] = useState(null);
 
   const effectivePatientId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    if (!effectivePatientId) return;
+    const fetchPatientData = async () => {
+      try {
+        const patientDoc = await getDoc(doc(db, "users", effectivePatientId));
+        if (patientDoc.exists()) {
+          setPatientData(patientDoc.data());
+        }
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      }
+    };
+    fetchPatientData();
+  }, [effectivePatientId]);
 
   useEffect(() => {
     const fetchSceneData = async () => {
@@ -83,6 +86,30 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
 
     if (selectedGame === "sceneDetective") {
       fetchSceneData();
+    }
+  }, [selectedGame, selectedDate, effectivePatientId]);
+
+  useEffect(() => {
+    const fetchMemoryVaultData = async () => {
+      if (!selectedDate || !effectivePatientId) return;
+      try {
+        const vaultRef = collection(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/memoryVault`
+        );
+        const snapshot = await getDocs(vaultRef);
+        let data = {};
+        snapshot.forEach((docSnap) => {
+          data[docSnap.id] = docSnap.data();
+        });
+        setMemoryVaultData(data);
+      } catch (error) {
+        console.error("Error fetching memory vault data:", error);
+      }
+    };
+
+    if (selectedGame === "memoryVault") {
+      fetchMemoryVaultData();
     }
   }, [selectedGame, selectedDate, effectivePatientId]);
 
@@ -147,6 +174,39 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     );
   };
 
+  const renderMemoryVaultTable = (data) => {
+    const presentedArray = data.Presented
+      ? data.Presented.split(",").map((item) => item.trim())
+      : [];
+    const recalledArray = data.Recalled
+      ? data.Recalled.split(",").map((item) => item.trim())
+      : [];
+    const timeArray = data.TimeToRecall
+      ? data.TimeToRecall.split(",").map((item) => item.trim())
+      : [];
+    const maxRows = Math.max(
+      presentedArray.length,
+      recalledArray.length,
+      timeArray.length
+    );
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Presented</span>
+          <span>Recalled</span>
+          <span>Time to Recall (s)</span>
+        </div>
+        {Array.from({ length: maxRows }).map((_, index) => (
+          <div key={index} className="table-row">
+            <span>{presentedArray[index] || ""}</span>
+            <span>{recalledArray[index] || ""}</span>
+            <span>{timeArray[index] || ""}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="daily-reports-see-more-container">
       {onBack && (
@@ -156,9 +216,11 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
           </button>
         </div>
       )}
-      <div className="header-section">
-        <h1>Daily Reports {formattedDate && `for ${formattedDate}`}</h1>
-      </div>
+      <PatientInfoBoxComponent
+        selectedDate={selectedDate}
+        patientData={patientData}
+        effectivePatientId={effectivePatientId}
+      />
       {/* Game Buttons */}
       <div className="buttons-container">
         <button
@@ -194,11 +256,11 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
           Scene Detective
         </button>
       </div>
-      {/* Scene Detective View */}
+      {/* Game Section View */}
       {selectedGame === "sceneDetective" && (
-        <div className="scene-detective-section">
+        <div className="game-section">
           {sceneData ? (
-            <div className="scene-detective-grid">
+            <div className="game-grid">
               {[
                 "fluencyMetrics",
                 "lexicalFeatures",
@@ -206,7 +268,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 "semanticFeatures",
                 "structuralFeatures",
               ].map((metric) => (
-                <div key={metric} className="scene-box">
+                <div key={metric} className="game-box">
                   <h3>{metricTitles[metric] || formatMetricName(metric)}</h3>
                   <div className="fields">
                     {metric === "lexicalFeatures" ? (
@@ -258,6 +320,20 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
             </div>
           ) : (
             <p>Loading scene detective data...</p>
+          )}
+        </div>
+      )}
+      {selectedGame === "memoryVault" && (
+        <div className="game-section">
+          {memoryVaultData ? (
+            <div className="game-box-vault">
+              <h3>Recall Speed and Accuracy</h3>
+              {renderMemoryVaultTable(
+                memoryVaultData["recallSpeedAndAccuracy"]
+              )}
+            </div>
+          ) : (
+            <p>Loading memory vault data...</p>
           )}
         </div>
       )}

@@ -41,6 +41,8 @@
   flex: 1;
   margin: 10px;
   padding: 17px 20px;
+  margin-right: 20px;
+  margin-bottom: -15px;
   background-color: #516a80;
   color: #ffffff;
   border-radius: 20px;
@@ -59,31 +61,44 @@
   cursor: default;
 }
 
-.scene-detective-section {
+.game-section {
   margin-top: 20px;
 }
 
-.scene-detective-grid {
+.game-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 25px;
   grid-column-gap: 45px;
+  margin-right: 20px;
 }
 
-.scene-box {
+.game-box {
   margin-top: 20px;
-  border: 3px solid #2f3b66;
+  margin-bottom: 0px;
+  border: 4px solid #516a80;
   background-color: #e7eaf8;
   border-radius: 40px;
   padding: 10px;
   height: auto;
 }
 
-.scene-box h3 {
+.game-box-vault {
+  margin-top: 50px;
+  border: 4px solid #516a80;
+  background-color: #e7eaf8;
+  border-radius: 40px;
+  padding: 10px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.game-box h3,
+.game-box-vault h3 {
   text-align: center;
   font-size: 24px;
   margin-bottom: 20px;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 .fields {

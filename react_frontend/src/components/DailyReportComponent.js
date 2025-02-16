@@ -171,7 +171,7 @@ const DailyReportComponent = ({ patientId, onSeeMore }) => {
           {Object.keys(gameResults).map((gameKey) => {
             const gameName = gameNames[gameKey] || gameKey;
             return (
-              <div key={gameKey} className="game-box">
+              <div key={gameKey} className="game-box-neutral">
                 <h3 className="game-title">{gameName}</h3>
                 <div className="game-metrics">
                   {Object.entries(gameResults[gameKey]).map(
