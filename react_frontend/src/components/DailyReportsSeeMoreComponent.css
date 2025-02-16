@@ -23,12 +23,10 @@
 }
 
 .back-button {
-  padding: 8px 16px;
-  background-color: #e7eaf8;
-  border: 2px solid #516a80;
-  border-radius: 20px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
+  margin-left: 3px;
+  color: #2f3b66;
 }
 
 .buttons-container {
@@ -143,4 +141,8 @@
 .table-row span {
   flex: 1;
   text-align: center;
+}
+
+.no-metrics-available p {
+  color: red;
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
@@ -19,6 +20,7 @@ const metricTitles = {
 const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
   const [selectedGame, setSelectedGame] = useState("");
   const [sceneData, setSceneData] = useState(null);
+  const [processQuestData, setProcessQuestData] = useState(null);
   const [memoryVaultData, setMemoryVaultData] = useState(null);
   const [patientData, setPatientData] = useState(null);
 
@@ -86,6 +88,56 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
 
     if (selectedGame === "sceneDetective") {
       fetchSceneData();
+    }
+  }, [selectedGame, selectedDate, effectivePatientId]);
+
+  useEffect(() => {
+    const fetchProcessQuestData = async () => {
+      if (!selectedDate || !effectivePatientId) return;
+      try {
+        const questRef = collection(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest`
+        );
+        const snapshot = await getDocs(questRef);
+        let data = {};
+        snapshot.forEach((docSnap) => {
+          data[docSnap.id] = docSnap.data();
+        });
+
+        if (data["temporalCharacteristics"]) {
+          const pausesRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest/temporalCharacteristics/Pauses`
+          );
+          const pausesSnapshot = await getDocs(pausesRef);
+          let pauses = [];
+          pausesSnapshot.forEach((docSnap) => {
+            pauses.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          data["temporalCharacteristics"].pauses = pauses;
+        }
+
+        if (data["fluencyMetrics"]) {
+          const stuttersRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest/fluencyMetrics/Stutters`
+          );
+          const stuttersSnapshot = await getDocs(stuttersRef);
+          let stutters = [];
+          stuttersSnapshot.forEach((docSnap) => {
+            stutters.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          data["fluencyMetrics"].stutters = stutters;
+        }
+        setProcessQuestData(data);
+      } catch (error) {
+        console.error("Error fetching process quest data:", error);
+      }
+    };
+
+    if (selectedGame === "processQuest") {
+      fetchProcessQuestData();
     }
   }, [selectedGame, selectedDate, effectivePatientId]);
 
@@ -211,9 +263,9 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     <div className="daily-reports-see-more-container">
       {onBack && (
         <div className="back-button-container">
-          <button className="back-button" onClick={onBack}>
+          <Link className="back-button" onClick={onBack}>
             Back
-          </button>
+          </Link>
         </div>
       )}
       <PatientInfoBoxComponent
@@ -259,7 +311,11 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       {/* Game Section View */}
       {selectedGame === "sceneDetective" && (
         <div className="game-section">
-          {sceneData ? (
+          {sceneData === null ? (
+            <p>Loading scene detective data...</p>
+          ) : Object.keys(sceneData).length === 0 ? (
+            <p>No metrics available for Scene Detective on this date.</p>
+          ) : (
             <div className="game-grid">
               {[
                 "fluencyMetrics",
@@ -318,22 +374,90 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 </div>
               ))}
             </div>
+          )}
+        </div>
+      )}
+      {selectedGame === "processQuest" && (
+        <div className="game-section">
+          {processQuestData === null ? (
+            <p>Loading process quest data...</p>
+          ) : Object.keys(processQuestData).length === 0 ? (
+            <p>No metrics available for Process Quest on this date.</p>
           ) : (
-            <p>Loading scene detective data...</p>
+            <div className="game-grid">
+              {[
+                "fluencyMetrics",
+                "lexicalFeatures",
+                "temporalCharacteristics",
+                "semanticFeatures",
+                "structuralFeatures",
+              ].map((metric) => (
+                <div key={metric} className="game-box">
+                  <h3>{metricTitles[metric] || formatMetricName(metric)}</h3>
+                  <div className="fields">
+                    {metric === "lexicalFeatures" ? (
+                      renderLexicalFeatures(processQuestData[metric])
+                    ) : metric === "fluencyMetrics" ? (
+                      <>
+                        {Object.entries(processQuestData[metric]).map(
+                          ([field, value]) => {
+                            if (field === "stutters") return null;
+                            return (
+                              <p key={field}>
+                                <strong>{formatMetricName(field)}:</strong>{" "}
+                                {value}
+                              </p>
+                            );
+                          }
+                        )}
+                        {processQuestData[metric].stutters &&
+                          renderStutters(processQuestData[metric].stutters)}
+                      </>
+                    ) : metric === "temporalCharacteristics" ? (
+                      <>
+                        {Object.entries(processQuestData[metric]).map(
+                          ([field, value]) => {
+                            if (field === "pauses") return null;
+                            return (
+                              <p key={field}>
+                                <strong>{formatMetricName(field)}:</strong>{" "}
+                                {value}
+                              </p>
+                            );
+                          }
+                        )}
+                        {processQuestData[metric].pauses &&
+                          renderPauses(processQuestData[metric].pauses)}
+                      </>
+                    ) : (
+                      Object.entries(processQuestData[metric]).map(
+                        ([field, value]) => (
+                          <p key={field}>
+                            <strong>{formatMetricName(field)}:</strong> {value}
+                          </p>
+                        )
+                      )
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
       {selectedGame === "memoryVault" && (
         <div className="game-section">
-          {memoryVaultData ? (
-            <div className="game-box-vault">
+          {memoryVaultData === null ? (
+            <p>Loading memory vault data...</p>
+          ) : Object.keys(memoryVaultData).length === 0 ? (
+            <p>No metrics available for Memory Vault on this date.</p>
+          ) : (
+            <div className="game-box">
               <h3>Recall Speed and Accuracy</h3>
               {renderMemoryVaultTable(
                 memoryVaultData["recallSpeedAndAccuracy"]
               )}
             </div>
-          ) : (
-            <p>Loading memory vault data...</p>
           )}
         </div>
       )}
