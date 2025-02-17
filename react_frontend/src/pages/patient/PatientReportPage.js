@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import titleImage from "../../assets/title.svg";
 import homeIcon from "../../assets/home-light.svg";
@@ -6,9 +6,22 @@ import reportIcon from "../../assets/reports-dark.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import DailyReportComponent from "../../components/DailyReportComponent";
+import DailyReportsSeeMoreComponent from "../../components/DailyReportsSeeMoreComponent";
 import "./PatientReportPage.css";
 
 const PatientReportPage = () => {
+  const [view, setView] = useState("daily");
+  const [selectedDate, setSelectedDate] = useState("");
+
+  const handleSeeMore = (date) => {
+    setSelectedDate(date);
+    setView("seeMore");
+  };
+
+  const handleBack = () => {
+    setView("daily");
+  };
+
   return (
     <div className="patient-home-container">
       {/* Left Navigation */}
@@ -35,9 +48,16 @@ const PatientReportPage = () => {
           <span>Log Out</span>
         </Link>
       </div>
-      {/* Right Side: Shared Daily Report Content */}
+
+      {/* Right Side */}
       <div className="right-side">
-        <DailyReportComponent />
+        {view === "daily" && <DailyReportComponent onSeeMore={handleSeeMore} />}
+        {view === "seeMore" && (
+          <DailyReportsSeeMoreComponent
+            selectedDate={selectedDate}
+            onBack={handleBack}
+          />
+        )}
       </div>
     </div>
   );

@@ -73,7 +73,7 @@
   font-weight: bold;
 }
 
-.game-box {
+.game-box-neutral {
   padding-left: 0px;
   margin-bottom: 60px;
 }
@@ -139,4 +139,18 @@
 
 .percentage-change {
   font-weight: bold;
+}
+
+.see-more-container {
+  text-align: center;
+  margin-top: -10px;
+  margin-bottom: 35px;
+}
+
+.see-more-link {
+  color: #2F3B66;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
 }
