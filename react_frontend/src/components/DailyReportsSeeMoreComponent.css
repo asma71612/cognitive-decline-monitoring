@@ -63,6 +63,10 @@
   margin-top: 20px;
 }
 
+.game-section p {
+  margin-left: 10px;
+}
+
 .game-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -79,6 +83,10 @@
   border-radius: 40px;
   padding: 10px;
   height: auto;
+}
+
+.game-box p {
+  margin-left: 20px;
 }
 
 .game-box-vault {
