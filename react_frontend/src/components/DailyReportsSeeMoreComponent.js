@@ -17,6 +17,25 @@ const metricTitles = {
   temporalCharacteristics: "Temporal Characteristics",
 };
 
+const lexicalFeaturesOrder = [
+  "ClosedClass",
+  "Filler",
+  "Noun",
+  "OpenClass",
+  "Verb",
+];
+
+const semanticFeaturesOrder = [
+  "SemanticUnits",
+  "SemanticIdeaDensity",
+  "SemanticEfficiency",
+  "LexicalFrequencyOfNouns",
+];
+
+const fluencyMetricsOrder = ["WordsPerMin", "RevisionRatio"];
+
+const structuralFeaturesOrder = ["NumOfSentences", "MeanLengthOfOccurrence"];
+
 const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
   const [selectedGame, setSelectedGame] = useState("");
   const [sceneData, setSceneData] = useState(null);
@@ -511,17 +530,105 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
   };
 
   const renderLexicalFeatures = (fields) => {
+    const sortedFields = Object.keys(fields)
+      .sort(
+        (a, b) =>
+          lexicalFeaturesOrder.indexOf(a) - lexicalFeaturesOrder.indexOf(b)
+      )
+      .reduce((obj, key) => {
+        obj[key] = fields[key];
+        return obj;
+      }, {});
+
     return (
       <div className="table-container">
         <div className="table-header">
           <span>Word Types</span>
           <span>Count</span>
         </div>
-        {Object.entries(fields).map(([key, value]) => (
+        {Object.entries(sortedFields).map(([key, value]) => (
           <div key={key} className="table-row">
             <span>{formatMetricName(key)}</span>
             <span>{value}</span>
           </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderSemanticFeatures = (fields) => {
+    const sortedFields = Object.keys(fields)
+      .sort(
+        (a, b) =>
+          semanticFeaturesOrder.indexOf(a) - semanticFeaturesOrder.indexOf(b)
+      )
+      .reduce((obj, key) => {
+        obj[key] = fields[key];
+        return obj;
+      }, {});
+
+    return (
+      <div className="fields">
+        {Object.entries(sortedFields).map(([key, value]) => (
+          <p key={key}>
+            <strong>{formatMetricName(key)}:</strong> {value}
+          </p>
+        ))}
+      </div>
+    );
+  };
+
+  const renderStutters = (stutters) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Stutter #</span>
+          <span>Time</span>
+        </div>
+        {stutters.map((stutter, index) => (
+          <div key={stutter.id} className="table-row">
+            <span>{index + 1}</span>
+            <span>{stutter.Time}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderFluencyMetrics = (fields) => {
+    const sortedFields = fluencyMetricsOrder.reduce((obj, key) => {
+      if (fields[key] !== undefined) {
+        obj[key] = fields[key];
+      }
+      return obj;
+    }, {});
+
+    return (
+      <div className="fields">
+        {Object.entries(sortedFields).map(([key, value]) => (
+          <p key={key}>
+            <strong>{formatMetricName(key)}:</strong> {value}
+          </p>
+        ))}
+        {fields.stutters && renderStutters(fields.stutters)}
+      </div>
+    );
+  };
+
+  const renderStructuralFeatures = (fields) => {
+    const sortedFields = structuralFeaturesOrder.reduce((obj, key) => {
+      if (fields[key] !== undefined) {
+        obj[key] = fields[key];
+      }
+      return obj;
+    }, {});
+
+    return (
+      <div className="fields">
+        {Object.entries(sortedFields).map(([key, value]) => (
+          <p key={key}>
+            <strong>{formatMetricName(key)}:</strong> {value}
+          </p>
         ))}
       </div>
     );
@@ -550,23 +657,6 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
             </div>
           );
         })}
-      </div>
-    );
-  };
-
-  const renderStutters = (stutters) => {
-    return (
-      <div className="table-container">
-        <div className="table-header">
-          <span>Stutter #</span>
-          <span>Time</span>
-        </div>
-        {stutters.map((stutter, index) => (
-          <div key={stutter.id} className="table-row">
-            <span>{index + 1}</span>
-            <span>{stutter.Time}</span>
-          </div>
-        ))}
       </div>
     );
   };
@@ -674,22 +764,12 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                   <div className="fields">
                     {metric === "lexicalFeatures" ? (
                       renderLexicalFeatures(sceneData[metric])
+                    ) : metric === "semanticFeatures" ? (
+                      renderSemanticFeatures(sceneData[metric])
                     ) : metric === "fluencyMetrics" ? (
-                      <>
-                        {Object.entries(sceneData[metric]).map(
-                          ([field, value]) => {
-                            if (field === "stutters") return null;
-                            return (
-                              <p key={field}>
-                                <strong>{formatMetricName(field)}:</strong>{" "}
-                                {value}
-                              </p>
-                            );
-                          }
-                        )}
-                        {sceneData[metric].stutters &&
-                          renderStutters(sceneData[metric].stutters)}
-                      </>
+                      renderFluencyMetrics(sceneData[metric])
+                    ) : metric === "structuralFeatures" ? (
+                      renderStructuralFeatures(sceneData[metric])
                     ) : metric === "temporalCharacteristics" ? (
                       <>
                         {Object.entries(sceneData[metric]).map(
@@ -742,22 +822,12 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                   <div className="fields">
                     {metric === "lexicalFeatures" ? (
                       renderLexicalFeatures(processQuestData[metric])
+                    ) : metric === "semanticFeatures" ? (
+                      renderSemanticFeatures(processQuestData[metric])
                     ) : metric === "fluencyMetrics" ? (
-                      <>
-                        {Object.entries(processQuestData[metric]).map(
-                          ([field, value]) => {
-                            if (field === "stutters") return null;
-                            return (
-                              <p key={field}>
-                                <strong>{formatMetricName(field)}:</strong>{" "}
-                                {value}
-                              </p>
-                            );
-                          }
-                        )}
-                        {processQuestData[metric].stutters &&
-                          renderStutters(processQuestData[metric].stutters)}
-                      </>
+                      renderFluencyMetrics(processQuestData[metric])
+                    ) : metric === "structuralFeatures" ? (
+                      renderStructuralFeatures(processQuestData[metric])
                     ) : metric === "temporalCharacteristics" ? (
                       <>
                         {Object.entries(processQuestData[metric]).map(
