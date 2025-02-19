@@ -1,0 +1,156 @@
+.daily-reports-see-more-container {
+  margin-top: 100px;
+  margin-left: 80px;
+  margin-right: 80px;
+  width: -webkit-fill-available;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.daily-reports-see-more-container h1 {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.back-button-container {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.back-button {
+  cursor: pointer;
+  font-size: 20px;
+  margin-left: 3px;
+  color: #2f3b66;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.report-button {
+  flex: 1;
+  margin: 10px;
+  padding: 17px 20px;
+  margin-right: 20px;
+  margin-bottom: -15px;
+  background-color: #516a80;
+  color: #ffffff;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+}
+
+.report-button:hover {
+  background-color: #2f3b66;
+}
+
+.report-button.active {
+  background-color: #2f3b66;
+  cursor: default;
+}
+
+.game-section {
+  margin-top: 20px;
+}
+
+.game-section p {
+  margin-left: 10px;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 25px;
+  grid-column-gap: 45px;
+  margin-right: 20px;
+}
+
+.game-box {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  border: 4px solid #516a80;
+  background-color: #e7eaf8;
+  border-radius: 40px;
+  padding: 10px;
+  height: auto;
+}
+
+.game-box p {
+  margin-left: 20px;
+}
+
+.game-box-vault {
+  margin-top: 50px;
+  border: 4px solid #516a80;
+  background-color: #e7eaf8;
+  border-radius: 40px;
+  padding: 10px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.game-box h3,
+.game-box-vault h3 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+.fields {
+  margin-bottom: 20px;
+}
+
+.fields p {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 0px;
+  margin-top: 10px;
+}
+
+.table-container {
+  background-color: #c6cadd;
+  padding: 10px;
+  border-radius: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.table-header {
+  display: flex;
+  font-weight: bold;
+  border-bottom: 1px solid #2f3b66;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+
+.table-header span {
+  flex: 1;
+  text-align: center;
+}
+
+.table-row {
+  display: flex;
+  padding: 4px 0;
+}
+
+.table-row span {
+  flex: 1;
+  text-align: center;
+}
+
+.no-metrics-available p {
+  color: red;
+}

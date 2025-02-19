@@ -1,0 +1,25 @@
+.patient-info-box-container {
+  margin-bottom: 20px;
+  margin-right: 20px;
+}
+
+.patient-info-box-container h1 {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.patient-info-box {
+  border: 4px solid #516a80;
+  background-color: #e7eaf8;
+  color: #2f3b66;
+  padding: 20px;
+  padding-bottom: 10px;
+  border-radius: 22px;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.patient-info-box h2 {
+  margin-top: 0;
+}

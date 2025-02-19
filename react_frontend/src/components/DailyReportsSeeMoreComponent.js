@@ -1,0 +1,1053 @@
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
+import "./DailyReportsSeeMoreComponent.css";
+
+const formatMetricName = (name) => {
+  return name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
+};
+
+const metricTitles = {
+  fluencyMetrics: "Fluency Metrics",
+  lexicalFeatures: "Lexical Features",
+  structuralFeatures: "Structural Features",
+  semanticFeatures: "Semantic Features",
+  temporalCharacteristics: "Temporal Characteristics",
+};
+
+const lexicalFeaturesOrder = [
+  "ClosedClass",
+  "Filler",
+  "Noun",
+  "OpenClass",
+  "Verb",
+];
+
+const semanticFeaturesOrder = [
+  "SemanticUnits",
+  "SemanticIdeaDensity",
+  "SemanticEfficiency",
+  "LexicalFrequencyOfNouns",
+];
+
+const fluencyMetricsOrder = ["WordsPerMin", "RevisionRatio"];
+
+const structuralFeaturesOrder = ["NumOfSentences", "MeanLengthOfOccurrence"];
+
+const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
+  const [selectedGame, setSelectedGame] = useState("");
+  const [sceneData, setSceneData] = useState(null);
+  const [processQuestData, setProcessQuestData] = useState(null);
+  const [memoryVaultData, setMemoryVaultData] = useState(null);
+  const [naturesGazeData, setNaturesGazeData] = useState(null);
+  const [patientData, setPatientData] = useState(null);
+
+  const effectivePatientId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    if (!effectivePatientId) return;
+    const fetchPatientData = async () => {
+      try {
+        const patientDoc = await getDoc(doc(db, "users", effectivePatientId));
+        if (patientDoc.exists()) {
+          setPatientData(patientDoc.data());
+        }
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      }
+    };
+    fetchPatientData();
+  }, [effectivePatientId]);
+
+  // Fetch Scene Detective Data
+  useEffect(() => {
+    const fetchSceneData = async () => {
+      if (!selectedDate || !effectivePatientId) return;
+      try {
+        const sceneRef = collection(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/sceneDetective`
+        );
+        const snapshot = await getDocs(sceneRef);
+        let data = {};
+        snapshot.forEach((docSnap) => {
+          data[docSnap.id] = docSnap.data();
+        });
+
+        if (data["temporalCharacteristics"]) {
+          const pausesRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/sceneDetective/temporalCharacteristics/Pauses`
+          );
+          const pausesSnapshot = await getDocs(pausesRef);
+          let pauses = [];
+          pausesSnapshot.forEach((docSnap) => {
+            pauses.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          data["temporalCharacteristics"].pauses = pauses;
+        }
+
+        if (data["fluencyMetrics"]) {
+          const stuttersRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/sceneDetective/fluencyMetrics/Stutters`
+          );
+          const stuttersSnapshot = await getDocs(stuttersRef);
+          let stutters = [];
+          stuttersSnapshot.forEach((docSnap) => {
+            stutters.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          data["fluencyMetrics"].stutters = stutters;
+        }
+        setSceneData(data);
+      } catch (error) {
+        console.error("Error fetching scene detective data:", error);
+      }
+    };
+
+    if (selectedGame === "sceneDetective") {
+      fetchSceneData();
+    }
+  }, [selectedGame, selectedDate, effectivePatientId]);
+
+  // Fetch Process Quest Data
+  useEffect(() => {
+    const fetchProcessQuestData = async () => {
+      if (!selectedDate || !effectivePatientId) return;
+      try {
+        const questRef = collection(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest`
+        );
+        const snapshot = await getDocs(questRef);
+        let data = {};
+        snapshot.forEach((docSnap) => {
+          data[docSnap.id] = docSnap.data();
+        });
+
+        if (data["temporalCharacteristics"]) {
+          const pausesRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest/temporalCharacteristics/Pauses`
+          );
+          const pausesSnapshot = await getDocs(pausesRef);
+          let pauses = [];
+          pausesSnapshot.forEach((docSnap) => {
+            pauses.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          data["temporalCharacteristics"].pauses = pauses;
+        }
+
+        if (data["fluencyMetrics"]) {
+          const stuttersRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest/fluencyMetrics/Stutters`
+          );
+          const stuttersSnapshot = await getDocs(stuttersRef);
+          let stutters = [];
+          stuttersSnapshot.forEach((docSnap) => {
+            stutters.push({ id: docSnap.id, ...docSnap.data() });
+          });
+          data["fluencyMetrics"].stutters = stutters;
+        }
+        setProcessQuestData(data);
+      } catch (error) {
+        console.error("Error fetching process quest data:", error);
+      }
+    };
+
+    if (selectedGame === "processQuest") {
+      fetchProcessQuestData();
+    }
+  }, [selectedGame, selectedDate, effectivePatientId]);
+
+  // Fetch Memory Vault Data
+  useEffect(() => {
+    const fetchMemoryVaultData = async () => {
+      if (!selectedDate || !effectivePatientId) return;
+      try {
+        const vaultRef = collection(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/memoryVault`
+        );
+        const snapshot = await getDocs(vaultRef);
+        let data = {};
+        snapshot.forEach((docSnap) => {
+          data[docSnap.id] = docSnap.data();
+        });
+        setMemoryVaultData(data);
+      } catch (error) {
+        console.error("Error fetching memory vault data:", error);
+      }
+    };
+
+    if (selectedGame === "memoryVault") {
+      fetchMemoryVaultData();
+    }
+  }, [selectedGame, selectedDate, effectivePatientId]);
+
+  // Fetch Natures Gaze Data
+  useEffect(() => {
+    const fetchNaturesGazeData = async () => {
+      if (!selectedDate || !effectivePatientId) return;
+      let data = {};
+
+      try {
+        const fixationAccuracyRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy`
+        );
+        const fixationAccuracySnap = await getDoc(fixationAccuracyRef);
+        if (fixationAccuracySnap.exists()) {
+          let fixationAccuracyData = fixationAccuracySnap.data();
+          const landingAccuracyRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy/landingAccuracy`
+          );
+          const landingAccuracySnapshot = await getDocs(landingAccuracyRef);
+          let landingAccuracy = {};
+          landingAccuracySnapshot.forEach((docSnap) => {
+            landingAccuracy[docSnap.id] = docSnap.data();
+          });
+          fixationAccuracyData.landingAccuracy = landingAccuracy;
+          data.fixationAccuracy = fixationAccuracyData;
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching naturesGaze fixationAccuracy data",
+          error
+        );
+      }
+
+      try {
+        const fixationDurationRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration`
+        );
+        const fixationDurationSnap = await getDoc(fixationDurationRef);
+        if (fixationDurationSnap.exists()) {
+          let fixationDurationData = fixationDurationSnap.data();
+          const durationsRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration/durations`
+          );
+          const durationsSnapshot = await getDocs(durationsRef);
+          let durations = {};
+          durationsSnapshot.forEach((docSnap) => {
+            durations[docSnap.id] = docSnap.data();
+          });
+          fixationDurationData.durations = durations;
+          data.fixationDuration = fixationDurationData;
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching naturesGaze fixationDuration data",
+          error
+        );
+      }
+
+      try {
+        const fixationErrorRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError`
+        );
+        const fixationErrorSnap = await getDoc(fixationErrorRef);
+        if (fixationErrorSnap.exists()) {
+          let fixationErrorData = fixationErrorSnap.data();
+          const errorsRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError/errors`
+          );
+          const errorsSnapshot = await getDocs(errorsRef);
+          let errors = {};
+          errorsSnapshot.forEach((docSnap) => {
+            errors[docSnap.id] = docSnap.data();
+          });
+          fixationErrorData.errors = errors;
+          data.fixationError = fixationErrorData;
+        }
+      } catch (error) {
+        console.error("Error fetching naturesGaze fixationError data", error);
+      }
+
+      try {
+        const reactionTimeRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/reactionTime`
+        );
+        const reactionTimeSnap = await getDoc(reactionTimeRef);
+        if (reactionTimeSnap.exists()) {
+          data.reactionTime = reactionTimeSnap.data();
+        }
+      } catch (error) {
+        console.error("Error fetching naturesGaze reactionTime data", error);
+      }
+
+      try {
+        const saccadeDirectionAccuracyRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy`
+        );
+        const saccadeDirectionAccuracySnap = await getDoc(
+          saccadeDirectionAccuracyRef
+        );
+        if (saccadeDirectionAccuracySnap.exists()) {
+          let saccadeDirectionAccuracyData =
+            saccadeDirectionAccuracySnap.data();
+          const accuracyRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy/accuracy`
+          );
+          const accuracySnapshot = await getDocs(accuracyRef);
+          let accuracy = {};
+          accuracySnapshot.forEach((docSnap) => {
+            accuracy[docSnap.id] = docSnap.data();
+          });
+          saccadeDirectionAccuracyData.accuracy = accuracy;
+          data.saccadeDirectionAccuracy = saccadeDirectionAccuracyData;
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching naturesGaze saccadeDirectionAccuracy data",
+          error
+        );
+      }
+
+      try {
+        const saccadeDirectionErrorRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError`
+        );
+        const saccadeDirectionErrorSnap = await getDoc(
+          saccadeDirectionErrorRef
+        );
+        if (saccadeDirectionErrorSnap.exists()) {
+          let saccadeDirectionErrorData = saccadeDirectionErrorSnap.data();
+          const errorsRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError/errors`
+          );
+          const errorsSnapshot = await getDocs(errorsRef);
+          let errors = {};
+          errorsSnapshot.forEach((docSnap) => {
+            errors[docSnap.id] = docSnap.data();
+          });
+          saccadeDirectionErrorData.errors = errors;
+          data.saccadeDirectionError = saccadeDirectionErrorData;
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching naturesGaze saccadeDirectionError data",
+          error
+        );
+      }
+
+      try {
+        const saccadeDurationRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration`
+        );
+        const saccadeDurationSnap = await getDoc(saccadeDurationRef);
+        if (saccadeDurationSnap.exists()) {
+          let saccadeDurationData = saccadeDurationSnap.data();
+          const durationsRef = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration/durations`
+          );
+          const durationsSnapshot = await getDocs(durationsRef);
+          let durations = {};
+          durationsSnapshot.forEach((docSnap) => {
+            durations[docSnap.id] = docSnap.data();
+          });
+          saccadeDurationData.durations = durations;
+          data.saccadeDuration = saccadeDurationData;
+        }
+      } catch (error) {
+        console.error("Error fetching naturesGaze saccadeDuration data", error);
+      }
+
+      try {
+        const saccadeOmissionPercentagesRef = doc(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeOmissionPercentages`
+        );
+        const saccadeOmissionPercentagesSnap = await getDoc(
+          saccadeOmissionPercentagesRef
+        );
+        if (saccadeOmissionPercentagesSnap.exists()) {
+          data.saccadeOmissionPercentages =
+            saccadeOmissionPercentagesSnap.data();
+        }
+      } catch (error) {
+        console.error(
+          "Error fetching naturesGaze saccadeOmissionPercentages data",
+          error
+        );
+      }
+
+      setNaturesGazeData(data);
+    };
+
+    if (selectedGame === "naturesGaze") {
+      fetchNaturesGazeData();
+    }
+  }, [selectedGame, selectedDate, effectivePatientId]);
+
+  const renderFixationAccuracyTable = (landingAccuracy) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Landing Accuracy</span>
+          <span>Confidence Interval</span>
+        </div>
+        {Object.entries(landingAccuracy).map(([task, data]) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data.LandingAccuracy}</span>
+            <span>{data.ConfidenceInterval}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderFixationDurationTable = (durations) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Duration</span>
+        </div>
+        {Object.entries(durations).map(([task, data]) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data.Duration}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderFixationErrorTable = (errors) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Error Count</span>
+          <span>Percent Error</span>
+        </div>
+        {Object.entries(errors).map(([task, data]) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data.ErrorCount}</span>
+            <span>{data.PercentError}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderSaccadeDirectionAccuracyTable = (accuracy) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Percent Accuracy</span>
+        </div>
+        {Object.entries(accuracy).map(([task, data]) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data.PercentAccuracy}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderSaccadeDirectionErrorTable = (errors) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Error Count</span>
+          <span>Percent Error</span>
+        </div>
+        {Object.entries(errors).map(([task, data]) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data.ErrorCount}</span>
+            <span>{data.PercentError}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderSaccadeDurationTable = (durations) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Duration</span>
+        </div>
+        {Object.entries(durations).map(([task, data]) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data.Duration}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderReactionTime = (reactionTime) => {
+    return (
+      <div className="fields">
+        <p>
+          <strong>Gap Task:</strong> {reactionTime.GapTask}
+        </p>
+        <p>
+          <strong>Overlap Task:</strong> {reactionTime.OverlapTask}
+        </p>
+      </div>
+    );
+  };
+
+  const renderSaccadeOmissionPercentages = (data) => {
+    return (
+      <div className="fields">
+        <p>
+          <strong>Gap Task:</strong> {data.GapTask}
+        </p>
+        <p>
+          <strong>Overlap Task:</strong> {data.OverlapTask}
+        </p>
+      </div>
+    );
+  };
+
+  const renderLexicalFeatures = (fields) => {
+    const sortedFields = Object.keys(fields)
+      .sort(
+        (a, b) =>
+          lexicalFeaturesOrder.indexOf(a) - lexicalFeaturesOrder.indexOf(b)
+      )
+      .reduce((obj, key) => {
+        obj[key] = fields[key];
+        return obj;
+      }, {});
+
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Word Types</span>
+          <span>Count</span>
+        </div>
+        {Object.entries(sortedFields).map(([key, value]) => (
+          <div key={key} className="table-row">
+            <span>{formatMetricName(key)}</span>
+            <span>{value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderSemanticFeatures = (fields) => {
+    const sortedFields = Object.keys(fields)
+      .sort(
+        (a, b) =>
+          semanticFeaturesOrder.indexOf(a) - semanticFeaturesOrder.indexOf(b)
+      )
+      .reduce((obj, key) => {
+        obj[key] = fields[key];
+        return obj;
+      }, {});
+
+    return (
+      <div className="fields">
+        {Object.entries(sortedFields).map(([key, value]) => (
+          <p key={key}>
+            <strong>{formatMetricName(key)}:</strong> {value}
+          </p>
+        ))}
+      </div>
+    );
+  };
+
+  const renderStutters = (stutters) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Stutter #</span>
+          <span>Time</span>
+        </div>
+        {stutters.map((stutter, index) => (
+          <div key={stutter.id} className="table-row">
+            <span>{index + 1}</span>
+            <span>{stutter.Time}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderFluencyMetrics = (fields) => {
+    const sortedFields = fluencyMetricsOrder.reduce((obj, key) => {
+      if (fields[key] !== undefined) {
+        obj[key] = fields[key];
+      }
+      return obj;
+    }, {});
+
+    return (
+      <div className="fields">
+        {Object.entries(sortedFields).map(([key, value]) => (
+          <p key={key}>
+            <strong>{formatMetricName(key)}:</strong> {value}
+          </p>
+        ))}
+        {fields.stutters && renderStutters(fields.stutters)}
+      </div>
+    );
+  };
+
+  const renderStructuralFeatures = (fields) => {
+    const sortedFields = structuralFeaturesOrder.reduce((obj, key) => {
+      if (fields[key] !== undefined) {
+        obj[key] = fields[key];
+      }
+      return obj;
+    }, {});
+
+    return (
+      <div className="fields">
+        {Object.entries(sortedFields).map(([key, value]) => (
+          <p key={key}>
+            <strong>{formatMetricName(key)}:</strong> {value}
+          </p>
+        ))}
+      </div>
+    );
+  };
+
+  const renderPauses = (pauses) => {
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Pause #</span>
+          <span>Start Time</span>
+          <span>End Time</span>
+          <span>Duration</span>
+        </div>
+        {pauses.map((pause, index) => {
+          const start = parseFloat(pause.StartTime);
+          const end = parseFloat(pause.EndTime);
+          const duration =
+            !isNaN(start) && !isNaN(end) ? (end - start).toFixed(2) : "N/A";
+          return (
+            <div key={pause.id} className="table-row">
+              <span>{index + 1}</span>
+              <span>{pause.StartTime}</span>
+              <span>{pause.EndTime}</span>
+              <span>{duration}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderMemoryVaultTable = (data) => {
+    const presentedArray = data.Presented
+      ? data.Presented.split(",").map((item) => item.trim())
+      : [];
+    const recalledArray = data.Recalled
+      ? data.Recalled.split(",").map((item) => item.trim())
+      : [];
+    const timeArray = data.TimeToRecall
+      ? data.TimeToRecall.split(",").map((item) => item.trim())
+      : [];
+    const maxRows = Math.max(
+      presentedArray.length,
+      recalledArray.length,
+      timeArray.length
+    );
+    return (
+      <div className="table-container">
+        <div className="table-header">
+          <span>Presented</span>
+          <span>Recalled</span>
+          <span>Time to Recall (s)</span>
+        </div>
+        {Array.from({ length: maxRows }).map((_, index) => (
+          <div key={index} className="table-row">
+            <span>{presentedArray[index] || ""}</span>
+            <span>{recalledArray[index] || ""}</span>
+            <span>{timeArray[index] || ""}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="daily-reports-see-more-container">
+      {onBack && (
+        <div className="back-button-container">
+          <Link className="back-button" onClick={onBack}>
+            Back
+          </Link>
+        </div>
+      )}
+      <PatientInfoBoxComponent
+        selectedDate={selectedDate}
+        patientData={patientData}
+        effectivePatientId={effectivePatientId}
+      />
+      {/* Game Buttons */}
+      <div className="buttons-container">
+        <button
+          className={`report-button ${
+            selectedGame === "naturesGaze" ? "active" : ""
+          }`}
+          onClick={() => setSelectedGame("naturesGaze")}
+        >
+          Natures Gaze I/II
+        </button>
+        <button
+          className={`report-button ${
+            selectedGame === "memoryVault" ? "active" : ""
+          }`}
+          onClick={() => setSelectedGame("memoryVault")}
+        >
+          Memory Vault
+        </button>
+        <button
+          className={`report-button ${
+            selectedGame === "processQuest" ? "active" : ""
+          }`}
+          onClick={() => setSelectedGame("processQuest")}
+        >
+          Process Quest
+        </button>
+        <button
+          className={`report-button ${
+            selectedGame === "sceneDetective" ? "active" : ""
+          }`}
+          onClick={() => setSelectedGame("sceneDetective")}
+        >
+          Scene Detective
+        </button>
+      </div>
+      {/* Game Section Views */}
+      {selectedGame === "sceneDetective" && (
+        <div className="game-section">
+          {sceneData === null ? (
+            <p>Loading scene detective data...</p>
+          ) : Object.keys(sceneData).length === 0 ? (
+            <p>No metrics available for Scene Detective on this date.</p>
+          ) : (
+            <div className="game-grid">
+              {[
+                "fluencyMetrics",
+                "lexicalFeatures",
+                "temporalCharacteristics",
+                "semanticFeatures",
+                "structuralFeatures",
+              ].map((metric) => (
+                <div key={metric} className="game-box">
+                  <h3>{metricTitles[metric] || formatMetricName(metric)}</h3>
+                  <div className="fields">
+                    {metric === "lexicalFeatures" ? (
+                      renderLexicalFeatures(sceneData[metric])
+                    ) : metric === "semanticFeatures" ? (
+                      renderSemanticFeatures(sceneData[metric])
+                    ) : metric === "fluencyMetrics" ? (
+                      renderFluencyMetrics(sceneData[metric])
+                    ) : metric === "structuralFeatures" ? (
+                      renderStructuralFeatures(sceneData[metric])
+                    ) : metric === "temporalCharacteristics" ? (
+                      <>
+                        {Object.entries(sceneData[metric]).map(
+                          ([field, value]) => {
+                            if (field === "pauses") return null;
+                            return (
+                              <p key={field}>
+                                <strong>{formatMetricName(field)}:</strong>{" "}
+                                {value}
+                              </p>
+                            );
+                          }
+                        )}
+                        {sceneData[metric].pauses &&
+                          renderPauses(sceneData[metric].pauses)}
+                      </>
+                    ) : (
+                      Object.entries(sceneData[metric]).map(
+                        ([field, value]) => (
+                          <p key={field}>
+                            <strong>{formatMetricName(field)}:</strong> {value}
+                          </p>
+                        )
+                      )
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {selectedGame === "processQuest" && (
+        <div className="game-section">
+          {processQuestData === null ? (
+            <p>Loading process quest data...</p>
+          ) : Object.keys(processQuestData).length === 0 ? (
+            <p>No metrics available for Process Quest on this date.</p>
+          ) : (
+            <div className="game-grid">
+              {[
+                "fluencyMetrics",
+                "lexicalFeatures",
+                "temporalCharacteristics",
+                "semanticFeatures",
+                "structuralFeatures",
+              ].map((metric) => (
+                <div key={metric} className="game-box">
+                  <h3>{metricTitles[metric] || formatMetricName(metric)}</h3>
+                  <div className="fields">
+                    {metric === "lexicalFeatures" ? (
+                      renderLexicalFeatures(processQuestData[metric])
+                    ) : metric === "semanticFeatures" ? (
+                      renderSemanticFeatures(processQuestData[metric])
+                    ) : metric === "fluencyMetrics" ? (
+                      renderFluencyMetrics(processQuestData[metric])
+                    ) : metric === "structuralFeatures" ? (
+                      renderStructuralFeatures(processQuestData[metric])
+                    ) : metric === "temporalCharacteristics" ? (
+                      <>
+                        {Object.entries(processQuestData[metric]).map(
+                          ([field, value]) => {
+                            if (field === "pauses") return null;
+                            return (
+                              <p key={field}>
+                                <strong>{formatMetricName(field)}:</strong>{" "}
+                                {value}
+                              </p>
+                            );
+                          }
+                        )}
+                        {processQuestData[metric].pauses &&
+                          renderPauses(processQuestData[metric].pauses)}
+                      </>
+                    ) : (
+                      Object.entries(processQuestData[metric]).map(
+                        ([field, value]) => (
+                          <p key={field}>
+                            <strong>{formatMetricName(field)}:</strong> {value}
+                          </p>
+                        )
+                      )
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {selectedGame === "memoryVault" && (
+        <div className="game-section">
+          {memoryVaultData === null ? (
+            <p>Loading memory vault data...</p>
+          ) : Object.keys(memoryVaultData).length === 0 ? (
+            <p>No metrics available for Memory Vault on this date.</p>
+          ) : (
+            <div className="game-box-vault">
+              <h3>Recall Speed and Accuracy</h3>
+              {renderMemoryVaultTable(
+                memoryVaultData["recallSpeedAndAccuracy"]
+              )}
+            </div>
+          )}
+        </div>
+      )}
+      {selectedGame === "naturesGaze" && (
+        <div className="game-section">
+          {naturesGazeData === null ? (
+            <p>Loading Natures Gaze data...</p>
+          ) : Object.keys(naturesGazeData).length === 0 ? (
+            <p>No metrics available for Natures Gaze on this date.</p>
+          ) : (
+            <div className="game-grid">
+              <div className="game-box">
+                <h3>Fixation Accuracy</h3>
+                {naturesGazeData.fixationAccuracy &&
+                naturesGazeData.fixationAccuracy.landingAccuracy ? (
+                  renderFixationAccuracyTable(
+                    naturesGazeData.fixationAccuracy.landingAccuracy
+                  )
+                ) : (
+                  <p>No landing accuracy data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <h3>Fixation Duration</h3>
+                {naturesGazeData.fixationDuration ? (
+                  <>
+                    {naturesGazeData.fixationDuration
+                      .AverageFixationDuration && (
+                      <p>
+                        <strong>Average Fixation Duration:</strong>{" "}
+                        {
+                          naturesGazeData.fixationDuration
+                            .AverageFixationDuration
+                        }
+                      </p>
+                    )}
+                    {naturesGazeData.fixationDuration.durations ? (
+                      renderFixationDurationTable(
+                        naturesGazeData.fixationDuration.durations
+                      )
+                    ) : (
+                      <p>No duration data.</p>
+                    )}
+                  </>
+                ) : (
+                  <p>No fixation duration data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <h3>Fixation Error</h3>
+                {naturesGazeData.fixationError ? (
+                  <>
+                    {naturesGazeData.fixationError
+                      .AverageFixationErrorPercentage && (
+                      <p>
+                        <strong>Average Fixation Error Percentage:</strong>{" "}
+                        {
+                          naturesGazeData.fixationError
+                            .AverageFixationErrorPercentage
+                        }
+                      </p>
+                    )}
+                    {naturesGazeData.fixationError.errors ? (
+                      renderFixationErrorTable(
+                        naturesGazeData.fixationError.errors
+                      )
+                    ) : (
+                      <p>No error data.</p>
+                    )}
+                  </>
+                ) : (
+                  <p>No fixation error data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <h3>Saccade Direction Accuracy</h3>
+                {naturesGazeData.saccadeDirectionAccuracy ? (
+                  <>
+                    {naturesGazeData.saccadeDirectionAccuracy
+                      .AverageSaccadeDirectionPercentage && (
+                      <p>
+                        <strong>Average Saccade Direction Accuracy:</strong>{" "}
+                        {
+                          naturesGazeData.saccadeDirectionAccuracy
+                            .AverageSaccadeDirectionPercentage
+                        }
+                      </p>
+                    )}
+                    {naturesGazeData.saccadeDirectionAccuracy.accuracy ? (
+                      renderSaccadeDirectionAccuracyTable(
+                        naturesGazeData.saccadeDirectionAccuracy.accuracy
+                      )
+                    ) : (
+                      <p>No accuracy data.</p>
+                    )}
+                  </>
+                ) : (
+                  <p>No saccade direction accuracy data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <h3>Saccade Direction Error</h3>
+                {naturesGazeData.saccadeDirectionError ? (
+                  <>
+                    {naturesGazeData.saccadeDirectionError
+                      .AverageSaccadeErrorPercentage && (
+                      <p>
+                        <strong>
+                          Average Saccade Direction Error Percentage:
+                        </strong>{" "}
+                        {
+                          naturesGazeData.saccadeDirectionError
+                            .AverageSaccadeErrorPercentage
+                        }
+                      </p>
+                    )}
+                    {naturesGazeData.saccadeDirectionError.errors ? (
+                      renderSaccadeDirectionErrorTable(
+                        naturesGazeData.saccadeDirectionError.errors
+                      )
+                    ) : (
+                      <p>No error data.</p>
+                    )}
+                  </>
+                ) : (
+                  <p>No saccade direction error data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <h3>Saccade Duration</h3>
+                {naturesGazeData.saccadeDuration ? (
+                  <>
+                    {naturesGazeData.saccadeDuration.AverageSaccadeDuration && (
+                      <p>
+                        <strong>Average Saccade Duration:</strong>{" "}
+                        {naturesGazeData.saccadeDuration.AverageSaccadeDuration}
+                      </p>
+                    )}
+                    {naturesGazeData.saccadeDuration.durations ? (
+                      renderSaccadeDurationTable(
+                        naturesGazeData.saccadeDuration.durations
+                      )
+                    ) : (
+                      <p>No duration data.</p>
+                    )}
+                  </>
+                ) : (
+                  <p>No saccade duration data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <h3>Saccade Omission Percentages</h3>
+                {naturesGazeData.saccadeOmissionPercentages ? (
+                  renderSaccadeOmissionPercentages(
+                    naturesGazeData.saccadeOmissionPercentages
+                  )
+                ) : (
+                  <p>No omission percentages data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <h3>Reaction Time</h3>
+                {naturesGazeData.reactionTime ? (
+                  renderReactionTime(naturesGazeData.reactionTime)
+                ) : (
+                  <p>No reaction time data.</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      <div style={{ height: "100px" }}></div> {/* Spacer for scrolling */}
+    </div>
+  );
+};
+
+export default DailyReportsSeeMoreComponent;
