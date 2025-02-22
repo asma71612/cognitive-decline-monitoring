@@ -1,0 +1,10 @@
+.chart-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.chart-box {
+  width: 600px;
+  width: 0 auto;
+}

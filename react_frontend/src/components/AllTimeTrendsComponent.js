@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
 import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
+import BoxPlot from "./BoxPlot";
 import "./AllTimeTrendsComponent.css";
 
-const AllTimeTrendsComponent = ({ selectedDate }) => {
+const AllTimeTrendsComponent = ({ patientId }) => {
+  const effectivePatientId = patientId || localStorage.getItem("userId");
   const [selectedGame, setSelectedGame] = useState("memoryVault");
   const [patientData, setPatientData] = useState(null);
-
-  const effectivePatientId = localStorage.getItem("userId");
+  const [rawData, setRawData] = useState({});
 
   useEffect(() => {
     if (!effectivePatientId) return;
@@ -25,13 +26,74 @@ const AllTimeTrendsComponent = ({ selectedDate }) => {
     fetchPatientData();
   }, [effectivePatientId]);
 
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "memoryVault") return;
+
+    const fetchDataAndComputePoints = async () => {
+      try {
+        const memoryVaultPoints = {};
+        const reportsCollection = collection(
+          db,
+          `users/${effectivePatientId}/dailyReportsSeeMore`
+        );
+        const reportSnapshots = await getDocs(reportsCollection);
+
+        for (const reportDoc of reportSnapshots.docs) {
+          const dateKey = reportDoc.id;
+          const [month, , year] = dateKey.split("-");
+          const monthYear = new Date(year, month - 1).toLocaleDateString(
+            "en-US",
+            { year: "numeric", month: "short" }
+          );
+
+          const memoryVaultCollection = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/memoryVault`
+          );
+          const memoryVaultSnapshots = await getDocs(memoryVaultCollection);
+
+          for (const mvDoc of memoryVaultSnapshots.docs) {
+            const { Presented, Recalled } = mvDoc.data();
+            const presentedWords = Presented.split(",").map((w) => w.trim());
+            const recalledWords = Recalled.split(",").map((w) => w.trim());
+            let sessionPoints = [];
+            for (let i = 0; i < presentedWords.length; i++) {
+              const response = await fetch(
+                "http://127.0.0.1:5000/compute-points",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    presented_word: presentedWords[i],
+                    recalled_word: recalledWords[i],
+                  }),
+                }
+              );
+              const { points } = await response.json();
+              sessionPoints.push(points);
+            }
+            if (!memoryVaultPoints[monthYear]) {
+              memoryVaultPoints[monthYear] = [];
+            }
+            memoryVaultPoints[monthYear].push(...sessionPoints);
+          }
+        }
+        setRawData(memoryVaultPoints);
+      } catch (error) {
+        console.error("Error fetching or computing points:", error);
+      }
+    };
+
+    fetchDataAndComputePoints();
+  }, [selectedGame, effectivePatientId]);
+
   return (
     <div className="all-time-trends-container">
       <PatientInfoBoxComponent
-        selectedDate={selectedDate}
         patientData={patientData}
         effectivePatientId={effectivePatientId}
-        reportType={"Daily Reports"}
+        reportTitle="All Time Reports"
+        selectedDate={null}
       />
       <div className="buttons-container">
         <button
@@ -67,6 +129,8 @@ const AllTimeTrendsComponent = ({ selectedDate }) => {
           Scene Detective
         </button>
       </div>
+      {selectedGame === "memoryVault" && <BoxPlot rawData={rawData} />}
+      <div style={{ height: "100px" }}></div>
     </div>
   );
 };

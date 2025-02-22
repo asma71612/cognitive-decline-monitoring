@@ -41,7 +41,7 @@ const DailyReports = () => {
             <span>My Patients</span>
           </Link>
           <Link
-            to="/daily-reports"
+            to={`/physician-daily-report/${patientId}`}
             className="menu-item-daily-reports link daily"
           >
             <img src={dailyReportsIcon} alt="Daily Reports" />
@@ -52,7 +52,7 @@ const DailyReports = () => {
             <span>Weekly Reports</span>
           </Link>
           <Link
-            to="/physician-all-time-trends"
+            to={`/physician-all-time-trends/${patientId}`}
             className="menu-item-daily-reports link"
           >
             <img src={allTimeReportsIcon} alt="All-Time Trends" />

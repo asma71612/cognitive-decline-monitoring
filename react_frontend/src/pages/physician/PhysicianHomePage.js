@@ -134,7 +134,7 @@ const PhysicianHomePage = () => {
                     <td>
                       {/* Link passes the patient.id via the URL */}
                       <Link
-                        to={`/physician-daily-report/${patient.id}`}
+                        to={`/physician-all-time-trends/${patient.id}`}
                         className="view-reports-btn"
                       >
                         View Reports

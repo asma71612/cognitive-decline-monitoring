@@ -30,7 +30,7 @@ const AllTimeTrends = () => {
             <span>My Patients</span>
           </Link>
           <Link
-            to="/daily-reports"
+            to={`/physician-daily-report/${patientId}`}
             className="menu-item-all-time-reports link daily"
           >
             <img src={dailyReportsIcon} alt="Daily Reports" />
@@ -44,8 +44,8 @@ const AllTimeTrends = () => {
             <span>Weekly Reports</span>
           </Link>
           <Link
-            to="/physician-all-time-trends"
-            className="menu-item-all-time-reports link"
+            to={`/physician-all-time-trends/${patientId}`}
+            className="menu-item-all-time-reports link all-time-trends"
           >
             <img src={allTimeReportsIcon} alt="All-Time Trends" />
             <span>All-Time Trends</span>

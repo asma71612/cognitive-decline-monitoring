@@ -704,6 +704,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
         </div>
       )}
       <PatientInfoBoxComponent
+        reportTitle="Daily Reports"
         selectedDate={selectedDate}
         patientData={patientData}
         effectivePatientId={effectivePatientId}

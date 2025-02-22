@@ -50,15 +50,15 @@
 }
 
 .menu-item-all-time-reports.link span {
+  color: #516A80 !important;
+}
+
+.menu-item-all-time-reports.all-time-trends span {
+  color: #2F3B66 !important;
+}
+
+.menu-item-all-time-reports.link span {
   color: inherit;
-}
-
-.menu-item-all-time-reports.link:not(.daily):not(.logout) span {
-  color: #2f3b66 !important;
-}
-
-.menu-item-all-time-reports.link.daily span {
-  color: #2f3b66 !important;
 }
 
 .menu-item-all-time-reports.link.colored span {
