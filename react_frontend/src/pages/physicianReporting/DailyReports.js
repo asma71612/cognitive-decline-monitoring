@@ -51,7 +51,10 @@ const DailyReports = () => {
             <img src={weeklyReportsIcon} alt="Weekly Reports" />
             <span>Weekly Reports</span>
           </Link>
-          <Link to="/all-time-trends" className="menu-item-daily-reports link">
+          <Link
+            to="/physician-all-time-trends"
+            className="menu-item-daily-reports link"
+          >
             <img src={allTimeReportsIcon} alt="All-Time Trends" />
             <span>All-Time Trends</span>
           </Link>
