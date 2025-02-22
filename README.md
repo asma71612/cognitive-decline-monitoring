@@ -1,8 +1,8 @@
 # Cognitive Decline Monitoring - Setup Guide
 
 This repository contains the code for the **Cognitive Decline Monitoring** application. It consists of two main parts:
-- **Backend**: A Spring Boot application to handle the logic and API endpoints.
-- **Frontend**: A React application for the user interface.
+- **Backend**: A Spring Boot application using Python and Flask to handle the logic and API endpoints.
+- **Frontend**: A React application using JavaScript for the user interface.
 
 *Please make sure you are working on a separate branch and not commiting to main - See 'Git Basics' below for instructions**
 
@@ -13,6 +13,7 @@ Before you start, ensure you have the following installed on your system:
 - **Java 11 or higher**
 - **Maven** (for building the backend)
 - **Node.js and npm** (for running the frontend)
+- **Python 3.11.6** (for running the backend modelling)
 
 ## Current Versions
 Here are the versions of the tools and technologies currently being used for this project. You do not have to use these version, but just ensure to update your dependencies locally if you choose to deviate.
@@ -23,14 +24,27 @@ Here are the versions of the tools and technologies currently being used for thi
 - **npm**: 10.8.2
 - **React**: 18.3.1
 - **Spring Boot**: 3.4.0 (already included in pom.xml)
+- **Flask** 3.1.0
+- **chart.js** 4.4.8
+- **react-chartjs-2** 5.3.0
+- **@sgratzl/chartjs-chart-boxplot** 4.4.4
 
-## Step 1: Install Java 11 (or higher)
+These will be included in the package files so if you use a different version, make sure to not commit and push that to the main branch.
+
+## Step 1: Install Java 11 (or higher) and Python
 
 To run the backend, you need to have Java 11 or higher installed. You can download Java from [AdoptOpenJDK](https://adoptopenjdk.net/) or [Oracle's JDK page](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html).
 
 After installation, verify the Java version:
 ```bash
-java -version
+java --version
+```
+
+To run the backend NLP files, you need to install Python which you can do so using brew install or downloading it from the web.
+
+After installation, verify the Python version:
+```bash
+python --version
 ```
 
 ## Step 2: Install Maven
@@ -162,8 +176,30 @@ export { db, auth };
 
 *Replace the placeholder values (YOUR_API_KEY, YOUR_AUTH_DOMAIN, etc.) with your actual Firebase configuration values.**
 
-**Important: Do not commit the firebaseConfig.js file to the repository. Add it to your .gitignore file if it isnot already there.**
+**Important: Do not commit the firebaseConfig.js file to the repository. Add it to your .gitignore file if it is not already there.**
 
+## Step 8: Flask Setup
+If you ran `npm install` it should automatically install important libraries. However, if you get any errors related to Flask, make sure to run the following commands:
+
+```bash
+npm install chart.js react-chartjs-2
+npm install @sgratzl/chartjs-chart-boxplot
+```
+
+If any of the Python imports are giving you trouble, make sure to run the following:
+```bash
+pip install Flask
+pip install flask-cors
+pip install spacy
+python -m spacy download en_core_web_lg
+```
+
+In order to see the box plots populated on the reporting pages for memoryVault, you will need to run the backend Flask server so the frontend is able to hit that endpoint:
+
+```bash
+cd demo/flask_api/
+python app.py
+```
 
 ## Stopping the Server
 Simply do `Ctrl + C` or `Cmd + C` in the terminal to terminate the batch job
@@ -190,6 +226,29 @@ If you get errors like command not found, ensure that both Maven and Node.js are
 **Issues: Missing Maven Wrapper (mvnw)**
 
 If the Maven wrapper (mvnw) is missing or not working, you may need to regenerate it by running mvn wrapper:wrapper in the backend directory (assuming Maven is already installed).
+
+**Issues: React not loading on the memoryVault All Time Trends Report Page**
+
+This can happen if you have different versions of react and react-dom that are not compatible with the Chartjs version we are using to create the box plots. In that case, cross-reference with the following below:
+
+```bash
+npm ls react
+```
+
+Yours should look the same as mine, if not, you will need to upgrade/ downgrade versions:
+```
+├─┬ react-chartjs-2@5.3.0
+│ └── react@17.0.2 deduped
+├─┬ react-dom@17.0.2
+│ └── react@17.0.2 deduped
+├─┬ react-router-dom@6.28.1
+│ ├─┬ react-router@6.28.1
+│ │ └── react@17.0.2 deduped
+│ └── react@17.0.2 deduped
+├─┬ react-scripts@4.0.3
+│ └── react@17.0.2 deduped
+└── react@17.0.2
+```
 
 ## Git Basics
 Before you start working:
