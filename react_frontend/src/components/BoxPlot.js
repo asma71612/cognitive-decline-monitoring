@@ -25,13 +25,13 @@ ChartJS.register(
   BoxAndWiskers
 );
 
-const BoxPlot = ({ rawData }) => {
+const BoxPlot = ({ rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  const calculateBoxPlotData = (rawData) => {
+  const calculateBoxPlotData = (dataSeries) => {
     const processedData = {};
-    for (const [monthYear, points] of Object.entries(rawData)) {
+    for (const [monthYear, points] of Object.entries(dataSeries)) {
       points.sort((a, b) => a - b);
       const getQuartile = (data, q) => {
         const pos = (data.length - 1) * q;
@@ -43,7 +43,6 @@ const BoxPlot = ({ rawData }) => {
           return data[base];
         }
       };
-
       processedData[monthYear] = [
         points[0], // Min
         getQuartile(points, 0.25), // Q1
@@ -57,23 +56,64 @@ const BoxPlot = ({ rawData }) => {
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
-
     if (chartInstanceRef.current) {
       chartInstanceRef.current.destroy();
     }
 
-    const plotData = calculateBoxPlotData(rawData);
+    let labels = [];
+    let datasets = [];
+    let globalPoints = [];
 
-    const data = {
-      labels: Object.keys(plotData),
-      datasets: [
+    // Check if multi-series
+    if (rawData && rawData.gap) {
+      labels = Object.keys(rawData.gap);
+      const gapPlotData = calculateBoxPlotData(rawData.gap);
+      const overlapPlotData = calculateBoxPlotData(rawData.overlap);
+
+      // Collect all points for global min/max calculation
+      Object.values(rawData.gap).forEach((arr) => globalPoints.push(...arr));
+      Object.values(rawData.overlap).forEach((arr) =>
+        globalPoints.push(...arr)
+      );
+
+      datasets = [
         {
-          data: Object.values(plotData),
+          label: seriesLabels && seriesLabels.gap ? seriesLabels.gap : "Series 1",
+          data: Object.values(gapPlotData),
           backgroundColor: "#516A80",
           borderColor: "black",
           borderWidth: 1,
         },
-      ],
+        {
+          label: seriesLabels && seriesLabels.overlap ? seriesLabels.overlap : "Series 2",
+          data: Object.values(overlapPlotData),
+          backgroundColor: "#A0C4FF",
+          borderColor: "black",
+          borderWidth: 1,
+        },
+      ];
+    } else {
+      // Single dataset case
+      const singlePlotData = calculateBoxPlotData(rawData);
+      labels = Object.keys(singlePlotData);
+      Object.values(rawData).forEach((arr) => globalPoints.push(...arr));
+      datasets = [
+        {
+          label: undefined,
+          data: Object.values(singlePlotData),
+          backgroundColor: "#516A80",
+          borderColor: "black",
+          borderWidth: 1,
+        },
+      ];
+    }
+
+    const globalMin = globalPoints.length ? Math.min(...globalPoints) : 0;
+    const globalMax = globalPoints.length ? Math.max(...globalPoints) : 0;
+
+    const data = {
+      labels,
+      datasets,
     };
 
     const config = {
@@ -83,57 +123,56 @@ const BoxPlot = ({ rawData }) => {
         responsive: true,
         scales: {
           x: {
-            title: { 
-              display: true, 
-              text: "Date", 
+            title: {
+              display: true,
+              text: xAxisLabel,
               color: "black",
               font: { size: 16, family: "Inter", weight: "bold" },
             },
-            ticks: { 
+            ticks: {
               color: "black",
-              font: { family: "Inter", size: 14 }
+              font: { family: "Inter", size: 14 },
             },
             grid: { color: "rgba(0,0,0,0.1)" },
             border: { color: "black", width: 2 },
           },
           y: {
             beginAtZero: false,
-            min: -1,
-            max: 5,
-            title: { 
-              display: true, 
-              text: "Score", 
+            min: globalMin - 2,
+            max: globalMax + 2,
+            title: {
+              display: true,
+              text: yAxisLabel,
               color: "black",
               font: { size: 16, family: "Inter", weight: "bold" },
             },
-            ticks: { 
+            ticks: {
               color: "black",
-              font: { family: "Inter", size: 14 }
+              font: { family: "Inter", size: 14 },
             },
             grid: { color: "rgba(0,0,0,0.1)" },
             border: { color: "black", width: 2 },
           },
         },
         plugins: {
-          legend: false,
-          title: { 
-            display: true, 
-            text: "Recall Score", 
+          legend: { display: datasets.length > 1 },
+          title: {
+            display: true,
+            text: plotTitle,
             font: { size: 20, family: "Inter" },
-            color: "black"
+            color: "black",
           },
         },
       },
     };
 
     chartInstanceRef.current = new ChartJS(ctx, config);
-
     return () => {
       if (chartInstanceRef.current) {
         chartInstanceRef.current.destroy();
       }
     };
-  }, [rawData]);
+  }, [rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels]);
 
   return (
     <div className="chart-container">
