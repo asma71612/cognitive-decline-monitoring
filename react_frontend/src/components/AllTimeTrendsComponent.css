@@ -40,3 +40,109 @@
   background-color: #2f3b66;
   cursor: default;
 }
+
+/* Remove or comment out .processquest-grid if present */
+
+/* New styles for the metrics carousel */
+.metrics-carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.metrics-next-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #2f3b66;
+}
+
+/* New styles for the structural carousel */
+.structural-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.structural-next-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #2f3b66;
+}
+
+/* New styles for the fluency carousel */
+.fluency-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.fluency-next-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #2f3b66;
+}
+
+/* Lexical carousel remains unchanged */
+.lexical-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.lexical-next-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #2f3b66;
+}
+
+/* New styles for the semantic carousel */
+.semantic-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.semantic-next-button {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #2f3b66;
+}
+
+/* New common styles for carousel indicators */
+.carousel-wrapper {
+  margin-bottom: 20px;
+}
+
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  margin-right: 45px;
+  margin-top: 8px;
+  gap: 8px;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #516A80;
+}
+
+.indicator.active {
+  background-color: #2F3B66;
+}

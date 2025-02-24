@@ -5,20 +5,137 @@ import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
 import BoxPlot from "./BoxPlot";
 import "./AllTimeTrendsComponent.css";
 
+// Helper to get report info
+const getReports = async (effectivePatientId) => {
+  const reportsCollection = collection(
+    db,
+    `users/${effectivePatientId}/dailyReportsSeeMore`
+  );
+  const reportSnapshots = await getDocs(reportsCollection);
+  return reportSnapshots.docs.map((reportDoc) => {
+    const dateKey = reportDoc.id;
+    const [month, , year] = dateKey.split("-");
+    const monthYear = new Date(year, month - 1).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
+    return { dateKey, monthYear };
+  });
+};
+
 const AllTimeTrendsComponent = ({ patientId }) => {
   const effectivePatientId = patientId || localStorage.getItem("userId");
-  const [selectedGame, setSelectedGame] = useState(""); // By default, no game is selected
+  const [selectedGame, setSelectedGame] = useState(""); // default: no game selected
   const [patientData, setPatientData] = useState(null);
-  const [rawData, setRawData] = useState({});
 
-  // This will clear any old data when switching games so no previous graphs render on the screen even for a split second
+  // Separate state for each dataset:
+  const [memoryVaultRecallScoreData, setMemoryVaultRecallScoreData] = useState(
+    {}
+  );
+  const [naturesGazeReactionTimeData, setNaturesGazeReactionTimeData] =
+    useState({});
+  const [naturesGazeSopData, setNaturesGazeSopData] = useState({});
+  const [saccadeDurationData, setSaccadeDurationData] = useState({}); // 4-series
+  const [saccadeDirectionAccuracyData, setSaccadeDirectionAccuracyData] =
+    useState({}); // 4-series
+  const [fixationDurationData, setFixationDurationData] = useState({}); // 2-series: gap and overlap
+  const [fixationAccuracyData, setFixationAccuracyData] = useState({}); // 2-series: gap and overlap
+  const [saccadeDirectionErrorData, setSaccadeDirectionErrorData] = useState(
+    {}
+  ); // 4-series
+  const [speakingTimeData, setSpeakingTimeData] = useState({}); // New state for Speaking Time
+  const [pauseCountData, setPauseCountData] = useState({}); // New state for Pause Count
+  const [pauseDurationData, setPauseDurationData] = useState({}); // New state for Pause Duration
+  const [lexNounData, setLexNounData] = useState({}); // New state for Noun Count
+  const [lexClosedClassData, setLexClosedClassData] = useState({}); // New state for ClosedClass Count
+  const [lexFillerData, setLexFillerData] = useState({}); // New state for Filler Count
+  const [lexOpenClassData, setLexOpenClassData] = useState({}); // New state for OpenClass Count
+  const [lexVerbData, setLexVerbData] = useState({}); // New state for Verb Count
+  const [lexicalIndex, setLexicalIndex] = useState(0); // New state for lexical carousel
+  const [metricsIndex, setMetricsIndex] = useState(0); // New state for metrics carousel
+  const [structuralMeanData, setStructuralMeanData] = useState({}); // New state for MeanLengthOfOccurrence
+  const [structuralSentenceData, setStructuralSentenceData] = useState({}); // New state for NumOfSentences
+  const [structuralIndex, setStructuralIndex] = useState(0); // New state for structural features carousel
+  const [fluencyRevisionRatioData, setFluencyRevisionRatioData] = useState({}); // New state for RevisionRatio
+  const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({}); // New state for WordsPerMin
+  const [fluencyStutterCountData, setFluencyStutterCountData] = useState({}); // New state for Stutter Count
+  const [fluencyIndex, setFluencyIndex] = useState(0); // New state for fluency carousel
+  const [semanticLexFreqData, setSemanticLexFreqData] = useState({}); // New state for LexicalFrequencyOfNouns
+  const [semanticEfficiencyData, setSemanticEfficiencyData] = useState({}); // New state for SemanticEfficiency
+  const [semanticIdeaDensityData, setSemanticIdeaDensityData] = useState({}); // New state for SemanticIdeaDensity
+  const [semanticIndex, setSemanticIndex] = useState(0); // New index for semantic carousel
+
   useEffect(() => {
-    setRawData({});
+    // Clear all datasets on game change
+    setMemoryVaultRecallScoreData({});
+    setNaturesGazeReactionTimeData({});
+    setNaturesGazeSopData({});
+    if (selectedGame !== "naturesGaze") {
+      setSaccadeDurationData({});
+      setSaccadeDirectionAccuracyData({});
+      setFixationDurationData({});
+      setFixationAccuracyData({});
+      setSaccadeDirectionErrorData({});
+    }
+    if (selectedGame !== "processQuest") {
+      setSpeakingTimeData({});
+      setPauseCountData({});
+      setPauseDurationData({});
+      setLexNounData({});
+      setLexClosedClassData({});
+      setLexFillerData({});
+      setLexOpenClassData({});
+      setLexVerbData({});
+      setStructuralMeanData({});
+      setStructuralSentenceData({});
+      setFluencyRevisionRatioData({}); // Clear fluency data
+      setFluencyWordsPerMinData({});
+      setFluencyStutterCountData({});
+      setSemanticLexFreqData({});
+      setSemanticEfficiencyData({});
+      setSemanticIdeaDensityData({});
+    }
   }, [selectedGame]);
 
+  // New useEffect to reset lexical index when processQuest is selected
+  useEffect(() => {
+    if (selectedGame === "processQuest") {
+      setLexicalIndex(0);
+    }
+  }, [selectedGame]);
+
+  // New useEffect to reset metrics index when processQuest is selected
+  useEffect(() => {
+    if (selectedGame === "processQuest") {
+      setMetricsIndex(0);
+    }
+  }, [selectedGame]);
+
+  // New useEffect to reset structural index when processQuest is selected
+  useEffect(() => {
+    if (selectedGame === "processQuest") {
+      setStructuralIndex(0);
+    }
+  }, [selectedGame]);
+
+  // Reset fluency index when processQuest is selected
+  useEffect(() => {
+    if (selectedGame === "processQuest") {
+      setFluencyIndex(0);
+    }
+  }, [selectedGame]);
+
+  // New useEffect to reset semantic index when processQuest is selected
+  useEffect(() => {
+    if (selectedGame === "processQuest") {
+      setSemanticIndex(0);
+    }
+  }, [selectedGame]);
+
+  // Fetch patient data
   useEffect(() => {
     if (!effectivePatientId) return;
-    const fetchPatientData = async () => {
+    (async () => {
       try {
         const patientDoc = await getDoc(doc(db, "users", effectivePatientId));
         if (patientDoc.exists()) {
@@ -27,37 +144,23 @@ const AllTimeTrendsComponent = ({ patientId }) => {
       } catch (error) {
         console.error("Error fetching patient data:", error);
       }
-    };
-    fetchPatientData();
+    })();
   }, [effectivePatientId]);
 
+  // MemoryVault Recall Score fetching
   useEffect(() => {
     if (!effectivePatientId || selectedGame !== "memoryVault") return;
-
-    const fetchDataAndComputePoints = async () => {
+    (async () => {
       try {
-        const memoryVaultPoints = {};
-        const reportsCollection = collection(
-          db,
-          `users/${effectivePatientId}/dailyReportsSeeMore`
-        );
-        const reportSnapshots = await getDocs(reportsCollection);
-
-        for (const reportDoc of reportSnapshots.docs) {
-          const dateKey = reportDoc.id;
-          const [month, , year] = dateKey.split("-");
-          const monthYear = new Date(year, month - 1).toLocaleDateString(
-            "en-US",
-            { year: "numeric", month: "short" }
-          );
-
-          const memoryVaultCollection = collection(
+        const dataPoints = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const mvCollection = collection(
             db,
             `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/memoryVault`
           );
-          const memoryVaultSnapshots = await getDocs(memoryVaultCollection);
-
-          for (const mvDoc of memoryVaultSnapshots.docs) {
+          const mvSnapshots = await getDocs(mvCollection);
+          for (const mvDoc of mvSnapshots.docs) {
             const { Presented, Recalled } = mvDoc.data();
             const presentedWords = Presented.split(",").map((w) => w.trim());
             const recalledWords = Recalled.split(",").map((w) => w.trim());
@@ -77,71 +180,581 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               const { points } = await response.json();
               sessionPoints.push(points);
             }
-            if (!memoryVaultPoints[monthYear]) {
-              memoryVaultPoints[monthYear] = [];
+            if (!dataPoints[monthYear]) {
+              dataPoints[monthYear] = [];
             }
-            memoryVaultPoints[monthYear].push(...sessionPoints);
+            dataPoints[monthYear].push(...sessionPoints);
           }
         }
-        setRawData(memoryVaultPoints);
+        setMemoryVaultRecallScoreData(dataPoints);
       } catch (error) {
         console.error("Error fetching or computing points:", error);
       }
-    };
-
-    fetchDataAndComputePoints();
+    })();
   }, [selectedGame, effectivePatientId]);
 
+  // naturesGaze Reaction Time fetching
   useEffect(() => {
     if (!effectivePatientId || selectedGame !== "naturesGaze") return;
-    const fetchNaturesGazeData = async () => {
+    (async () => {
       try {
-        const naturesGazePoints = { gap: {}, overlap: {} };
-        const reportsCollection = collection(
-          db,
-          `users/${effectivePatientId}/dailyReportsSeeMore`
-        );
-        const reportSnapshots = await getDocs(reportsCollection);
-
-        for (const reportDoc of reportSnapshots.docs) {
-          const dateKey = reportDoc.id;
-          const [month, , year] = dateKey.split("-");
-          const monthYear = new Date(year, month - 1).toLocaleDateString(
-            "en-US",
-            { year: "numeric", month: "short" }
-          );
-
-          const natureDocRef = doc(
+        const dataPoints = { gap: {}, overlap: {} };
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const reactionDocRef = doc(
             db,
             `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/reactionTime`
           );
-          const natureDoc = await getDoc(natureDocRef);
-
-          if (natureDoc.exists()) {
-            const data = natureDoc.data();
-            const gapTask = data.GapTask;
-            const overlapTask = data.OverlapTask;
-
-            if (gapTask != null) {
-              if (!naturesGazePoints.gap[monthYear]) {
-                naturesGazePoints.gap[monthYear] = [];
-              }
-              naturesGazePoints.gap[monthYear].push(gapTask);
+          const reactionDoc = await getDoc(reactionDocRef);
+          if (reactionDoc.exists()) {
+            const data = reactionDoc.data();
+            if (data.GapTask != null) {
+              if (!dataPoints.gap[monthYear]) dataPoints.gap[monthYear] = [];
+              dataPoints.gap[monthYear].push(data.GapTask);
             }
-            if (overlapTask != null) {
-              if (!naturesGazePoints.overlap[monthYear]) {
-                naturesGazePoints.overlap[monthYear] = [];
-              }
-              naturesGazePoints.overlap[monthYear].push(overlapTask);
+            if (data.OverlapTask != null) {
+              if (!dataPoints.overlap[monthYear])
+                dataPoints.overlap[monthYear] = [];
+              dataPoints.overlap[monthYear].push(data.OverlapTask);
             }
           }
         }
-        setRawData(naturesGazePoints);
+        setNaturesGazeReactionTimeData(dataPoints);
       } catch (error) {
-        console.error("Error fetching natures gaze data:", error);
+        console.error("Error fetching reaction time data:", error);
       }
-    };
-    fetchNaturesGazeData();
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // naturesGaze Saccade Omission Percentages fetching
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    (async () => {
+      try {
+        const saccadePoints = { gap: {}, overlap: {} };
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const saccadeDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeOmissionPercentages`
+          );
+          const saccadeDoc = await getDoc(saccadeDocRef);
+          if (saccadeDoc.exists()) {
+            const data = saccadeDoc.data();
+            if (data.GapTask != null) {
+              if (!saccadePoints.gap[monthYear])
+                saccadePoints.gap[monthYear] = [];
+              saccadePoints.gap[monthYear].push(data.GapTask);
+            }
+            if (data.OverlapTask != null) {
+              if (!saccadePoints.overlap[monthYear])
+                saccadePoints.overlap[monthYear] = [];
+              saccadePoints.overlap[monthYear].push(data.OverlapTask);
+            }
+          }
+        }
+        setNaturesGazeSopData(saccadePoints);
+      } catch (error) {
+        console.error("Error fetching saccade omission data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // naturesGaze Saccade Duration fetching
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    (async () => {
+      try {
+        const durationPoints = {
+          antiGap: {},
+          proGap: {},
+          antiOverlap: {},
+          proOverlap: {},
+        };
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const sdDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDuration`
+          );
+          const durationsCollection = collection(sdDocRef, "durations");
+          const durationsSnapshots = await getDocs(durationsCollection);
+          durationsSnapshots.docs.forEach((docSnap) => {
+            const data = docSnap.data();
+            const seriesKey = docSnap.id;
+            if (
+              data.Duration != null &&
+              durationPoints[seriesKey] !== undefined
+            ) {
+              if (!durationPoints[seriesKey][monthYear]) {
+                durationPoints[seriesKey][monthYear] = [];
+              }
+              durationPoints[seriesKey][monthYear].push(data.Duration);
+            }
+          });
+        }
+        setSaccadeDurationData(durationPoints);
+      } catch (error) {
+        console.error("Error fetching saccade duration data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // naturesGaze Saccade Direction Accuracy fetching
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    (async () => {
+      try {
+        const accuracyPoints = {
+          antiGap: {},
+          proGap: {},
+          antiOverlap: {},
+          proOverlap: {},
+        };
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const accDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDirectionAccuracy`
+          );
+          const accuracyCollection = collection(accDocRef, "accuracy");
+          const accuracySnapshots = await getDocs(accuracyCollection);
+          accuracySnapshots.docs.forEach((docSnap) => {
+            const data = docSnap.data();
+            const seriesKey = docSnap.id;
+            if (
+              data.PercentAccuracy != null &&
+              accuracyPoints[seriesKey] !== undefined
+            ) {
+              if (!accuracyPoints[seriesKey][monthYear]) {
+                accuracyPoints[seriesKey][monthYear] = [];
+              }
+              accuracyPoints[seriesKey][monthYear].push(data.PercentAccuracy);
+            }
+          });
+        }
+        setSaccadeDirectionAccuracyData(accuracyPoints);
+      } catch (error) {
+        console.error("Error fetching saccade direction accuracy data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // Fixation Duration fetching (2-series: gap and overlap)
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    (async () => {
+      try {
+        const fixationPoints = {
+          gap: {},
+          overlap: {},
+        };
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const fixDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationDuration`
+          );
+          const durationsCollection = collection(fixDocRef, "durations");
+          const durationsSnapshots = await getDocs(durationsCollection);
+          durationsSnapshots.docs.forEach((docSnap) => {
+            const data = docSnap.data();
+            const seriesKey = docSnap.id; // expected: "gap" or "overlap"
+            if (
+              data.Duration != null &&
+              fixationPoints[seriesKey] !== undefined
+            ) {
+              if (!fixationPoints[seriesKey][monthYear]) {
+                fixationPoints[seriesKey][monthYear] = [];
+              }
+              fixationPoints[seriesKey][monthYear].push(data.Duration);
+            }
+          });
+        }
+        setFixationDurationData(fixationPoints);
+      } catch (error) {
+        console.error("Error fetching fixation duration data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // Fixation Accuracy fetching (2-series: gap and overlap)
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    (async () => {
+      try {
+        const accuracyPoints = {
+          gap: {},
+          overlap: {},
+        };
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const fixAccDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationAccuracy`
+          );
+          const accuracyCollection = collection(
+            fixAccDocRef,
+            "landingAccuracy"
+          );
+          const accuracySnapshots = await getDocs(accuracyCollection);
+          accuracySnapshots.docs.forEach((docSnap) => {
+            const data = docSnap.data();
+            const seriesKey = docSnap.id; // expected: "gap" or "overlap"
+            if (
+              data.LandingAccuracy != null &&
+              accuracyPoints[seriesKey] !== undefined
+            ) {
+              if (!accuracyPoints[seriesKey][monthYear]) {
+                accuracyPoints[seriesKey][monthYear] = [];
+              }
+              accuracyPoints[seriesKey][monthYear].push(data.LandingAccuracy);
+            }
+          });
+        }
+        setFixationAccuracyData(accuracyPoints);
+      } catch (error) {
+        console.error("Error fetching fixation accuracy data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // Saccade Direction Error fetching (4-series)
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    (async () => {
+      try {
+        const errorPoints = {
+          antiGap: {},
+          proGap: {},
+          antiOverlap: {},
+          proOverlap: {},
+        };
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const errorDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDirectionError`
+          );
+          const errorsCollection = collection(errorDocRef, "errors");
+          const errorsSnapshot = await getDocs(errorsCollection);
+          errorsSnapshot.docs.forEach((docSnap) => {
+            const data = docSnap.data();
+            const seriesKey = docSnap.id; // expected: antiGap, proGap, antiOverlap, proOverlap
+            if (
+              data.PercentError != null &&
+              errorPoints[seriesKey] !== undefined
+            ) {
+              if (!errorPoints[seriesKey][monthYear]) {
+                errorPoints[seriesKey][monthYear] = [];
+              }
+              errorPoints[seriesKey][monthYear].push(data.PercentError);
+            }
+          });
+        }
+        setSaccadeDirectionErrorData(errorPoints);
+      } catch (error) {
+        console.error("Error fetching saccade direction error data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // Process Quest Speaking Time fetching
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    (async () => {
+      try {
+        const dataPoints = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const tpDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/temporalCharacteristics`
+          );
+          const tpDoc = await getDoc(tpDocRef);
+          console.log(
+            "tpDoc for",
+            dateKey,
+            "exists:",
+            tpDoc.exists(),
+            "data:",
+            tpDoc.data()
+          );
+          if (tpDoc.exists()) {
+            const data = tpDoc.data();
+            const speakingTime = data.SpeakingTime;
+            if (typeof speakingTime === "string") {
+              const [minStr, secStr] = speakingTime.split(":");
+              const minutes = parseInt(minStr, 10);
+              const seconds = parseInt(secStr, 10) || 0;
+              const totalSec = minutes * 60 + seconds;
+              console.log(
+                "Converted SpeakingTime:",
+                speakingTime,
+                "=>",
+                totalSec,
+                "seconds"
+              );
+              if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
+              dataPoints[monthYear].push(totalSec);
+            } else {
+              console.warn(
+                "SpeakingTime is not a string for",
+                dateKey,
+                ":",
+                speakingTime
+              );
+            }
+          }
+        }
+        console.log("Final Speaking Time dataPoints:", dataPoints);
+        setSpeakingTimeData(dataPoints);
+      } catch (error) {
+        console.error("Error fetching Speaking Time data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // New effect: Fetch Process Quest Pause Count data
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    (async () => {
+      try {
+        const dataPoints = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          // Reference to the "Pauses" collection inside the temporalCharacteristics document
+          const pausesCollection = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/temporalCharacteristics/Pauses`
+          );
+          const pausesSnapshots = await getDocs(pausesCollection);
+          const count = pausesSnapshots.docs.length; // number of pause documents
+          if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
+          dataPoints[monthYear].push(count);
+        }
+        console.log("Final Pause Count dataPoints:", dataPoints);
+        setPauseCountData(dataPoints);
+      } catch (error) {
+        console.error("Error fetching Pause Count data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // New effect: Fetch Process Quest Pause Duration data
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    (async () => {
+      try {
+        const dataPoints = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          // Reference to the "Pauses" collection under temporalCharacteristics
+          const pausesCollection = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/temporalCharacteristics/Pauses`
+          );
+          const pausesSnapshots = await getDocs(pausesCollection);
+          pausesSnapshots.docs.forEach((pauseDoc) => {
+            const data = pauseDoc.data();
+            if (data.StartTime && data.EndTime) {
+              // Convert StartTime & EndTime ("MM:SS") to seconds
+              const [startMin, startSec] = data.StartTime.split(":").map((x) =>
+                parseInt(x, 10)
+              );
+              const [endMin, endSec] = data.EndTime.split(":").map((x) =>
+                parseInt(x, 10)
+              );
+              const startTotal = startMin * 60 + startSec;
+              const endTotal = endMin * 60 + endSec;
+              const duration = endTotal - startTotal;
+              if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
+              dataPoints[monthYear].push(duration);
+            }
+          });
+        }
+        console.log("Final Pause Duration dataPoints:", dataPoints);
+        setPauseDurationData(dataPoints);
+      } catch (error) {
+        console.error("Error fetching Pause Duration data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // New effect: Fetch Process Quest Lexical Features data
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    (async () => {
+      try {
+        const nounData = {};
+        const closedClassData = {};
+        const fillerData = {};
+        const openClassData = {};
+        const verbData = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          // Reference to lexicalFeatures document
+          const lexicalDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/lexicalFeatures`
+          );
+          const lexicalDoc = await getDoc(lexicalDocRef);
+          if (lexicalDoc.exists()) {
+            const data = lexicalDoc.data();
+            // Convert each field to a number (ensure proper type conversion)
+            const nounCount = Number(data.Noun);
+            const closedClassCount = Number(data.ClosedClass);
+            const fillerCount = Number(data.Filler);
+            const openClassCount = Number(data.OpenClass);
+            const verbCount = Number(data.Verb);
+            if (!nounData[monthYear]) nounData[monthYear] = [];
+            if (!closedClassData[monthYear]) closedClassData[monthYear] = [];
+            if (!fillerData[monthYear]) fillerData[monthYear] = [];
+            if (!openClassData[monthYear]) openClassData[monthYear] = [];
+            if (!verbData[monthYear]) verbData[monthYear] = [];
+            nounData[monthYear].push(nounCount);
+            closedClassData[monthYear].push(closedClassCount);
+            fillerData[monthYear].push(fillerCount);
+            openClassData[monthYear].push(openClassCount);
+            verbData[monthYear].push(verbCount);
+          }
+        }
+        console.log("Lexical Noun dataPoints:", nounData);
+        console.log("Lexical ClosedClass dataPoints:", closedClassData);
+        console.log("Lexical Filler dataPoints:", fillerData);
+        console.log("Lexical OpenClass dataPoints:", openClassData);
+        console.log("Lexical Verb dataPoints:", verbData);
+        setLexNounData(nounData);
+        setLexClosedClassData(closedClassData);
+        setLexFillerData(fillerData);
+        setLexOpenClassData(openClassData);
+        setLexVerbData(verbData);
+      } catch (error) {
+        console.error("Error fetching lexical features data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // New effect: Fetch Process Quest Structural Features data
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    (async () => {
+      try {
+        const meanDataPoints = {};
+        const sentenceDataPoints = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const structuralDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/structuralFeatures`
+          );
+          const structuralDoc = await getDoc(structuralDocRef);
+          if (structuralDoc.exists()) {
+            const data = structuralDoc.data();
+            const meanValue = Number(data.MeanLengthOfOccurrence);
+            const sentenceCount = Number(data.NumOfSentences);
+            if (!meanDataPoints[monthYear]) meanDataPoints[monthYear] = [];
+            if (!sentenceDataPoints[monthYear])
+              sentenceDataPoints[monthYear] = [];
+            meanDataPoints[monthYear].push(meanValue);
+            sentenceDataPoints[monthYear].push(sentenceCount);
+          }
+        }
+        console.log("Structural Mean dataPoints:", meanDataPoints);
+        console.log("Structural Sentence dataPoints:", sentenceDataPoints);
+        setStructuralMeanData(meanDataPoints);
+        setStructuralSentenceData(sentenceDataPoints);
+      } catch (error) {
+        console.error("Error fetching structural features data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // New effect: Fetch Process Quest Fluency Metrics data
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    (async () => {
+      try {
+        const revisionData = {};
+        const wordsData = {};
+        const stutterData = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          // Fluency metrics document path
+          const fluencyDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/fluencyMetrics`
+          );
+          const fluencyDoc = await getDoc(fluencyDocRef);
+          if (fluencyDoc.exists()) {
+            const data = fluencyDoc.data();
+            const revision = Number(data.RevisionRatio);
+            const wordsPerMin = Number(data.WordsPerMin);
+            if (!revisionData[monthYear]) revisionData[monthYear] = [];
+            if (!wordsData[monthYear]) wordsData[monthYear] = [];
+            revisionData[monthYear].push(revision);
+            wordsData[monthYear].push(wordsPerMin);
+          }
+          // Stutter count: count docs in the “Stutters” collection
+          const stuttersCollection = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/fluencyMetrics/Stutters`
+          );
+          const stuttersSnapshots = await getDocs(stuttersCollection);
+          if (!stutterData[monthYear]) stutterData[monthYear] = [];
+          // Push count of stutter documents
+          stutterData[monthYear].push(stuttersSnapshots.docs.length);
+        }
+        console.log("Fluency Revision Ratio:", revisionData);
+        console.log("Fluency Words Per Min:", wordsData);
+        console.log("Fluency Stutter Count:", stutterData);
+        setFluencyRevisionRatioData(revisionData);
+        setFluencyWordsPerMinData(wordsData);
+        setFluencyStutterCountData(stutterData);
+      } catch (error) {
+        console.error("Error fetching fluency metrics data:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId]);
+
+  // New effect: Fetch Process Quest Semantic Features data
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    (async () => {
+      try {
+        const lexFreqData = {};
+        const efficiencyData = {};
+        const ideaDensityData = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const semanticDocRef = doc(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/semanticFeatures`
+          );
+          const semanticDoc = await getDoc(semanticDocRef);
+          if (semanticDoc.exists()) {
+            const data = semanticDoc.data();
+            const lexFreq = Number(data.LexicalFrequencyOfNouns);
+            const efficiency = Number(data.SemanticEfficiency);
+            const ideaDensity = Number(data.SemanticIdeaDensity);
+            if (!lexFreqData[monthYear]) lexFreqData[monthYear] = [];
+            if (!efficiencyData[monthYear]) efficiencyData[monthYear] = [];
+            if (!ideaDensityData[monthYear]) ideaDensityData[monthYear] = [];
+            lexFreqData[monthYear].push(lexFreq);
+            efficiencyData[monthYear].push(efficiency);
+            ideaDensityData[monthYear].push(ideaDensity);
+          }
+        }
+        console.log("Semantic LexFreq dataPoints:", lexFreqData);
+        console.log("Semantic Efficiency dataPoints:", efficiencyData);
+        console.log("Semantic Idea Density dataPoints:", ideaDensityData);
+        setSemanticLexFreqData(lexFreqData);
+        setSemanticEfficiencyData(efficiencyData);
+        setSemanticIdeaDensityData(ideaDensityData);
+      } catch (error) {
+        console.error("Error fetching semantic features data:", error);
+      }
+    })();
   }, [selectedGame, effectivePatientId]);
 
   return (
@@ -153,6 +766,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         selectedDate={null}
       />
       <div className="buttons-container">
+        {/* ...existing buttons... */}
         <button
           className={`report-button ${
             selectedGame === "naturesGaze" ? "active" : ""
@@ -186,20 +800,364 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           Scene Detective
         </button>
       </div>
-      {(selectedGame === "memoryVault" || selectedGame === "naturesGaze") && (
+      {selectedGame === "memoryVault" && (
         <BoxPlot
-          rawData={rawData}
-          plotTitle={
-            selectedGame === "memoryVault" ? "Recall Score" : "Reaction Time"
-          }
+          rawData={memoryVaultRecallScoreData}
+          plotTitle="Recall Score"
           xAxisLabel="Date"
-          yAxisLabel={selectedGame === "memoryVault" ? "Points" : "Time (s)"}
-          seriesLabels={
-            selectedGame === "naturesGaze"
-              ? { gap: "Gap Task", overlap: "Overlap Task" }
-              : undefined
-          }
+          yAxisLabel="Points"
         />
+      )}
+      {selectedGame === "naturesGaze" && (
+        <>
+          <BoxPlot
+            rawData={naturesGazeReactionTimeData}
+            plotTitle="Reaction Time"
+            xAxisLabel="Date"
+            yAxisLabel="Time (s)"
+            seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
+            multiSeries={true}
+          />
+          <BoxPlot
+            rawData={naturesGazeSopData}
+            plotTitle="Saccade Omission Percentages"
+            xAxisLabel="Date"
+            yAxisLabel="Percentage (%)"
+            seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
+            multiSeries={true}
+          />
+          <BoxPlot
+            rawData={saccadeDurationData}
+            plotTitle="Saccade Durations"
+            xAxisLabel="Date"
+            yAxisLabel="Duration (s)"
+            seriesLabels={{
+              antiGap: "Anti Gap",
+              proGap: "Pro Gap",
+              antiOverlap: "Anti Overlap",
+              proOverlap: "Pro Overlap",
+            }}
+            multiSeries={true}
+          />
+          <BoxPlot
+            rawData={saccadeDirectionAccuracyData}
+            plotTitle="Saccade Direction Accuracy"
+            xAxisLabel="Date"
+            yAxisLabel="Percent Accuracy (%)"
+            seriesLabels={{
+              antiGap: "Anti Gap",
+              proGap: "Pro Gap",
+              antiOverlap: "Anti Overlap",
+              proOverlap: "Pro Overlap",
+            }}
+            multiSeries={true}
+          />
+          <BoxPlot
+            rawData={fixationDurationData}
+            plotTitle="Fixation Duration"
+            xAxisLabel="Date"
+            yAxisLabel="Duration (s)"
+            seriesLabels={{
+              antiGap: "Anti Gap",
+              proGap: "Pro Gap",
+              antiOverlap: "Anti Overlap",
+              proOverlap: "Pro Overlap",
+            }}
+            multiSeries={true}
+          />
+          <BoxPlot
+            rawData={fixationAccuracyData}
+            plotTitle="Fixation Accuracy"
+            xAxisLabel="Date"
+            yAxisLabel="Landing Accuracy (deg)"
+            seriesLabels={{ gap: "Gap", overlap: "Overlap" }}
+            multiSeries={true}
+          />
+          <BoxPlot
+            rawData={saccadeDirectionErrorData}
+            plotTitle="Saccade Direction Error"
+            xAxisLabel="Date"
+            yAxisLabel="Percent Error (%)"
+            seriesLabels={{
+              antiGap: "Anti Gap",
+              proGap: "Pro Gap",
+              antiOverlap: "Anti Overlap",
+              proOverlap: "Pro Overlap",
+            }}
+            multiSeries={true}
+          />
+        </>
+      )}
+      {selectedGame === "processQuest" && (
+        <>
+          {/* New metrics carousel for Speaking Time, Pause Count, Pause Duration */}
+          {(() => {
+            const metricsConfigs = [
+              {
+                title: "Temporal Characteristics - Speaking Time",
+                rawData: speakingTimeData,
+                yAxisLabel: "Time (seconds)",
+              },
+              {
+                title: "Temporal Characteristics - Pause Count",
+                rawData: pauseCountData,
+                yAxisLabel: "Pause Count",
+              },
+              {
+                title: "Temporal Characteristics - Pause Duration",
+                rawData: pauseDurationData,
+                yAxisLabel: "Pause Duration (seconds)",
+              },
+            ];
+            return (
+              <div className="carousel-wrapper">
+                <div className="metrics-carousel-container">
+                  <BoxPlot
+                    rawData={metricsConfigs[metricsIndex].rawData}
+                    plotTitle={metricsConfigs[metricsIndex].title}
+                    xAxisLabel="Date"
+                    yAxisLabel={metricsConfigs[metricsIndex].yAxisLabel}
+                  />
+                  <button
+                    className="metrics-next-button"
+                    onClick={() =>
+                      setMetricsIndex(
+                        (prev) => (prev + 1) % metricsConfigs.length
+                      )
+                    }
+                  >
+                    →
+                  </button>
+                </div>
+                <div className="carousel-indicators">
+                  {metricsConfigs.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={
+                        idx === metricsIndex ? "indicator active" : "indicator"
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          {/* New structural carousel */}
+          {(() => {
+            const structuralConfigs = [
+              {
+                title: "Structural Features - Mean Length of Occurrence",
+                rawData: structuralMeanData,
+                yAxisLabel: "Mean Length",
+              },
+              {
+                title: "Structural Features - Number of Sentences",
+                rawData: structuralSentenceData,
+                yAxisLabel: "Sentence Count",
+              },
+            ];
+            return (
+              <div className="carousel-wrapper">
+                <div className="structural-carousel">
+                  <BoxPlot
+                    rawData={structuralConfigs[structuralIndex].rawData}
+                    plotTitle={structuralConfigs[structuralIndex].title}
+                    xAxisLabel="Date"
+                    yAxisLabel={structuralConfigs[structuralIndex].yAxisLabel}
+                  />
+                  <button
+                    className="structural-next-button"
+                    onClick={() =>
+                      setStructuralIndex(
+                        (prev) => (prev + 1) % structuralConfigs.length
+                      )
+                    }
+                  >
+                    →
+                  </button>
+                </div>
+                <div className="carousel-indicators">
+                  {structuralConfigs.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={
+                        idx === structuralIndex
+                          ? "indicator active"
+                          : "indicator"
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          {/* New Fluency carousel */}
+          {(() => {
+            const fluencyConfigs = [
+              {
+                title: "Fluency Metrics - Revision Ratio",
+                rawData: fluencyRevisionRatioData,
+                yAxisLabel: "RevisionRatio",
+              },
+              {
+                title: "Fluency Metrics - Word Count",
+                rawData: fluencyWordsPerMinData,
+                yAxisLabel: "Words per Minute",
+              },
+              {
+                title: "Fluency Metrics - Stutter Count",
+                rawData: fluencyStutterCountData,
+                yAxisLabel: "Stutter Count",
+              },
+            ];
+            return (
+              <div className="carousel-wrapper">
+                <div className="fluency-carousel">
+                  <BoxPlot
+                    rawData={fluencyConfigs[fluencyIndex].rawData}
+                    plotTitle={fluencyConfigs[fluencyIndex].title}
+                    xAxisLabel="Date"
+                    yAxisLabel={fluencyConfigs[fluencyIndex].yAxisLabel}
+                  />
+                  <button
+                    className="fluency-next-button"
+                    onClick={() =>
+                      setFluencyIndex(
+                        (prev) => (prev + 1) % fluencyConfigs.length
+                      )
+                    }
+                  >
+                    →
+                  </button>
+                </div>
+                <div className="carousel-indicators">
+                  {fluencyConfigs.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={
+                        idx === fluencyIndex ? "indicator active" : "indicator"
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          {/* Lexical carousel remains unchanged */}
+          {(() => {
+            const lexicalConfigs = [
+              {
+                title: "Lexical Content - Nouns",
+                rawData: lexNounData,
+                yAxisLabel: "Noun Count",
+              },
+              {
+                title: "Lexical Content - ClosedClass",
+                rawData: lexClosedClassData,
+                yAxisLabel: "ClosedClass Count",
+              },
+              {
+                title: "Lexical Content - Filler",
+                rawData: lexFillerData,
+                yAxisLabel: "Filler Count",
+              },
+              {
+                title: "Lexical Content - OpenClass",
+                rawData: lexOpenClassData,
+                yAxisLabel: "OpenClass Count",
+              },
+              {
+                title: "Lexical Content - Verb",
+                rawData: lexVerbData,
+                yAxisLabel: "Verb Count",
+              },
+            ];
+            return (
+              <div className="carousel-wrapper">
+                <div className="lexical-carousel">
+                  <BoxPlot
+                    rawData={lexicalConfigs[lexicalIndex].rawData}
+                    plotTitle={lexicalConfigs[lexicalIndex].title}
+                    xAxisLabel="Date"
+                    yAxisLabel={lexicalConfigs[lexicalIndex].yAxisLabel}
+                  />
+                  <button
+                    className="lexical-next-button"
+                    onClick={() =>
+                      setLexicalIndex(
+                        (prev) => (prev + 1) % lexicalConfigs.length
+                      )
+                    }
+                  >
+                    →
+                  </button>
+                </div>
+                <div className="carousel-indicators">
+                  {lexicalConfigs.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={
+                        idx === lexicalIndex ? "indicator active" : "indicator"
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          {/* New semantic carousel */}
+          {(() => {
+            const semanticConfigs = [
+              {
+                title: "Semantic Features - Lexical Frequency of Nouns",
+                rawData: semanticLexFreqData,
+                yAxisLabel: "Frequency",
+              },
+              {
+                title: "Semantic Features - Semantic Efficiency",
+                rawData: semanticEfficiencyData,
+                yAxisLabel: "Efficiency",
+              },
+              {
+                title: "Semantic Features - Semantic Idea Density",
+                rawData: semanticIdeaDensityData,
+                yAxisLabel: "Density",
+              },
+            ];
+            return (
+              <div className="carousel-wrapper">
+                <div className="semantic-carousel">
+                  <BoxPlot
+                    rawData={semanticConfigs[semanticIndex].rawData}
+                    plotTitle={semanticConfigs[semanticIndex].title}
+                    xAxisLabel="Date"
+                    yAxisLabel={semanticConfigs[semanticIndex].yAxisLabel}
+                  />
+                  <button
+                    className="semantic-next-button"
+                    onClick={() =>
+                      setSemanticIndex(
+                        (prev) => (prev + 1) % semanticConfigs.length
+                      )
+                    }
+                  >
+                    →
+                  </button>
+                </div>
+                <div className="carousel-indicators">
+                  {semanticConfigs.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={
+                        idx === semanticIndex ? "indicator active" : "indicator"
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </>
       )}
       <div style={{ height: "100px" }}></div>
     </div>

@@ -24,7 +24,7 @@ const AllTimeTrends = () => {
         <div className="menu">
           <Link
             to="/physician-home-page"
-            className="menu-item-all-time-reports link"
+            className="menu-item-all-time-reports link home"
           >
             <img src={patientsIcon} alt="My Patients" />
             <span>My Patients</span>
@@ -38,21 +38,21 @@ const AllTimeTrends = () => {
           </Link>
           <Link
             to="/weekly-reports"
-            className="menu-item-all-time-reports link"
+            className="menu-item-all-time-reports link weekly"
           >
             <img src={weeklyReportsIcon} alt="Weekly Reports" />
             <span>Weekly Reports</span>
           </Link>
           <Link
             to={`/physician-all-time-trends/${patientId}`}
-            className="menu-item-all-time-reports link all-time-trends"
+            className="menu-item-all-time-reports link trends"
           >
             <img src={allTimeReportsIcon} alt="All-Time Trends" />
             <span>All-Time Trends</span>
           </Link>
           <Link
             to="/physician-support"
-            className="menu-item-all-time-reports link"
+            className="menu-item-all-time-reports link support"
           >
             <img src={supportIcon} alt="Support" />
             <span>Support</span>

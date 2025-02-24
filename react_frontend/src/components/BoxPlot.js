@@ -25,7 +25,14 @@ ChartJS.register(
   BoxAndWiskers
 );
 
-const BoxPlot = ({ rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels }) => {
+const BoxPlot = ({
+  rawData,
+  plotTitle,
+  xAxisLabel,
+  yAxisLabel,
+  seriesLabels,
+  multiSeries = false,
+}) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -37,11 +44,9 @@ const BoxPlot = ({ rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels }) =
         const pos = (data.length - 1) * q;
         const base = Math.floor(pos);
         const rest = pos - base;
-        if (data[base + 1] !== undefined) {
-          return data[base] + rest * (data[base + 1] - data[base]);
-        } else {
-          return data[base];
-        }
+        return data[base + 1] !== undefined
+          ? data[base] + rest * (data[base + 1] - data[base])
+          : data[base];
       };
       processedData[monthYear] = [
         points[0], // Min
@@ -56,44 +61,43 @@ const BoxPlot = ({ rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels }) =
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
-    if (chartInstanceRef.current) {
-      chartInstanceRef.current.destroy();
-    }
+    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
 
     let labels = [];
     let datasets = [];
     let globalPoints = [];
 
-    // Check if multi-series
-    if (rawData && rawData.gap) {
-      labels = Object.keys(rawData.gap);
-      const gapPlotData = calculateBoxPlotData(rawData.gap);
-      const overlapPlotData = calculateBoxPlotData(rawData.overlap);
-
-      // Collect all points for global min/max calculation
-      Object.values(rawData.gap).forEach((arr) => globalPoints.push(...arr));
-      Object.values(rawData.overlap).forEach((arr) =>
-        globalPoints.push(...arr)
-      );
-
-      datasets = [
-        {
-          label: seriesLabels && seriesLabels.gap ? seriesLabels.gap : "Series 1",
-          data: Object.values(gapPlotData),
-          backgroundColor: "#516A80",
+    if (multiSeries) {
+      // In multi-series mode, rawData is an object with series keys
+      const seriesKeys = Object.keys(rawData);
+      if (seriesKeys.length === 0) {
+        labels = [];
+      } else {
+        labels = Object.keys(rawData[seriesKeys[0]]);
+      }
+      seriesKeys.forEach((key) => {
+        const seriesPlotData = calculateBoxPlotData(rawData[key]);
+        Object.values(rawData[key]).forEach((arr) => globalPoints.push(...arr));
+        let bgColor =
+          key === "antiGap" || key === "gap"
+            ? "#516A80"
+            : key === "proGap" || key === "overlap"
+            ? "#A0C4FF"
+            : key === "antiOverlap"
+            ? "#F6BD60"
+            : key === "proOverlap"
+            ? "#F28482"
+            : "#516A80";
+        datasets.push({
+          label: (seriesLabels && seriesLabels[key]) || key,
+          data: Object.values(seriesPlotData),
+          backgroundColor: bgColor,
           borderColor: "black",
           borderWidth: 1,
-        },
-        {
-          label: seriesLabels && seriesLabels.overlap ? seriesLabels.overlap : "Series 2",
-          data: Object.values(overlapPlotData),
-          backgroundColor: "#A0C4FF",
-          borderColor: "black",
-          borderWidth: 1,
-        },
-      ];
-    } else {
-      // Single dataset case
+        });
+      });
+    } else if (rawData && typeof rawData === "object" && rawData !== null) {
+      // Single dataset mode: rawData is an object mapping label -> array
       const singlePlotData = calculateBoxPlotData(rawData);
       labels = Object.keys(singlePlotData);
       Object.values(rawData).forEach((arr) => globalPoints.push(...arr));
@@ -110,11 +114,7 @@ const BoxPlot = ({ rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels }) =
 
     const globalMin = globalPoints.length ? Math.min(...globalPoints) : 0;
     const globalMax = globalPoints.length ? Math.max(...globalPoints) : 0;
-
-    const data = {
-      labels,
-      datasets,
-    };
+    const data = { labels, datasets };
 
     const config = {
       type: "boxplot",
@@ -168,11 +168,9 @@ const BoxPlot = ({ rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels }) =
 
     chartInstanceRef.current = new ChartJS(ctx, config);
     return () => {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
-      }
+      if (chartInstanceRef.current) chartInstanceRef.current.destroy();
     };
-  }, [rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels]);
+  }, [rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels, multiSeries]);
 
   return (
     <div className="chart-container">
