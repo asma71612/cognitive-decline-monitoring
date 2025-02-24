@@ -3,9 +3,9 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
 import BoxPlot from "./BoxPlot";
+import carouselNextImg from "../assets/carousel-next-button.svg";
 import "./AllTimeTrendsComponent.css";
 
-// Helper to get report info
 const getReports = async (effectivePatientId) => {
   const reportsCollection = collection(
     db,
@@ -25,45 +25,44 @@ const getReports = async (effectivePatientId) => {
 
 const AllTimeTrendsComponent = ({ patientId }) => {
   const effectivePatientId = patientId || localStorage.getItem("userId");
-  const [selectedGame, setSelectedGame] = useState(""); // default: no game selected
+  const [selectedGame, setSelectedGame] = useState("");
   const [patientData, setPatientData] = useState(null);
 
-  // Separate state for each dataset:
   const [memoryVaultRecallScoreData, setMemoryVaultRecallScoreData] = useState(
     {}
   );
   const [naturesGazeReactionTimeData, setNaturesGazeReactionTimeData] =
     useState({});
   const [naturesGazeSopData, setNaturesGazeSopData] = useState({});
-  const [saccadeDurationData, setSaccadeDurationData] = useState({}); // 4-series
+  const [saccadeDurationData, setSaccadeDurationData] = useState({});
   const [saccadeDirectionAccuracyData, setSaccadeDirectionAccuracyData] =
-    useState({}); // 4-series
-  const [fixationDurationData, setFixationDurationData] = useState({}); // 2-series: gap and overlap
-  const [fixationAccuracyData, setFixationAccuracyData] = useState({}); // 2-series: gap and overlap
+    useState({});
+  const [fixationDurationData, setFixationDurationData] = useState({});
+  const [fixationAccuracyData, setFixationAccuracyData] = useState({});
   const [saccadeDirectionErrorData, setSaccadeDirectionErrorData] = useState(
     {}
-  ); // 4-series
-  const [speakingTimeData, setSpeakingTimeData] = useState({}); // New state for Speaking Time
-  const [pauseCountData, setPauseCountData] = useState({}); // New state for Pause Count
-  const [pauseDurationData, setPauseDurationData] = useState({}); // New state for Pause Duration
-  const [lexNounData, setLexNounData] = useState({}); // New state for Noun Count
-  const [lexClosedClassData, setLexClosedClassData] = useState({}); // New state for ClosedClass Count
-  const [lexFillerData, setLexFillerData] = useState({}); // New state for Filler Count
-  const [lexOpenClassData, setLexOpenClassData] = useState({}); // New state for OpenClass Count
-  const [lexVerbData, setLexVerbData] = useState({}); // New state for Verb Count
-  const [lexicalIndex, setLexicalIndex] = useState(0); // New state for lexical carousel
-  const [metricsIndex, setMetricsIndex] = useState(0); // New state for metrics carousel
-  const [structuralMeanData, setStructuralMeanData] = useState({}); // New state for MeanLengthOfOccurrence
-  const [structuralSentenceData, setStructuralSentenceData] = useState({}); // New state for NumOfSentences
-  const [structuralIndex, setStructuralIndex] = useState(0); // New state for structural features carousel
-  const [fluencyRevisionRatioData, setFluencyRevisionRatioData] = useState({}); // New state for RevisionRatio
-  const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({}); // New state for WordsPerMin
-  const [fluencyStutterCountData, setFluencyStutterCountData] = useState({}); // New state for Stutter Count
-  const [fluencyIndex, setFluencyIndex] = useState(0); // New state for fluency carousel
-  const [semanticLexFreqData, setSemanticLexFreqData] = useState({}); // New state for LexicalFrequencyOfNouns
-  const [semanticEfficiencyData, setSemanticEfficiencyData] = useState({}); // New state for SemanticEfficiency
-  const [semanticIdeaDensityData, setSemanticIdeaDensityData] = useState({}); // New state for SemanticIdeaDensity
-  const [semanticIndex, setSemanticIndex] = useState(0); // New index for semantic carousel
+  );
+  const [speakingTimeData, setSpeakingTimeData] = useState({});
+  const [pauseCountData, setPauseCountData] = useState({});
+  const [pauseDurationData, setPauseDurationData] = useState({});
+  const [lexNounData, setLexNounData] = useState({});
+  const [lexClosedClassData, setLexClosedClassData] = useState({});
+  const [lexFillerData, setLexFillerData] = useState({});
+  const [lexOpenClassData, setLexOpenClassData] = useState({});
+  const [lexVerbData, setLexVerbData] = useState({});
+  const [lexicalIndex, setLexicalIndex] = useState(0);
+  const [metricsIndex, setMetricsIndex] = useState(0);
+  const [structuralMeanData, setStructuralMeanData] = useState({});
+  const [structuralSentenceData, setStructuralSentenceData] = useState({});
+  const [structuralIndex, setStructuralIndex] = useState(0);
+  const [fluencyRevisionRatioData, setFluencyRevisionRatioData] = useState({});
+  const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({});
+  const [fluencyStutterCountData, setFluencyStutterCountData] = useState({});
+  const [fluencyIndex, setFluencyIndex] = useState(0);
+  const [semanticLexFreqData, setSemanticLexFreqData] = useState({});
+  const [semanticEfficiencyData, setSemanticEfficiencyData] = useState({});
+  const [semanticIdeaDensityData, setSemanticIdeaDensityData] = useState({});
+  const [semanticIndex, setSemanticIndex] = useState(0);
 
   useEffect(() => {
     // Clear all datasets on game change
@@ -77,7 +76,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
       setFixationAccuracyData({});
       setSaccadeDirectionErrorData({});
     }
-    if (selectedGame !== "processQuest") {
+    if (selectedGame !== "processQuest" && selectedGame !== "sceneDetective") {
       setSpeakingTimeData({});
       setPauseCountData({});
       setPauseDurationData({});
@@ -88,7 +87,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
       setLexVerbData({});
       setStructuralMeanData({});
       setStructuralSentenceData({});
-      setFluencyRevisionRatioData({}); // Clear fluency data
+      setFluencyRevisionRatioData({});
       setFluencyWordsPerMinData({});
       setFluencyStutterCountData({});
       setSemanticLexFreqData({});
@@ -97,37 +96,32 @@ const AllTimeTrendsComponent = ({ patientId }) => {
     }
   }, [selectedGame]);
 
-  // New useEffect to reset lexical index when processQuest is selected
   useEffect(() => {
-    if (selectedGame === "processQuest") {
+    if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
       setLexicalIndex(0);
     }
   }, [selectedGame]);
 
-  // New useEffect to reset metrics index when processQuest is selected
   useEffect(() => {
-    if (selectedGame === "processQuest") {
+    if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
       setMetricsIndex(0);
     }
   }, [selectedGame]);
 
-  // New useEffect to reset structural index when processQuest is selected
   useEffect(() => {
-    if (selectedGame === "processQuest") {
+    if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
       setStructuralIndex(0);
     }
   }, [selectedGame]);
 
-  // Reset fluency index when processQuest is selected
   useEffect(() => {
-    if (selectedGame === "processQuest") {
+    if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
       setFluencyIndex(0);
     }
   }, [selectedGame]);
 
-  // New useEffect to reset semantic index when processQuest is selected
   useEffect(() => {
-    if (selectedGame === "processQuest") {
+    if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
       setSemanticIndex(0);
     }
   }, [selectedGame]);
@@ -460,8 +454,10 @@ const AllTimeTrendsComponent = ({ patientId }) => {
   }, [selectedGame, effectivePatientId]);
 
   // Process Quest Speaking Time fetching
+  const isTemporalGame =
+    selectedGame === "processQuest" || selectedGame === "sceneDetective";
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
       try {
         const dataPoints = {};
@@ -469,7 +465,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         for (const { dateKey, monthYear } of reports) {
           const tpDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/temporalCharacteristics`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics`
           );
           const tpDoc = await getDoc(tpDocRef);
           console.log(
@@ -497,6 +493,10 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               );
               if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
               dataPoints[monthYear].push(totalSec);
+            } else if (typeof speakingTime === "number") {
+              // new branch
+              if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
+              dataPoints[monthYear].push(speakingTime);
             } else {
               console.warn(
                 "SpeakingTime is not a string for",
@@ -517,16 +517,15 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // New effect: Fetch Process Quest Pause Count data
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
       try {
         const dataPoints = {};
         const reports = await getReports(effectivePatientId);
         for (const { dateKey, monthYear } of reports) {
-          // Reference to the "Pauses" collection inside the temporalCharacteristics document
           const pausesCollection = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/temporalCharacteristics/Pauses`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics/Pauses`
           );
           const pausesSnapshots = await getDocs(pausesCollection);
           const count = pausesSnapshots.docs.length; // number of pause documents
@@ -543,16 +542,15 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // New effect: Fetch Process Quest Pause Duration data
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
       try {
         const dataPoints = {};
         const reports = await getReports(effectivePatientId);
         for (const { dateKey, monthYear } of reports) {
-          // Reference to the "Pauses" collection under temporalCharacteristics
           const pausesCollection = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/temporalCharacteristics/Pauses`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics/Pauses`
           );
           const pausesSnapshots = await getDocs(pausesCollection);
           pausesSnapshots.docs.forEach((pauseDoc) => {
@@ -583,7 +581,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // New effect: Fetch Process Quest Lexical Features data
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
       try {
         const nounData = {};
@@ -593,15 +591,13 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         const verbData = {};
         const reports = await getReports(effectivePatientId);
         for (const { dateKey, monthYear } of reports) {
-          // Reference to lexicalFeatures document
           const lexicalDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/lexicalFeatures`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/lexicalFeatures`
           );
           const lexicalDoc = await getDoc(lexicalDocRef);
           if (lexicalDoc.exists()) {
             const data = lexicalDoc.data();
-            // Convert each field to a number (ensure proper type conversion)
             const nounCount = Number(data.Noun);
             const closedClassCount = Number(data.ClosedClass);
             const fillerCount = Number(data.Filler);
@@ -637,7 +633,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // New effect: Fetch Process Quest Structural Features data
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
       try {
         const meanDataPoints = {};
@@ -646,7 +642,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         for (const { dateKey, monthYear } of reports) {
           const structuralDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/structuralFeatures`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/structuralFeatures`
           );
           const structuralDoc = await getDoc(structuralDocRef);
           if (structuralDoc.exists()) {
@@ -672,7 +668,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // New effect: Fetch Process Quest Fluency Metrics data
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
       try {
         const revisionData = {};
@@ -680,10 +676,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         const stutterData = {};
         const reports = await getReports(effectivePatientId);
         for (const { dateKey, monthYear } of reports) {
-          // Fluency metrics document path
           const fluencyDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/fluencyMetrics`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics`
           );
           const fluencyDoc = await getDoc(fluencyDocRef);
           if (fluencyDoc.exists()) {
@@ -695,10 +690,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             revisionData[monthYear].push(revision);
             wordsData[monthYear].push(wordsPerMin);
           }
-          // Stutter count: count docs in the “Stutters” collection
           const stuttersCollection = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/fluencyMetrics/Stutters`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics/Stutters`
           );
           const stuttersSnapshots = await getDocs(stuttersCollection);
           if (!stutterData[monthYear]) stutterData[monthYear] = [];
@@ -719,7 +713,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // New effect: Fetch Process Quest Semantic Features data
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "processQuest") return;
+    if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
       try {
         const lexFreqData = {};
@@ -729,7 +723,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         for (const { dateKey, monthYear } of reports) {
           const semanticDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/processQuest/semanticFeatures`
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/semanticFeatures`
           );
           const semanticDoc = await getDoc(semanticDocRef);
           if (semanticDoc.exists()) {
@@ -766,7 +760,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         selectedDate={null}
       />
       <div className="buttons-container">
-        {/* ...existing buttons... */}
         <button
           className={`report-button ${
             selectedGame === "naturesGaze" ? "active" : ""
@@ -888,9 +881,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           />
         </>
       )}
-      {selectedGame === "processQuest" && (
+      {(selectedGame === "processQuest" ||
+        selectedGame === "sceneDetective") && (
         <>
-          {/* New metrics carousel for Speaking Time, Pause Count, Pause Duration */}
           {(() => {
             const metricsConfigs = [
               {
@@ -919,14 +912,14 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     yAxisLabel={metricsConfigs[metricsIndex].yAxisLabel}
                   />
                   <button
-                    className="metrics-next-button"
+                    className="carousel-next-button"
                     onClick={() =>
                       setMetricsIndex(
                         (prev) => (prev + 1) % metricsConfigs.length
                       )
                     }
                   >
-                    →
+                    <img src={carouselNextImg} alt="Next" />
                   </button>
                 </div>
                 <div className="carousel-indicators">
@@ -942,7 +935,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               </div>
             );
           })()}
-          {/* New structural carousel */}
           {(() => {
             const structuralConfigs = [
               {
@@ -966,14 +958,14 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     yAxisLabel={structuralConfigs[structuralIndex].yAxisLabel}
                   />
                   <button
-                    className="structural-next-button"
+                    className="carousel-next-button"
                     onClick={() =>
                       setStructuralIndex(
                         (prev) => (prev + 1) % structuralConfigs.length
                       )
                     }
                   >
-                    →
+                    <img src={carouselNextImg} alt="Next" />
                   </button>
                 </div>
                 <div className="carousel-indicators">
@@ -991,7 +983,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               </div>
             );
           })()}
-          {/* New Fluency carousel */}
           {(() => {
             const fluencyConfigs = [
               {
@@ -1020,14 +1011,14 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     yAxisLabel={fluencyConfigs[fluencyIndex].yAxisLabel}
                   />
                   <button
-                    className="fluency-next-button"
+                    className="carousel-next-button"
                     onClick={() =>
                       setFluencyIndex(
                         (prev) => (prev + 1) % fluencyConfigs.length
                       )
                     }
                   >
-                    →
+                    <img src={carouselNextImg} alt="Next" />
                   </button>
                 </div>
                 <div className="carousel-indicators">
@@ -1043,7 +1034,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               </div>
             );
           })()}
-          {/* Lexical carousel remains unchanged */}
           {(() => {
             const lexicalConfigs = [
               {
@@ -1082,14 +1072,14 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     yAxisLabel={lexicalConfigs[lexicalIndex].yAxisLabel}
                   />
                   <button
-                    className="lexical-next-button"
+                    className="carousel-next-button"
                     onClick={() =>
                       setLexicalIndex(
                         (prev) => (prev + 1) % lexicalConfigs.length
                       )
                     }
                   >
-                    →
+                    <img src={carouselNextImg} alt="Next" />
                   </button>
                 </div>
                 <div className="carousel-indicators">
@@ -1105,7 +1095,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               </div>
             );
           })()}
-          {/* New semantic carousel */}
           {(() => {
             const semanticConfigs = [
               {
@@ -1134,14 +1123,14 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     yAxisLabel={semanticConfigs[semanticIndex].yAxisLabel}
                   />
                   <button
-                    className="semantic-next-button"
+                    className="carousel-next-button"
                     onClick={() =>
                       setSemanticIndex(
                         (prev) => (prev + 1) % semanticConfigs.length
                       )
                     }
                   >
-                    →
+                    <img src={carouselNextImg} alt="Next" />
                   </button>
                 </div>
                 <div className="carousel-indicators">
