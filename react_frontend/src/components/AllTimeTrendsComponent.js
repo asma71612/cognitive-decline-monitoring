@@ -37,7 +37,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
   const [saccadeDurationData, setSaccadeDurationData] = useState({});
   const [saccadeDirectionAccuracyData, setSaccadeDirectionAccuracyData] =
     useState({});
-  const [fixationDurationData, setFixationDurationData] = useState({});
   const [fixationAccuracyData, setFixationAccuracyData] = useState({});
   const [saccadeDirectionErrorData, setSaccadeDirectionErrorData] = useState(
     {}
@@ -72,7 +71,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
     if (selectedGame !== "naturesGaze") {
       setSaccadeDurationData({});
       setSaccadeDirectionAccuracyData({});
-      setFixationDurationData({});
       setFixationAccuracyData({});
       setSaccadeDirectionErrorData({});
     }
@@ -140,52 +138,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
       }
     })();
   }, [effectivePatientId]);
-
-  // MemoryVault Recall Score fetching
-  useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "memoryVault") return;
-    (async () => {
-      try {
-        const dataPoints = {};
-        const reports = await getReports(effectivePatientId);
-        for (const { dateKey, monthYear } of reports) {
-          const mvCollection = collection(
-            db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/memoryVault`
-          );
-          const mvSnapshots = await getDocs(mvCollection);
-          for (const mvDoc of mvSnapshots.docs) {
-            const { Presented, Recalled } = mvDoc.data();
-            const presentedWords = Presented.split(",").map((w) => w.trim());
-            const recalledWords = Recalled.split(",").map((w) => w.trim());
-            let sessionPoints = [];
-            for (let i = 0; i < presentedWords.length; i++) {
-              const response = await fetch(
-                "http://127.0.0.1:5000/compute-points",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    presented_word: presentedWords[i],
-                    recalled_word: recalledWords[i],
-                  }),
-                }
-              );
-              const { points } = await response.json();
-              sessionPoints.push(points);
-            }
-            if (!dataPoints[monthYear]) {
-              dataPoints[monthYear] = [];
-            }
-            dataPoints[monthYear].push(...sessionPoints);
-          }
-        }
-        setMemoryVaultRecallScoreData(dataPoints);
-      } catch (error) {
-        console.error("Error fetching or computing points:", error);
-      }
-    })();
-  }, [selectedGame, effectivePatientId]);
 
   // naturesGaze Reaction Time fetching
   useEffect(() => {
@@ -334,44 +286,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
     })();
   }, [selectedGame, effectivePatientId]);
 
-  // Fixation Duration fetching (2-series: gap and overlap)
-  useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
-    (async () => {
-      try {
-        const fixationPoints = {
-          gap: {},
-          overlap: {},
-        };
-        const reports = await getReports(effectivePatientId);
-        for (const { dateKey, monthYear } of reports) {
-          const fixDocRef = doc(
-            db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationDuration`
-          );
-          const durationsCollection = collection(fixDocRef, "durations");
-          const durationsSnapshots = await getDocs(durationsCollection);
-          durationsSnapshots.docs.forEach((docSnap) => {
-            const data = docSnap.data();
-            const seriesKey = docSnap.id; // expected: "gap" or "overlap"
-            if (
-              data.Duration != null &&
-              fixationPoints[seriesKey] !== undefined
-            ) {
-              if (!fixationPoints[seriesKey][monthYear]) {
-                fixationPoints[seriesKey][monthYear] = [];
-              }
-              fixationPoints[seriesKey][monthYear].push(data.Duration);
-            }
-          });
-        }
-        setFixationDurationData(fixationPoints);
-      } catch (error) {
-        console.error("Error fetching fixation duration data:", error);
-      }
-    })();
-  }, [selectedGame, effectivePatientId]);
-
   // Fixation Accuracy fetching (2-series: gap and overlap)
   useEffect(() => {
     if (!effectivePatientId || selectedGame !== "naturesGaze") return;
@@ -456,6 +370,53 @@ const AllTimeTrendsComponent = ({ patientId }) => {
   // Process Quest Speaking Time fetching
   const isTemporalGame =
     selectedGame === "processQuest" || selectedGame === "sceneDetective";
+
+  // MemoryVault Recall Score fetching
+  useEffect(() => {
+    if (!effectivePatientId || selectedGame !== "memoryVault") return;
+    (async () => {
+      try {
+        const dataPoints = {};
+        const reports = await getReports(effectivePatientId);
+        for (const { dateKey, monthYear } of reports) {
+          const mvCollection = collection(
+            db,
+            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/memoryVault`
+          );
+          const mvSnapshots = await getDocs(mvCollection);
+          for (const mvDoc of mvSnapshots.docs) {
+            const { Presented, Recalled } = mvDoc.data();
+            const presentedWords = Presented.split(",").map((w) => w.trim());
+            const recalledWords = Recalled.split(",").map((w) => w.trim());
+            let sessionPoints = [];
+            for (let i = 0; i < presentedWords.length; i++) {
+              const response = await fetch(
+                "http://127.0.0.1:5000/compute-points",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    presented_word: presentedWords[i],
+                    recalled_word: recalledWords[i],
+                  }),
+                }
+              );
+              const { points } = await response.json();
+              sessionPoints.push(points);
+            }
+            if (!dataPoints[monthYear]) {
+              dataPoints[monthYear] = [];
+            }
+            dataPoints[monthYear].push(...sessionPoints);
+          }
+        }
+        setMemoryVaultRecallScoreData(dataPoints);
+      } catch (error) {
+        console.error("Error fetching or computing points:", error);
+      }
+    })();
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
+
   useEffect(() => {
     if (!effectivePatientId || !isTemporalGame) return;
     (async () => {
@@ -513,7 +474,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching Speaking Time data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Pause Count data
   useEffect(() => {
@@ -538,7 +499,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching Pause Count data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Pause Duration data
   useEffect(() => {
@@ -577,7 +538,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching Pause Duration data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Lexical Features data
   useEffect(() => {
@@ -629,7 +590,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching lexical features data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Structural Features data
   useEffect(() => {
@@ -664,7 +625,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching structural features data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Fluency Metrics data
   useEffect(() => {
@@ -709,7 +670,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching fluency metrics data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Semantic Features data
   useEffect(() => {
@@ -749,7 +710,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching semantic features data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectivePatientId, isTemporalGame]);
 
   return (
     <div className="all-time-trends-container">
@@ -837,19 +798,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             plotTitle="Saccade Direction Accuracy"
             xAxisLabel="Date"
             yAxisLabel="Percent Accuracy (%)"
-            seriesLabels={{
-              antiGap: "Anti Gap",
-              proGap: "Pro Gap",
-              antiOverlap: "Anti Overlap",
-              proOverlap: "Pro Overlap",
-            }}
-            multiSeries={true}
-          />
-          <BoxPlot
-            rawData={fixationDurationData}
-            plotTitle="Fixation Duration"
-            xAxisLabel="Date"
-            yAxisLabel="Duration (s)"
             seriesLabels={{
               antiGap: "Anti Gap",
               proGap: "Pro Gap",
