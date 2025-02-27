@@ -4,6 +4,7 @@ import { db } from "../firebaseConfig";
 import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
 import BoxPlot from "./BoxPlot";
 import carouselNextImg from "../assets/carousel-next-button.svg";
+import PlotDescriptions from "../components/PlotDescriptions";
 import "./AllTimeTrendsComponent.css";
 
 const getReports = async (effectivePatientId) => {
@@ -35,8 +36,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
     useState({});
   const [naturesGazeSopData, setNaturesGazeSopData] = useState({});
   const [saccadeDurationData, setSaccadeDurationData] = useState({});
-  const [saccadeDirectionAccuracyData, setSaccadeDirectionAccuracyData] =
-    useState({});
   const [fixationAccuracyData, setFixationAccuracyData] = useState({});
   const [saccadeDirectionErrorData, setSaccadeDirectionErrorData] = useState(
     {}
@@ -70,7 +69,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
     setNaturesGazeSopData({});
     if (selectedGame !== "naturesGaze") {
       setSaccadeDurationData({});
-      setSaccadeDirectionAccuracyData({});
       setFixationAccuracyData({});
       setSaccadeDirectionErrorData({});
     }
@@ -247,46 +245,6 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         setSaccadeDurationData(durationPoints);
       } catch (error) {
         console.error("Error fetching saccade duration data:", error);
-      }
-    })();
-  }, [selectedGame, effectivePatientId]);
-
-  // naturesGaze Saccade Direction Accuracy fetching
-  useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
-    (async () => {
-      try {
-        const accuracyPoints = {
-          antiGap: {},
-          proGap: {},
-          antiOverlap: {},
-          proOverlap: {},
-        };
-        const reports = await getReports(effectivePatientId);
-        for (const { dateKey, monthYear } of reports) {
-          const accDocRef = doc(
-            db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDirectionAccuracy`
-          );
-          const accuracyCollection = collection(accDocRef, "accuracy");
-          const accuracySnapshots = await getDocs(accuracyCollection);
-          accuracySnapshots.docs.forEach((docSnap) => {
-            const data = docSnap.data();
-            const seriesKey = docSnap.id;
-            if (
-              data.PercentAccuracy != null &&
-              accuracyPoints[seriesKey] !== undefined
-            ) {
-              if (!accuracyPoints[seriesKey][monthYear]) {
-                accuracyPoints[seriesKey][monthYear] = [];
-              }
-              accuracyPoints[seriesKey][monthYear].push(data.PercentAccuracy);
-            }
-          });
-        }
-        setSaccadeDirectionAccuracyData(accuracyPoints);
-      } catch (error) {
-        console.error("Error fetching saccade direction accuracy data:", error);
       }
     })();
   }, [selectedGame, effectivePatientId]);
@@ -766,6 +724,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           displaySubtitle={false}
           xAxisLabel="Date"
           yAxisLabel="Points"
+          infoDescription={PlotDescriptions["Recall Score"]}
         />
       )}
       {selectedGame === "naturesGaze" && (
@@ -778,6 +737,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             yAxisLabel="Time (seconds)"
             seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
             multiSeries={true}
+            infoDescription={PlotDescriptions["Reaction Time"]}
           />
           <BoxPlot
             rawData={naturesGazeSopData}
@@ -787,6 +747,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             yAxisLabel="Percentage (%)"
             seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
             multiSeries={true}
+            infoDescription={PlotDescriptions["Saccade Omission Percentages"]}
           />
           <BoxPlot
             rawData={saccadeDurationData}
@@ -801,20 +762,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               proOverlap: "Pro Overlap",
             }}
             multiSeries={true}
-          />
-          <BoxPlot
-            rawData={saccadeDirectionAccuracyData}
-            plotTitle="Saccade Direction Accuracy"
-            displaySubtitle={false}
-            xAxisLabel="Date"
-            yAxisLabel="Percent Accuracy (%)"
-            seriesLabels={{
-              antiGap: "Anti Gap",
-              proGap: "Pro Gap",
-              antiOverlap: "Anti Overlap",
-              proOverlap: "Pro Overlap",
-            }}
-            multiSeries={true}
+            infoDescription={PlotDescriptions["Saccade Durations"]}
           />
           <BoxPlot
             rawData={fixationAccuracyData}
@@ -824,6 +772,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             yAxisLabel="Landing Accuracy (degrees)"
             seriesLabels={{ gap: "Gap", overlap: "Overlap" }}
             multiSeries={true}
+            infoDescription={PlotDescriptions["Fixation Accuracy"]}
           />
           <BoxPlot
             rawData={saccadeDirectionErrorData}
@@ -838,6 +787,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
               proOverlap: "Pro Overlap",
             }}
             multiSeries={true}
+            infoDescription={PlotDescriptions["Saccade Direction Error"]}
           />
         </>
       )}
@@ -872,6 +822,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     subtitleText={metricsConfigs[metricsIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={metricsConfigs[metricsIndex].yAxisLabel}
+                    infoDescription={
+                      PlotDescriptions[
+                        "Temporal Characteristics: " + selectedGame
+                      ]
+                    }
                   />
                   <button
                     className="carousel-next-button"
@@ -920,6 +875,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     subtitleText={structuralConfigs[structuralIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={structuralConfigs[structuralIndex].yAxisLabel}
+                    infoDescription={PlotDescriptions["Structural Features"]}
                   />
                   <button
                     className="carousel-next-button"
@@ -975,6 +931,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     subtitleText={fluencyConfigs[fluencyIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={fluencyConfigs[fluencyIndex].yAxisLabel}
+                    infoDescription={
+                      PlotDescriptions["Fluency Metrics: " + selectedGame]
+                    }
                   />
                   <button
                     className="carousel-next-button"
@@ -1038,6 +997,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     subtitleText={lexicalConfigs[lexicalIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={lexicalConfigs[lexicalIndex].yAxisLabel}
+                    infoDescription={
+                      PlotDescriptions["Lexical Content: " + selectedGame]
+                    }
                   />
                   <button
                     className="carousel-next-button"
@@ -1091,6 +1053,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                     subtitleText={semanticConfigs[semanticIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={semanticConfigs[semanticIndex].yAxisLabel}
+                    infoDescription={PlotDescriptions["Semantic Features"]}
                   />
                   <button
                     className="carousel-next-button"
