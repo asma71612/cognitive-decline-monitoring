@@ -33,11 +33,12 @@ const PatientInfoBoxComponent = ({
   selectedDate,
   patientData,
   effectivePatientId,
+  reportTitle,
 }) => {
   return (
     <div className="patient-info-box-container">
       <h1>
-        Daily Reports{" "}
+        {reportTitle}{" "}
         {selectedDate && `for ${formatSelectedDate(selectedDate)}`}
       </h1>
       {patientData && (

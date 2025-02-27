@@ -1,0 +1,87 @@
+.all-time-trends-container {
+  margin-top: 100px;
+  margin-left: 80px;
+  margin-right: 80px;
+  width: -webkit-fill-available;
+}
+
+.all-time-trends-container h1 {
+  font-size: 50px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.report-button {
+  flex: 1;
+  margin: 10px;
+  padding: 17px 20px;
+  margin-right: 20px;
+  margin-bottom: -15px;
+  background-color: #516a80;
+  color: #ffffff;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+}
+
+.report-button:hover {
+  background-color: #2f3b66;
+}
+
+.report-button.active {
+  background-color: #2f3b66;
+  cursor: default;
+}
+
+.metrics-carousel-container,
+.structural-carousel,
+.fluency-carousel,
+.lexical-carousel,
+.semantic-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.carousel-next-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.carousel-next-button:hover {
+  background: none !important;
+  border: none !important;
+}
+
+.carousel-wrapper {
+  margin-bottom: 20px;
+}
+
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  margin-right: 45px;
+  margin-top: 8px;
+  gap: 8px;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #516A80;
+}
+
+.indicator.active {
+  background-color: #2F3B66;
+}
