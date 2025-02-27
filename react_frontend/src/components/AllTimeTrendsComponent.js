@@ -144,7 +144,12 @@ const AllTimeTrendsComponent = ({ patientId }) => {
     if (!effectivePatientId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
-        const dataPoints = { gap: {}, overlap: {} };
+        const dataPoints = {
+          antiGap: {},
+          proGap: {},
+          proOverlap: {},
+          antiOverlap: {},
+        };
         const reports = await getReports(effectivePatientId);
         for (const { dateKey, monthYear } of reports) {
           const reactionDocRef = doc(
@@ -154,15 +159,13 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           const reactionDoc = await getDoc(reactionDocRef);
           if (reactionDoc.exists()) {
             const data = reactionDoc.data();
-            if (data.GapTask != null) {
-              if (!dataPoints.gap[monthYear]) dataPoints.gap[monthYear] = [];
-              dataPoints.gap[monthYear].push(data.GapTask);
-            }
-            if (data.OverlapTask != null) {
-              if (!dataPoints.overlap[monthYear])
-                dataPoints.overlap[monthYear] = [];
-              dataPoints.overlap[monthYear].push(data.OverlapTask);
-            }
+            Object.entries(data).forEach(([series, value]) => {
+              if (value != null && dataPoints.hasOwnProperty(series)) {
+                if (!dataPoints[series][monthYear])
+                  dataPoints[series][monthYear] = [];
+                dataPoints[series][monthYear].push(value);
+              }
+            });
           }
         }
         setNaturesGazeReactionTimeData(dataPoints);
@@ -177,7 +180,12 @@ const AllTimeTrendsComponent = ({ patientId }) => {
     if (!effectivePatientId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
-        const saccadePoints = { gap: {}, overlap: {} };
+        const dataPoints = {
+          antiGap: {},
+          proGap: {},
+          proOverlap: {},
+          antiOverlap: {},
+        };
         const reports = await getReports(effectivePatientId);
         for (const { dateKey, monthYear } of reports) {
           const saccadeDocRef = doc(
@@ -187,19 +195,16 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           const saccadeDoc = await getDoc(saccadeDocRef);
           if (saccadeDoc.exists()) {
             const data = saccadeDoc.data();
-            if (data.GapTask != null) {
-              if (!saccadePoints.gap[monthYear])
-                saccadePoints.gap[monthYear] = [];
-              saccadePoints.gap[monthYear].push(data.GapTask);
-            }
-            if (data.OverlapTask != null) {
-              if (!saccadePoints.overlap[monthYear])
-                saccadePoints.overlap[monthYear] = [];
-              saccadePoints.overlap[monthYear].push(data.OverlapTask);
-            }
+            Object.entries(data).forEach(([series, value]) => {
+              if (value != null && dataPoints.hasOwnProperty(series)) {
+                if (!dataPoints[series][monthYear])
+                  dataPoints[series][monthYear] = [];
+                dataPoints[series][monthYear].push(value);
+              }
+            });
           }
         }
-        setNaturesGazeSopData(saccadePoints);
+        setNaturesGazeSopData(dataPoints);
       } catch (error) {
         console.error("Error fetching saccade omission data:", error);
       }
@@ -758,6 +763,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         <BoxPlot
           rawData={memoryVaultRecallScoreData}
           plotTitle="Recall Score"
+          displaySubtitle={false}
           xAxisLabel="Date"
           yAxisLabel="Points"
         />
@@ -767,14 +773,16 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           <BoxPlot
             rawData={naturesGazeReactionTimeData}
             plotTitle="Reaction Time"
+            displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Time (s)"
+            yAxisLabel="Time (seconds)"
             seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
             multiSeries={true}
           />
           <BoxPlot
             rawData={naturesGazeSopData}
             plotTitle="Saccade Omission Percentages"
+            displaySubtitle={false}
             xAxisLabel="Date"
             yAxisLabel="Percentage (%)"
             seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
@@ -783,8 +791,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           <BoxPlot
             rawData={saccadeDurationData}
             plotTitle="Saccade Durations"
+            displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Duration (s)"
+            yAxisLabel="Duration (seconds)"
             seriesLabels={{
               antiGap: "Anti Gap",
               proGap: "Pro Gap",
@@ -796,6 +805,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           <BoxPlot
             rawData={saccadeDirectionAccuracyData}
             plotTitle="Saccade Direction Accuracy"
+            displaySubtitle={false}
             xAxisLabel="Date"
             yAxisLabel="Percent Accuracy (%)"
             seriesLabels={{
@@ -809,14 +819,16 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           <BoxPlot
             rawData={fixationAccuracyData}
             plotTitle="Fixation Accuracy"
+            displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Landing Accuracy (deg)"
+            yAxisLabel="Landing Accuracy (degrees)"
             seriesLabels={{ gap: "Gap", overlap: "Overlap" }}
             multiSeries={true}
           />
           <BoxPlot
             rawData={saccadeDirectionErrorData}
             plotTitle="Saccade Direction Error"
+            displaySubtitle={false}
             xAxisLabel="Date"
             yAxisLabel="Percent Error (%)"
             seriesLabels={{
@@ -835,17 +847,17 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           {(() => {
             const metricsConfigs = [
               {
-                title: "Temporal Characteristics - Speaking Time",
+                subtitle: "Speaking Time",
                 rawData: speakingTimeData,
                 yAxisLabel: "Time (seconds)",
               },
               {
-                title: "Temporal Characteristics - Pause Count",
+                subtitle: "Pause Count",
                 rawData: pauseCountData,
                 yAxisLabel: "Pause Count",
               },
               {
-                title: "Temporal Characteristics - Pause Duration",
+                subtitle: "Pause Duration",
                 rawData: pauseDurationData,
                 yAxisLabel: "Pause Duration (seconds)",
               },
@@ -855,7 +867,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                 <div className="metrics-carousel-container">
                   <BoxPlot
                     rawData={metricsConfigs[metricsIndex].rawData}
-                    plotTitle={metricsConfigs[metricsIndex].title}
+                    plotTitle="Temporal Characteristics"
+                    displaySubtitle={true}
+                    subtitleText={metricsConfigs[metricsIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={metricsConfigs[metricsIndex].yAxisLabel}
                   />
@@ -886,12 +900,12 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           {(() => {
             const structuralConfigs = [
               {
-                title: "Structural Features - Mean Length of Occurrence",
+                subtitle: "Mean Length of Occurrence",
                 rawData: structuralMeanData,
                 yAxisLabel: "Mean Length",
               },
               {
-                title: "Structural Features - Number of Sentences",
+                subtitle: "Number of Sentences",
                 rawData: structuralSentenceData,
                 yAxisLabel: "Sentence Count",
               },
@@ -901,7 +915,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                 <div className="structural-carousel">
                   <BoxPlot
                     rawData={structuralConfigs[structuralIndex].rawData}
-                    plotTitle={structuralConfigs[structuralIndex].title}
+                    plotTitle="Structural Features"
+                    displaySubtitle={true}
+                    subtitleText={structuralConfigs[structuralIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={structuralConfigs[structuralIndex].yAxisLabel}
                   />
@@ -934,19 +950,19 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           {(() => {
             const fluencyConfigs = [
               {
-                title: "Fluency Metrics - Revision Ratio",
-                rawData: fluencyRevisionRatioData,
-                yAxisLabel: "RevisionRatio",
-              },
-              {
-                title: "Fluency Metrics - Word Count",
+                subtitle: "Word Count",
                 rawData: fluencyWordsPerMinData,
                 yAxisLabel: "Words per Minute",
               },
               {
-                title: "Fluency Metrics - Stutter Count",
+                subtitle: "Stutter Count",
                 rawData: fluencyStutterCountData,
                 yAxisLabel: "Stutter Count",
+              },
+              {
+                subtitle: "Revision Ratio",
+                rawData: fluencyRevisionRatioData,
+                yAxisLabel: "Revision Ratio",
               },
             ];
             return (
@@ -954,7 +970,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                 <div className="fluency-carousel">
                   <BoxPlot
                     rawData={fluencyConfigs[fluencyIndex].rawData}
-                    plotTitle={fluencyConfigs[fluencyIndex].title}
+                    plotTitle="Fluency Metrics"
+                    displaySubtitle={true}
+                    subtitleText={fluencyConfigs[fluencyIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={fluencyConfigs[fluencyIndex].yAxisLabel}
                   />
@@ -985,29 +1003,29 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           {(() => {
             const lexicalConfigs = [
               {
-                title: "Lexical Content - Nouns",
+                subtitle: "Noun",
                 rawData: lexNounData,
                 yAxisLabel: "Noun Count",
               },
               {
-                title: "Lexical Content - ClosedClass",
-                rawData: lexClosedClassData,
-                yAxisLabel: "ClosedClass Count",
+                subtitle: "Verb",
+                rawData: lexVerbData,
+                yAxisLabel: "Verb Count",
               },
               {
-                title: "Lexical Content - Filler",
+                subtitle: "Filler",
                 rawData: lexFillerData,
                 yAxisLabel: "Filler Count",
               },
               {
-                title: "Lexical Content - OpenClass",
+                subtitle: "OpenClass",
                 rawData: lexOpenClassData,
                 yAxisLabel: "OpenClass Count",
               },
               {
-                title: "Lexical Content - Verb",
-                rawData: lexVerbData,
-                yAxisLabel: "Verb Count",
+                subtitle: "ClosedClass",
+                rawData: lexClosedClassData,
+                yAxisLabel: "ClosedClass Count",
               },
             ];
             return (
@@ -1015,7 +1033,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                 <div className="lexical-carousel">
                   <BoxPlot
                     rawData={lexicalConfigs[lexicalIndex].rawData}
-                    plotTitle={lexicalConfigs[lexicalIndex].title}
+                    plotTitle="Lexical Content"
+                    displaySubtitle={true}
+                    subtitleText={lexicalConfigs[lexicalIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={lexicalConfigs[lexicalIndex].yAxisLabel}
                   />
@@ -1046,19 +1066,19 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           {(() => {
             const semanticConfigs = [
               {
-                title: "Semantic Features - Lexical Frequency of Nouns",
-                rawData: semanticLexFreqData,
-                yAxisLabel: "Frequency",
+                subtitle: "Semantic Idea Density",
+                rawData: semanticIdeaDensityData,
+                yAxisLabel: "Density",
               },
               {
-                title: "Semantic Features - Semantic Efficiency",
+                subtitle: "Semantic Efficiency",
                 rawData: semanticEfficiencyData,
                 yAxisLabel: "Efficiency",
               },
               {
-                title: "Semantic Features - Semantic Idea Density",
-                rawData: semanticIdeaDensityData,
-                yAxisLabel: "Density",
+                subtitle: "Lexical Frequency of Nouns",
+                rawData: semanticLexFreqData,
+                yAxisLabel: "Frequency",
               },
             ];
             return (
@@ -1066,7 +1086,9 @@ const AllTimeTrendsComponent = ({ patientId }) => {
                 <div className="semantic-carousel">
                   <BoxPlot
                     rawData={semanticConfigs[semanticIndex].rawData}
-                    plotTitle={semanticConfigs[semanticIndex].title}
+                    plotTitle="Semantic Features"
+                    displaySubtitle={true}
+                    subtitleText={semanticConfigs[semanticIndex].subtitle}
                     xAxisLabel="Date"
                     yAxisLabel={semanticConfigs[semanticIndex].yAxisLabel}
                   />

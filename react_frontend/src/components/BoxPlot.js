@@ -7,6 +7,7 @@ import {
   Title,
   Legend,
   BarElement,
+  SubTitle,
 } from "chart.js";
 import {
   BoxPlotController,
@@ -19,6 +20,7 @@ ChartJS.register(
   LinearScale,
   BarElement,
   Title,
+  SubTitle,
   Tooltip,
   Legend,
   BoxPlotController,
@@ -28,6 +30,8 @@ ChartJS.register(
 const BoxPlot = ({
   rawData,
   plotTitle,
+  displaySubtitle,
+  subtitleText,
   xAxisLabel,
   yAxisLabel,
   seriesLabels,
@@ -94,6 +98,7 @@ const BoxPlot = ({
           backgroundColor: bgColor,
           borderColor: "black",
           borderWidth: 1,
+          outlierBackgroundColor: "black",
         });
       });
     } else if (rawData && typeof rawData === "object" && rawData !== null) {
@@ -108,6 +113,7 @@ const BoxPlot = ({
           backgroundColor: "#516A80",
           borderColor: "black",
           borderWidth: 1,
+          outlierBackgroundColor: "black",
         },
       ];
     }
@@ -134,11 +140,11 @@ const BoxPlot = ({
               font: { family: "Inter", size: 14 },
             },
             grid: { color: "rgba(0,0,0,0.1)" },
-            border: { color: "black", width: 2 },
+            border: { color: "rgba(0,0,0,0.1)", width: 2 },
           },
           y: {
             beginAtZero: false,
-            min: globalMin - 2,
+            min: Math.min(globalMin, 0),
             max: globalMax + 2,
             title: {
               display: true,
@@ -151,7 +157,7 @@ const BoxPlot = ({
               font: { family: "Inter", size: 14 },
             },
             grid: { color: "rgba(0,0,0,0.1)" },
-            border: { color: "black", width: 2 },
+            border: { color: "rgba(0,0,0,0.1)", width: 2 },
           },
         },
         plugins: {
@@ -160,7 +166,14 @@ const BoxPlot = ({
             display: true,
             text: plotTitle,
             font: { size: 20, family: "Inter" },
-            color: "black",
+            color: "#2F3B66",
+          },
+          subtitle: {
+            display: displaySubtitle,
+            text: subtitleText,
+            font: { size: 16, family: "Inter", weight: "bold" },
+            color: "#516A80",
+            padding: { bottom: 10 },
           },
         },
       },
@@ -170,7 +183,7 @@ const BoxPlot = ({
     return () => {
       if (chartInstanceRef.current) chartInstanceRef.current.destroy();
     };
-  }, [rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels, multiSeries]);
+  }, [rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels, multiSeries, displaySubtitle, subtitleText]);
 
   return (
     <div className="chart-container">
