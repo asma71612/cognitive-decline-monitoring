@@ -11,11 +11,14 @@
   gap: 8px;
   margin-bottom: 10px;
   position: relative;
+  margin-left: 75px;
 }
 
 .boxplot-title-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .boxplot-title {
@@ -28,7 +31,7 @@
 .boxplot-subtitle {
   font-size: 14px;
   font-family: "Inter", sans-serif;
-  color: #516A80;
+  color: #516a80;
   align-self: center;
   margin-top: 5px;
 }

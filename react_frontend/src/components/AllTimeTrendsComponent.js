@@ -735,7 +735,12 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             displaySubtitle={false}
             xAxisLabel="Date"
             yAxisLabel="Time (seconds)"
-            seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
+            seriesLabels={{
+              antiGap: "Anti-Saccade, Gap Task",
+              proGap: "Pro-Saccade, Gap Task",
+              antiOverlap: "Anti-Saccade, Overlap Task",
+              proOverlap: "Pro-Saccade, Overlap Task",
+            }}
             multiSeries={true}
             infoDescription={PlotDescriptions["Reaction Time"]}
           />
@@ -745,7 +750,12 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             displaySubtitle={false}
             xAxisLabel="Date"
             yAxisLabel="Percentage (%)"
-            seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
+            seriesLabels={{
+              antiGap: "Anti-Saccade, Gap Task",
+              proGap: "Pro-Saccade, Gap Task",
+              antiOverlap: "Anti-Saccade, Overlap Task",
+              proOverlap: "Pro-Saccade, Overlap Task",
+            }}
             multiSeries={true}
             infoDescription={PlotDescriptions["Saccade Omission Percentages"]}
           />
@@ -756,10 +766,10 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             xAxisLabel="Date"
             yAxisLabel="Duration (seconds)"
             seriesLabels={{
-              antiGap: "Anti Gap",
-              proGap: "Pro Gap",
-              antiOverlap: "Anti Overlap",
-              proOverlap: "Pro Overlap",
+              antiGap: "Anti-Saccade, Gap Task",
+              proGap: "Pro-Saccade, Gap Task",
+              antiOverlap: "Anti-Saccade, Overlap Task",
+              proOverlap: "Pro-Saccade, Overlap Task",
             }}
             multiSeries={true}
             infoDescription={PlotDescriptions["Saccade Durations"]}
@@ -770,7 +780,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             displaySubtitle={false}
             xAxisLabel="Date"
             yAxisLabel="Landing Accuracy (degrees)"
-            seriesLabels={{ gap: "Gap", overlap: "Overlap" }}
+            seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
             multiSeries={true}
             infoDescription={PlotDescriptions["Fixation Accuracy"]}
           />
@@ -781,10 +791,10 @@ const AllTimeTrendsComponent = ({ patientId }) => {
             xAxisLabel="Date"
             yAxisLabel="Percent Error (%)"
             seriesLabels={{
-              antiGap: "Anti Gap",
-              proGap: "Pro Gap",
-              antiOverlap: "Anti Overlap",
-              proOverlap: "Pro Overlap",
+              antiGap: "Anti-Saccade, Gap Task",
+              proGap: "Pro-Saccade, Gap Task",
+              antiOverlap: "Anti-Saccade, Overlap Task",
+              proOverlap: "Pro-Saccade, Overlap Task",
             }}
             multiSeries={true}
             infoDescription={PlotDescriptions["Saccade Direction Error"]}
