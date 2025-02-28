@@ -5,10 +5,12 @@ import "./InstructionsModal.css";
 const InstructionsModal = ({
   title,
   howToPlay,
+  firstText,
   instructionsList,
   strongText,
   subText,
   noteText,
+  italicsText,
   startButtonText,
   startButtonRoute,
   backgroundImage,
@@ -23,6 +25,7 @@ const InstructionsModal = ({
       <div className="game-instruction-card">
         <h1>{title}</h1>
         <h2>{howToPlay}</h2>
+        <p>{firstText}</p>
         <ol>
           {instructionsList.map((instruction, index) => (
             <li key={index}>{instruction}</li>
@@ -33,6 +36,7 @@ const InstructionsModal = ({
         </p>
         <p>{subText}</p>
         <p>{noteText}</p>
+        <p style={{ fontStyle: 'italic' }}>{italicsText}</p>
         <button
           className="start-button"
           onClick={() => navigate(startButtonRoute)}

@@ -23,7 +23,7 @@ const GeneralInstructionsPage = () => {
           Make sure you're in a quiet environment, free from distractions, so you can fully focus on your task!
         </p>
         <div className="start-button-container">
-          <Link to="/lighting-calibration" className="start-button">Start Calibration</Link>
+          <Link to="/patient-home-page" className="start-button">Back to Home</Link>
         </div>
       </div>
     </div>
