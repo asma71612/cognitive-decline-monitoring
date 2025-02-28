@@ -1,10 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   Tooltip,
-  Title,
   Legend,
   BarElement,
   SubTitle,
@@ -14,12 +13,12 @@ import {
   BoxAndWiskers,
 } from "@sgratzl/chartjs-chart-boxplot";
 import "./BoxPlot.css";
+import infoIcon from "../assets/information-hover.svg";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
   SubTitle,
   Tooltip,
   Legend,
@@ -36,7 +35,9 @@ const BoxPlot = ({
   yAxisLabel,
   seriesLabels,
   multiSeries = false,
+  infoDescription  // new prop for info popup text
 }) => {
+  const [showInfo, setShowInfo] = useState(false);
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
@@ -53,11 +54,11 @@ const BoxPlot = ({
           : data[base];
       };
       processedData[monthYear] = [
-        points[0], // Min
-        getQuartile(points, 0.25), // Q1
-        getQuartile(points, 0.5), // Median
-        getQuartile(points, 0.75), // Q3
-        points[points.length - 1], // Max
+        points[0],
+        getQuartile(points, 0.25),
+        getQuartile(points, 0.5),
+        getQuartile(points, 0.75),
+        points[points.length - 1],
       ];
     }
     return processedData;
@@ -72,13 +73,8 @@ const BoxPlot = ({
     let globalPoints = [];
 
     if (multiSeries) {
-      // In multi-series mode, rawData is an object with series keys
       const seriesKeys = Object.keys(rawData);
-      if (seriesKeys.length === 0) {
-        labels = [];
-      } else {
-        labels = Object.keys(rawData[seriesKeys[0]]);
-      }
+      labels = seriesKeys.length ? Object.keys(rawData[seriesKeys[0]]) : [];
       seriesKeys.forEach((key) => {
         const seriesPlotData = calculateBoxPlotData(rawData[key]);
         Object.values(rawData[key]).forEach((arr) => globalPoints.push(...arr));
@@ -101,8 +97,7 @@ const BoxPlot = ({
           outlierBackgroundColor: "black",
         });
       });
-    } else if (rawData && typeof rawData === "object" && rawData !== null) {
-      // Single dataset mode: rawData is an object mapping label -> array
+    } else if (rawData && typeof rawData === "object") {
       const singlePlotData = calculateBoxPlotData(rawData);
       labels = Object.keys(singlePlotData);
       Object.values(rawData).forEach((arr) => globalPoints.push(...arr));
@@ -162,19 +157,8 @@ const BoxPlot = ({
         },
         plugins: {
           legend: { display: datasets.length > 1 },
-          title: {
-            display: true,
-            text: plotTitle,
-            font: { size: 20, family: "Inter" },
-            color: "#2F3B66",
-          },
-          subtitle: {
-            display: displaySubtitle,
-            text: subtitleText,
-            font: { size: 16, family: "Inter", weight: "bold" },
-            color: "#516A80",
-            padding: { bottom: 10 },
-          },
+          title: { display: false },
+          subtitle: { display: false },
         },
       },
     };
@@ -183,10 +167,29 @@ const BoxPlot = ({
     return () => {
       if (chartInstanceRef.current) chartInstanceRef.current.destroy();
     };
-  }, [rawData, plotTitle, xAxisLabel, yAxisLabel, seriesLabels, multiSeries, displaySubtitle, subtitleText]);
+  }, [rawData, xAxisLabel, yAxisLabel, seriesLabels, multiSeries]);
 
   return (
     <div className="chart-container">
+      <div className="boxplot-header">
+        <div className="boxplot-title-container">
+          <span className="boxplot-title">{plotTitle}</span>
+          {displaySubtitle && (
+            <span className="boxplot-subtitle">{subtitleText}</span>
+          )}
+        </div>
+        <img
+          src={infoIcon}
+          alt="Info"
+          className="boxplot-info-icon"
+          onClick={() => setShowInfo(!showInfo)}
+        />
+        {showInfo && (
+          <div className="boxplot-info-popover">
+            {infoDescription}
+          </div>
+        )}
+      </div>
       <div className="chart-box">
         <canvas ref={chartRef}></canvas>
       </div>

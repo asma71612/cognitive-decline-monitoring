@@ -4,6 +4,8 @@ import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
 import "./DailyReportsSeeMoreComponent.css";
+import infoIcon from "../assets/information-hover.svg";
+import PlotDescriptions from "./PlotDescriptions";
 
 const formatMetricName = (name) => {
   return name.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
@@ -35,6 +37,27 @@ const semanticFeaturesOrder = [
 const fluencyMetricsOrder = ["WordsPerMin", "RevisionRatio"];
 
 const structuralFeaturesOrder = ["NumOfSentences", "MeanLengthOfOccurrence"];
+
+const TitleWithInfo = ({ title, description }) => {
+  const [showInfo, setShowInfo] = useState(false);
+  return (
+    <div className="grid-title-container">
+      <h3>{title}</h3>
+      <img
+        src={infoIcon}
+        alt="Info"
+        className="info-icon"
+        onMouseEnter={() => setShowInfo(true)}
+        onMouseLeave={() => setShowInfo(false)}
+      />
+      {showInfo && (
+        <div className="info-popover">
+          {description}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
   const [selectedGame, setSelectedGame] = useState("");
@@ -414,59 +437,6 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     );
   };
 
-  const renderFixationDurationTable = (durations) => {
-    return (
-      <div className="table-container">
-        <div className="table-header">
-          <span>Task</span>
-          <span>Duration</span>
-        </div>
-        {Object.entries(durations).map(([task, data]) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data.Duration}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderFixationErrorTable = (errors) => {
-    return (
-      <div className="table-container">
-        <div className="table-header">
-          <span>Task</span>
-          <span>Error Count</span>
-          <span>Percent Error</span>
-        </div>
-        {Object.entries(errors).map(([task, data]) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data.ErrorCount}</span>
-            <span>{data.PercentError}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderSaccadeDirectionAccuracyTable = (accuracy) => {
-    return (
-      <div className="table-container">
-        <div className="table-header">
-          <span>Task</span>
-          <span>Percent Accuracy</span>
-        </div>
-        {Object.entries(accuracy).map(([task, data]) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data.PercentAccuracy}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   const renderSaccadeDirectionErrorTable = (errors) => {
     return (
       <div className="table-container">
@@ -503,28 +473,36 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     );
   };
 
-  const renderReactionTime = (reactionTime) => {
+  const renderReactionTime = (data) => {
     return (
-      <div className="fields">
-        <p>
-          <strong>Gap Task:</strong> {reactionTime.GapTask}
-        </p>
-        <p>
-          <strong>Overlap Task:</strong> {reactionTime.OverlapTask}
-        </p>
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Time (ms)</span>
+        </div>
+        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
+          </div>
+        ))}
       </div>
     );
   };
 
   const renderSaccadeOmissionPercentages = (data) => {
     return (
-      <div className="fields">
-        <p>
-          <strong>Gap Task:</strong> {data.GapTask}
-        </p>
-        <p>
-          <strong>Overlap Task:</strong> {data.OverlapTask}
-        </p>
+      <div className="table-container">
+        <div className="table-header">
+          <span>Task</span>
+          <span>Percent</span>
+        </div>
+        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
+          <div key={task} className="table-row">
+            <span>{task}</span>
+            <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
+          </div>
+        ))}
       </div>
     );
   };
@@ -668,26 +646,17 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     const recalledArray = data.Recalled
       ? data.Recalled.split(",").map((item) => item.trim())
       : [];
-    const timeArray = data.TimeToRecall
-      ? data.TimeToRecall.split(",").map((item) => item.trim())
-      : [];
-    const maxRows = Math.max(
-      presentedArray.length,
-      recalledArray.length,
-      timeArray.length
-    );
+    const maxRows = Math.max(presentedArray.length, recalledArray.length);
     return (
       <div className="table-container">
         <div className="table-header">
           <span>Presented</span>
           <span>Recalled</span>
-          <span>Time to Recall (s)</span>
         </div>
         {Array.from({ length: maxRows }).map((_, index) => (
           <div key={index} className="table-row">
             <span>{presentedArray[index] || ""}</span>
             <span>{recalledArray[index] || ""}</span>
-            <span>{timeArray[index] || ""}</span>
           </div>
         ))}
       </div>
@@ -759,46 +728,61 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 "temporalCharacteristics",
                 "semanticFeatures",
                 "structuralFeatures",
-              ].map((metric) => (
-                <div key={metric} className="game-box">
-                  <h3>{metricTitles[metric] || formatMetricName(metric)}</h3>
-                  <div className="fields">
-                    {metric === "lexicalFeatures" ? (
-                      renderLexicalFeatures(sceneData[metric])
-                    ) : metric === "semanticFeatures" ? (
-                      renderSemanticFeatures(sceneData[metric])
-                    ) : metric === "fluencyMetrics" ? (
-                      renderFluencyMetrics(sceneData[metric])
-                    ) : metric === "structuralFeatures" ? (
-                      renderStructuralFeatures(sceneData[metric])
-                    ) : metric === "temporalCharacteristics" ? (
-                      <>
-                        {Object.entries(sceneData[metric]).map(
-                          ([field, value]) => {
-                            if (field === "pauses") return null;
-                            return (
-                              <p key={field}>
-                                <strong>{formatMetricName(field)}:</strong>{" "}
-                                {value}
-                              </p>
-                            );
-                          }
-                        )}
-                        {sceneData[metric].pauses &&
-                          renderPauses(sceneData[metric].pauses)}
-                      </>
-                    ) : (
-                      Object.entries(sceneData[metric]).map(
-                        ([field, value]) => (
-                          <p key={field}>
-                            <strong>{formatMetricName(field)}:</strong> {value}
-                          </p>
+              ].map((metric) => {
+                let descriptionKey = metricTitles[metric] || formatMetricName(metric);
+                if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
+                  if (metric === "fluencyMetrics") {
+                    descriptionKey = "Fluency Metrics: " + selectedGame;
+                  } else if (metric === "lexicalFeatures") {
+                    descriptionKey = "Lexical Content: " + selectedGame;
+                  } else if (metric === "temporalCharacteristics") {
+                    descriptionKey = "Temporal Characteristics: " + selectedGame;
+                  }
+                }
+                return (
+                  <div key={metric} className="game-box">
+                    <TitleWithInfo
+                      title={metricTitles[metric] || formatMetricName(metric)}
+                      description={PlotDescriptions[descriptionKey] || ""}
+                    />
+                    <div className="fields">
+                      {metric === "lexicalFeatures" ? (
+                        renderLexicalFeatures(sceneData[metric])
+                      ) : metric === "semanticFeatures" ? (
+                        renderSemanticFeatures(sceneData[metric])
+                      ) : metric === "fluencyMetrics" ? (
+                        renderFluencyMetrics(sceneData[metric])
+                      ) : metric === "structuralFeatures" ? (
+                        renderStructuralFeatures(sceneData[metric])
+                      ) : metric === "temporalCharacteristics" ? (
+                        <>
+                          {Object.entries(sceneData[metric]).map(
+                            ([field, value]) => {
+                              if (field === "pauses") return null;
+                              return (
+                                <p key={field}>
+                                  <strong>{formatMetricName(field)}:</strong>{" "}
+                                  {value}
+                                </p>
+                              );
+                            }
+                          )}
+                          {sceneData[metric].pauses &&
+                            renderPauses(sceneData[metric].pauses)}
+                        </>
+                      ) : (
+                        Object.entries(sceneData[metric]).map(
+                          ([field, value]) => (
+                            <p key={field}>
+                              <strong>{formatMetricName(field)}:</strong> {value}
+                            </p>
+                          )
                         )
-                      )
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -817,46 +801,61 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 "temporalCharacteristics",
                 "semanticFeatures",
                 "structuralFeatures",
-              ].map((metric) => (
-                <div key={metric} className="game-box">
-                  <h3>{metricTitles[metric] || formatMetricName(metric)}</h3>
-                  <div className="fields">
-                    {metric === "lexicalFeatures" ? (
-                      renderLexicalFeatures(processQuestData[metric])
-                    ) : metric === "semanticFeatures" ? (
-                      renderSemanticFeatures(processQuestData[metric])
-                    ) : metric === "fluencyMetrics" ? (
-                      renderFluencyMetrics(processQuestData[metric])
-                    ) : metric === "structuralFeatures" ? (
-                      renderStructuralFeatures(processQuestData[metric])
-                    ) : metric === "temporalCharacteristics" ? (
-                      <>
-                        {Object.entries(processQuestData[metric]).map(
-                          ([field, value]) => {
-                            if (field === "pauses") return null;
-                            return (
-                              <p key={field}>
-                                <strong>{formatMetricName(field)}:</strong>{" "}
-                                {value}
-                              </p>
-                            );
-                          }
-                        )}
-                        {processQuestData[metric].pauses &&
-                          renderPauses(processQuestData[metric].pauses)}
-                      </>
-                    ) : (
-                      Object.entries(processQuestData[metric]).map(
-                        ([field, value]) => (
-                          <p key={field}>
-                            <strong>{formatMetricName(field)}:</strong> {value}
-                          </p>
+              ].map((metric) => {
+                let descriptionKey = metricTitles[metric] || formatMetricName(metric);
+                if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
+                  if (metric === "fluencyMetrics") {
+                    descriptionKey = "Fluency Metrics: " + selectedGame;
+                  } else if (metric === "lexicalFeatures") {
+                    descriptionKey = "Lexical Content: " + selectedGame;
+                  } else if (metric === "temporalCharacteristics") {
+                    descriptionKey = "Temporal Characteristics: " + selectedGame;
+                  }
+                }
+                return (
+                  <div key={metric} className="game-box">
+                    <TitleWithInfo
+                      title={metricTitles[metric] || formatMetricName(metric)}
+                      description={PlotDescriptions[descriptionKey] || ""}
+                    />
+                    <div className="fields">
+                      {metric === "lexicalFeatures" ? (
+                        renderLexicalFeatures(processQuestData[metric])
+                      ) : metric === "semanticFeatures" ? (
+                        renderSemanticFeatures(processQuestData[metric])
+                      ) : metric === "fluencyMetrics" ? (
+                        renderFluencyMetrics(processQuestData[metric])
+                      ) : metric === "structuralFeatures" ? (
+                        renderStructuralFeatures(processQuestData[metric])
+                      ) : metric === "temporalCharacteristics" ? (
+                        <>
+                          {Object.entries(processQuestData[metric]).map(
+                            ([field, value]) => {
+                              if (field === "pauses") return null;
+                              return (
+                                <p key={field}>
+                                  <strong>{formatMetricName(field)}:</strong>{" "}
+                                  {value}
+                                </p>
+                              );
+                            }
+                          )}
+                          {processQuestData[metric].pauses &&
+                            renderPauses(processQuestData[metric].pauses)}
+                        </>
+                      ) : (
+                        Object.entries(processQuestData[metric]).map(
+                          ([field, value]) => (
+                            <p key={field}>
+                              <strong>{formatMetricName(field)}:</strong> {value}
+                            </p>
+                          )
                         )
-                      )
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -869,7 +868,10 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
             <p>No metrics available for Memory Vault on this date.</p>
           ) : (
             <div className="game-box-vault">
-              <h3>Recall Speed and Accuracy</h3>
+              <TitleWithInfo
+                title="Recall Accuracy"
+                description={PlotDescriptions["Recall Score"] || ""}
+              />
               {renderMemoryVaultTable(
                 memoryVaultData["recallSpeedAndAccuracy"]
               )}
@@ -886,96 +888,12 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
           ) : (
             <div className="game-grid">
               <div className="game-box">
-                <h3>Fixation Accuracy</h3>
-                {naturesGazeData.fixationAccuracy &&
-                naturesGazeData.fixationAccuracy.landingAccuracy ? (
-                  renderFixationAccuracyTable(
-                    naturesGazeData.fixationAccuracy.landingAccuracy
-                  )
-                ) : (
-                  <p>No landing accuracy data.</p>
-                )}
-              </div>
-              <div className="game-box">
-                <h3>Fixation Duration</h3>
-                {naturesGazeData.fixationDuration ? (
-                  <>
-                    {naturesGazeData.fixationDuration
-                      .AverageFixationDuration && (
-                      <p>
-                        <strong>Average Fixation Duration:</strong>{" "}
-                        {
-                          naturesGazeData.fixationDuration
-                            .AverageFixationDuration
-                        }
-                      </p>
-                    )}
-                    {naturesGazeData.fixationDuration.durations ? (
-                      renderFixationDurationTable(
-                        naturesGazeData.fixationDuration.durations
-                      )
-                    ) : (
-                      <p>No duration data.</p>
-                    )}
-                  </>
-                ) : (
-                  <p>No fixation duration data.</p>
-                )}
-              </div>
-              <div className="game-box">
-                <h3>Fixation Error</h3>
-                {naturesGazeData.fixationError ? (
-                  <>
-                    {naturesGazeData.fixationError
-                      .AverageFixationErrorPercentage && (
-                      <p>
-                        <strong>Average Fixation Error Percentage:</strong>{" "}
-                        {
-                          naturesGazeData.fixationError
-                            .AverageFixationErrorPercentage
-                        }
-                      </p>
-                    )}
-                    {naturesGazeData.fixationError.errors ? (
-                      renderFixationErrorTable(
-                        naturesGazeData.fixationError.errors
-                      )
-                    ) : (
-                      <p>No error data.</p>
-                    )}
-                  </>
-                ) : (
-                  <p>No fixation error data.</p>
-                )}
-              </div>
-              <div className="game-box">
-                <h3>Saccade Direction Accuracy</h3>
-                {naturesGazeData.saccadeDirectionAccuracy ? (
-                  <>
-                    {naturesGazeData.saccadeDirectionAccuracy
-                      .AverageSaccadeDirectionPercentage && (
-                      <p>
-                        <strong>Average Saccade Direction Accuracy:</strong>{" "}
-                        {
-                          naturesGazeData.saccadeDirectionAccuracy
-                            .AverageSaccadeDirectionPercentage
-                        }
-                      </p>
-                    )}
-                    {naturesGazeData.saccadeDirectionAccuracy.accuracy ? (
-                      renderSaccadeDirectionAccuracyTable(
-                        naturesGazeData.saccadeDirectionAccuracy.accuracy
-                      )
-                    ) : (
-                      <p>No accuracy data.</p>
-                    )}
-                  </>
-                ) : (
-                  <p>No saccade direction accuracy data.</p>
-                )}
-              </div>
-              <div className="game-box">
-                <h3>Saccade Direction Error</h3>
+                <TitleWithInfo
+                  title="Saccade Direction Error"
+                  description={
+                    PlotDescriptions["Saccade Direction Error"] || ""
+                  }
+                />
                 {naturesGazeData.saccadeDirectionError ? (
                   <>
                     {naturesGazeData.saccadeDirectionError
@@ -1003,7 +921,10 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 )}
               </div>
               <div className="game-box">
-                <h3>Saccade Duration</h3>
+                <TitleWithInfo
+                  title="Saccade Duration"
+                  description={PlotDescriptions["Saccade Durations"] || ""}
+                />
                 {naturesGazeData.saccadeDuration ? (
                   <>
                     {naturesGazeData.saccadeDuration.AverageSaccadeDuration && (
@@ -1025,7 +946,12 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 )}
               </div>
               <div className="game-box">
-                <h3>Saccade Omission Percentages</h3>
+                <TitleWithInfo
+                  title="Saccade Omission Percentages"
+                  description={
+                    PlotDescriptions["Saccade Omission Percentages"] || ""
+                  }
+                />
                 {naturesGazeData.saccadeOmissionPercentages ? (
                   renderSaccadeOmissionPercentages(
                     naturesGazeData.saccadeOmissionPercentages
@@ -1035,11 +961,30 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 )}
               </div>
               <div className="game-box">
-                <h3>Reaction Time</h3>
+                <TitleWithInfo
+                  title="Reaction Time"
+                  description={PlotDescriptions["Reaction Time"] || ""}
+                />
                 {naturesGazeData.reactionTime ? (
                   renderReactionTime(naturesGazeData.reactionTime)
                 ) : (
                   <p>No reaction time data.</p>
+                )}
+              </div>
+              <div className="game-box">
+                <TitleWithInfo
+                  title="Fixation Landing Accuracy"
+                  description={
+                    PlotDescriptions["Fixation Accuracy"] || ""
+                  }
+                />
+                {naturesGazeData.fixationAccuracy &&
+                naturesGazeData.fixationAccuracy.landingAccuracy ? (
+                  renderFixationAccuracyTable(
+                    naturesGazeData.fixationAccuracy.landingAccuracy
+                  )
+                ) : (
+                  <p>No landing accuracy data.</p>
                 )}
               </div>
             </div>

@@ -103,7 +103,7 @@
 .game-box-vault h3 {
   text-align: center;
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 7px;
   margin-top: 15px;
 }
 
@@ -153,4 +153,38 @@
 
 .no-metrics-available p {
   color: red;
+}
+
+.grid-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 5px;
+}
+
+.info-icon {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  transform: translateY(5px);
+}
+
+.info-icon:hover {
+  opacity: 0.5;
+}
+
+.info-popover {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0,0,0,0.8);
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  white-space: normal;
+  z-index: 10;
+  text-align: center;
 }
