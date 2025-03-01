@@ -57,10 +57,11 @@
   margin-top: 30px;
 }
 
-.start-button-container {
+.instructions-button-container {
   display: flex;
   justify-content: center;
   margin-top: 60px;
+  margin: 0 10px;
 }
 
 .start-button {
@@ -76,6 +77,13 @@
 
 .start-button:hover {
   background-color: #8496aa;
+}
+
+.side-by-side-buttons {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  margin-top: 50px;
 }
 
 @media (max-width: 1200px) {

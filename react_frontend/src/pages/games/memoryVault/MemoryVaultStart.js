@@ -155,7 +155,7 @@ const MemoryVaultStart = () => {
 
       <div className="memory-vault-content">
         <h1 className="game-title">Memory Vault</h1>
-        <p className="game-instructions-text">Remember these items later on in this session:</p>
+        <p className="game-instructions-text">Remember these items for later:</p>
         <div className="memory-items-container">
           <div className="memory-item">{word}</div>
           <div className="memory-item">

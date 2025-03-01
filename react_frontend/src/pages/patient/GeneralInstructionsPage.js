@@ -15,15 +15,21 @@ const GeneralInstructionsPage = () => {
           These tasks are designed to monitor your cognitive abilities through a set of interactive games. Here's what to expect:
         </p>
         <ol className="instructions-list">
-          <li>You will be guided through an ambient light calibration test and an eye gaze calibration test to ensure data capture is as effective as possible.</li>
+          <li>You will be guided through a lighting and eye calibration test to ensure data capture is as effective as possible.</li>
           <li>Each game instruction will appear before its subsequent game. <span className="bold">Read each instruction carefully before starting.</span></li>
-          <li>There are a total of 5 games. All games must be completed in one sitting, back-to-back.</li>
+          <li>For some tasks, your audio will be recorded for analysis.</li>
         </ol>
         <p className="instructions-note">
           Make sure you're in a quiet environment, free from distractions, so you can fully focus on your task!
         </p>
-        <div className="start-button-container">
-          <Link to="/lighting-calibration" className="start-button">Start Calibration</Link>
+        <div className="side-by-side-buttons">
+          <div className="instructions-button-container">
+            <Link to="/patient-home-page" className="start-button">Back to Home</Link>
+          </div>
+
+          <div className="instructions-button-container">
+            <Link to="/lighting-calibration" className="start-button">Start Calibration</Link>
+          </div>
         </div>
       </div>
     </div>

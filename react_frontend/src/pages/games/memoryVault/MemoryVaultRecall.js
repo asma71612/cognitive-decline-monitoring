@@ -182,7 +182,7 @@ const MemoryVaultRecall = () => {
         <p className="game-instructions-text">Recall the items presented earlier in this session:</p>
         <div className="memory-input-container">
           <div className='input-container'>
-            <p className='bold'>Enter the word you saw</p>
+            <p className='bold'>Enter the word you read</p>
             <input className='input-textbox' type="text" value={inputWord} onChange={(e) => setInputWord(e.target.value)} />
             <div className='hint-container'>
               <button className='hint-button' onClick={() => handleHint("word")} disabled={wordHint}>Need a Hint?</button>
