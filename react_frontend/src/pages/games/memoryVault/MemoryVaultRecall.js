@@ -3,31 +3,8 @@ import { db } from "../../../firebaseConfig";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { Link } from 'react-router-dom';
 import titleImage from "../../../assets/title.svg";
+import RECALL_SESSIONS from './imports/recallSessions';
 import "./MemoryVault.css";
-
-const SESSIONS = [
-  { word: "Spoon", audio: 'Rainbow', picture: 'Apple', wordHint: 'Used to eat soup', audioHint: 'Colours in the sky', pictureHint: 'A fruit'},
-  { word: "Bicycle", audio: 'Shark', picture: 'Pencil', wordHint: 'Two-wheeled ride', audioHint: 'Ocean predator', pictureHint: 'Used to write'},
-  { word: "Castle", audio: 'Notebook', picture: 'Volcano', wordHint: 'Royal home', audioHint: 'Used for writing', pictureHint: 'Erupts lava'},
-  { word: "Clock", audio: 'Globe', picture: 'Hammer', wordHint: 'Tells time', audioHint: 'Earth model', pictureHint: 'Drives nails'},
-  { word: "Crown", audio: 'Pinneaple', picture: 'Lamp', wordHint: 'Worn by royalty', audioHint: 'Spiky fruit', pictureHint: 'Light source'},
-  { word: "Flower", audio: 'Hammock', picture: 'Kite', wordHint: 'It blooms', audioHint: 'Hanging bed', pictureHint: 'Flies in the wind'},
-  { word: "Window", audio: 'Grass', picture: 'Moon', wordHint: 'Glass opening', audioHint: 'Green ground', pictureHint: 'Night light'},
-  { word: "Fire", audio: 'Leaf', picture: 'Key', wordHint: 'Hot and bright', audioHint: 'Green plant part', pictureHint: 'Used to unlock'},
-  { word: "Cookie", audio: 'Door', picture: 'Knife', wordHint: 'Sweet treat', audioHint: 'Entrance', pictureHint: 'Cutting tool'},
-  { word: "Rain", audio: 'Egg', picture: 'Star', wordHint: 'Water from sky', audioHint: 'Oval protein source', pictureHint: 'Shines at night'},
-  { word: "Locket", audio: 'Cloud', picture: 'ladder', wordHint: 'Pendant with a photo', audioHint: 'Fluffy in the sky', pictureHint: 'For climbing'},
-  { word: "Bottle", audio: 'Ruler', picture: 'Button', wordHint: 'Holds liquid', audioHint: 'Measures length', pictureHint: 'Fastens clothes'},
-  { word: "Toothbrush", audio: 'Kettle', picture: 'Candle', wordHint: 'Cleans teeth', audioHint: 'Boils water', pictureHint: 'Wax light'},
-  { word: "Drum", audio: 'Brush', picture: 'Carrot', wordHint: 'Beaten instrument', audioHint: 'Cleans or paints', pictureHint: 'Orange veggie'},
-  { word: "Rope", audio: 'Lemon', picture: 'Bell', wordHint: 'Strong cord', audioHint: 'Sour fruit', pictureHint: 'It rings'},
-  { word: "Belt", audio: 'Alarm', picture: 'Chair', wordHint: 'Waistwear', audioHint: 'Wakes you up', pictureHint: 'Used to sit on'},
-  { word: "Wheel", audio: 'Block', picture: 'Vase', wordHint: 'It rolls', audioHint: 'Solid piece', pictureHint: 'Footwear'},
-  { word: "Bridge", audio: 'Mouse', picture: 'Sock', wordHint: 'Spans gaps', audioHint: 'Small rodent', pictureHint: 'Used to drink'},
-  { word: "Honey", audio: 'Frame', picture: 'Fan', wordHint: 'Sweet from bees', audioHint: 'Holds pictures', pictureHint: 'Blows air'},
-  { word: "Glass", audio: 'Boat', picture: 'Bowl', wordHint: 'Clear material', audioHint: 'Water transport', pictureHint: 'Holds food'},
-  { word: "Basket", audio: 'Salt', picture: 'Map', wordHint: 'Holds items', audioHint: 'Adds flavour', pictureHint: 'Shows places'},
-];
 
 const MemoryVaultRecall = () => {
   const [playCount, setPlayCount] = useState(0);
@@ -55,19 +32,24 @@ const MemoryVaultRecall = () => {
   }, []);
 
   const fetchUserData = async (userId) => {
-    const userRef = doc(db, "users", userId);
-    const userDoc = await getDoc(userRef);
-
-    if (userDoc.exists()) {
-      setPlayCount(userDoc.data().playCount || 0);
-    } else {
-      await setDoc(userRef, { playCount: 0, completedDays: [], currentStreak: 0 });
+    try {
+      const userRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userRef);
+  
+      if (userDoc.exists()) {
+        setPlayCount(userDoc.data().playCount || 0);
+      } else {
+        await setDoc(userRef, { playCount: 0, completedDays: [], currentStreak: 0 });
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
     }
   };
+  
 
   useEffect(() => {
-    const sessionIndex = playCount % SESSIONS.length;
-    const prevSession = SESSIONS[sessionIndex];
+    const sessionIndex = playCount % RECALL_SESSIONS.length;
+    const prevSession = RECALL_SESSIONS[sessionIndex];
 
     setWord(prevSession.word);
     setAudio(prevSession.audio);
@@ -79,13 +61,13 @@ const MemoryVaultRecall = () => {
 
     switch (type) {
       case "word":
-        setWordHint(SESSIONS[playCount % SESSIONS.length].wordHint);
+        setWordHint(RECALL_SESSIONS[playCount % RECALL_SESSIONS.length].wordHint);
         break;
       case "audio":
-        setAudioHint(SESSIONS[playCount % SESSIONS.length].audioHint);
+        setAudioHint(RECALL_SESSIONS[playCount % RECALL_SESSIONS.length].audioHint);
         break;
       case "picture":
-        setPictureHint(SESSIONS[playCount % SESSIONS.length].pictureHint);
+        setPictureHint(RECALL_SESSIONS[playCount % RECALL_SESSIONS.length].pictureHint);
         break;
       default:
         break;
@@ -105,13 +87,18 @@ const MemoryVaultRecall = () => {
       Timestamp: new Date().toISOString(),
     };
 
-    const formattedDate = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-    const pathToDailyReports = `/users/${userId}/dailyReports/${formattedDate}/memoryVault/recallSpeedAndAccuracy`;
+    const formattedDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).replace(/\//g, '-');
+
+    const pathToDailyReports = `/users/${userId}/dailyReports/${formattedDate}/games/memoryVault/recallSpeedAndAccuracy`;
     const pathToSeeMore = `/users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault/recallSpeedAndAccuracy`;
 
     try {
-      await setDoc(doc(db, pathToDailyReports), userAttempt);
-      await setDoc(doc(db, pathToSeeMore), userAttempt);
+      await updateDoc(doc(db, pathToDailyReports), userAttempt);
+      await updateDoc(doc(db, pathToSeeMore), userAttempt);
     } catch (error) {
       console.error("Error saving response:", error);
     }
@@ -178,7 +165,7 @@ const MemoryVaultRecall = () => {
       </div>
 
       <div className="memory-vault-content">
-        <h1 className="game-title">Unlock the Memory Vault</h1>
+        <h1 className="memory-vault-title">Unlock the Memory Vault</h1>
         <p className="game-instructions-text">Recall the items presented earlier in this session:</p>
         <div className="memory-input-container">
           <div className='input-container'>

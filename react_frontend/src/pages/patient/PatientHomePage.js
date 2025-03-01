@@ -182,6 +182,7 @@ const PatientHomePage = () => {
 
               <div className="task-progress">
                 <h3 className="progress-bar-title">This Week's Task Progress</h3>
+                <h4 className="progress-bar-value">{Math.round((numCompletedDays / 7) * 100)}%</h4>
                 <div className="progress-bar">
                   <div
                     className="progress-bar-fill"

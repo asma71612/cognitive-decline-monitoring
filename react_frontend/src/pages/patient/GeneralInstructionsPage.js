@@ -22,14 +22,8 @@ const GeneralInstructionsPage = () => {
         <p className="instructions-note">
           Make sure you're in a quiet environment, free from distractions, so you can fully focus on your task!
         </p>
-        <div className="side-by-side-buttons">
-          <div className="instructions-button-container">
-            <Link to="/patient-home-page" className="start-button">Back to Home</Link>
-          </div>
-
-          <div className="instructions-button-container">
-            <Link to="/lighting-calibration" className="start-button">Start Calibration</Link>
-          </div>
+        <div className="instructions-button-container">
+          <Link to="/lighting-calibration" className="start-button">Start Calibration</Link>
         </div>
       </div>
     </div>

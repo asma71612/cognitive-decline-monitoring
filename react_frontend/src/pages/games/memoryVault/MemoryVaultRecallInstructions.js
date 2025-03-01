@@ -4,7 +4,7 @@ import memoryVaultBackgroundDark from "../../../assets/memoryVaultBackgroundDark
 
 const MemoryVaultInstructions = () => {
   return (
-    <InstructionsPage
+      <InstructionsPage
       title="Unlock the Memory Vault"
       howToPlay="How to Play"
       firstText="Time to unlock the Memory Vault! We're now asking you to recall the 3 items from earlier in the session:"

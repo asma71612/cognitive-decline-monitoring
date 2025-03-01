@@ -64,6 +64,21 @@
   margin: 0 10px;
 }
 
+.secondary-button {
+  padding: 11px 40px;
+  font-size: 20px;
+  background-color: #fff3e3;
+  color: #576a7f;
+  border: thick solid #576a7f;
+  border-radius: 30px;
+  cursor: pointer;
+  margin-bottom: 17px;
+  align-self: center;
+  transition: background-color 0.3s;
+  text-decoration: none;
+  font-weight: bold;
+}
+
 .start-button {
   font-weight: bold;
   width: auto;
@@ -83,7 +98,7 @@
   display: flex;
   text-align: center;
   justify-content: center;
-  margin-top: 50px;
+  margin-top: 35px;
 }
 
 @media (max-width: 1200px) {

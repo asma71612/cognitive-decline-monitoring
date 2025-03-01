@@ -16,7 +16,7 @@
     justify-content: left;
 }
 
-.game-title {
+.memory-vault-title {
     font-size: 42px;
     font-weight: bold;
     margin-top: 10px;
@@ -44,7 +44,8 @@
     border-radius: 8px;
     min-width: 120px;
     text-align: center;
-    font-size: 22px;
+    font-size: 30px;
+    font-weight: bold;
 }
 
   
@@ -138,11 +139,12 @@
 
 .start-button-container {
     margin-top: 30px;
+    text-align: center;
 }
 
 .memory-image {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
 }
 
 .memory-item {
@@ -151,5 +153,5 @@
 }
 
 .audio-icon {
-    font-size: 40px;
+    font-size: 35px;
 }

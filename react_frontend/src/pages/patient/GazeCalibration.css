@@ -41,6 +41,7 @@ body {
 .instructions-list {
   list-style-type: none;
   padding: 20px;
+  padding-bottom: 10px;
   font-size: 18px;
   line-height: 1.8;
 }
