@@ -93,12 +93,12 @@ const MemoryVaultRecall = () => {
       day: '2-digit'
     }).replace(/\//g, '-');
 
-    const pathToDailyReports = `/users/${userId}/dailyReports/${formattedDate}/games/memoryVault/recallSpeedAndAccuracy`;
+    const pathToDailyReports = `/users/${userId}/dailyReports/${formattedDate}/memoryVault/recallSpeedAndAccuracy`;
     const pathToSeeMore = `/users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault/recallSpeedAndAccuracy`;
 
     try {
-      await updateDoc(doc(db, pathToDailyReports), userAttempt);
-      await updateDoc(doc(db, pathToSeeMore), userAttempt);
+      await setDoc(doc(db, pathToDailyReports), userAttempt);
+      await setDoc(doc(db, pathToSeeMore), userAttempt);
     } catch (error) {
       console.error("Error saving response:", error);
     }
