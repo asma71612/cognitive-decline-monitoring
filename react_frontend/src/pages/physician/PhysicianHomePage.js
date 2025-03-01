@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../../firebaseConfig.js";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import AddPatientsModal from "../../components/AddPatientsModal";
 import titleImage from "../../assets/title.svg";
 import patientsIcon from "../../assets/my-patients-dark.svg";
@@ -19,28 +19,22 @@ const PhysicianHomePage = () => {
     const fetchPatients = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "users"));
-
+        console.log("Is snapshot empty?", querySnapshot.empty);
+        const patientsData = querySnapshot.docs.map((doc) => {
+          console.log("Patient doc:", doc.id, doc.data());
+          return {
+            id: doc.id,
+            ...doc.data(),
+          };
+        });
         if (querySnapshot.empty) {
           console.log("No patients found in Firestore.");
-          return;
         }
-
-        let patientsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          firstName: doc.data().firstName,
-          lastName: doc.data().lastName,
-          dob: doc.data().dob,
-          sex: doc.data().sex,
-          enrolmentDate: doc.data().enrolmentDate,
-        }));
-
-        patientsData.sort((a, b) => a.lastName.localeCompare(b.lastName));
         setPatients(patientsData);
       } catch (error) {
         console.error("Error fetching patients:", error);
       }
     };
-
     fetchPatients();
   }, []);
 
@@ -62,7 +56,7 @@ const PhysicianHomePage = () => {
   };
 
   const filteredPatients = patients.filter((patient) =>
-    patient.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+    (patient.firstName || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
