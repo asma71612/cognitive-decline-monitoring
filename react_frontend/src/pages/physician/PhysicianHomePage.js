@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../../firebaseConfig.js";
-import { collection, getDocs, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import AddPatientsModal from "../../components/AddPatientsModal";
 import titleImage from "../../assets/title.svg";
 import patientsIcon from "../../assets/my-patients-dark.svg";
