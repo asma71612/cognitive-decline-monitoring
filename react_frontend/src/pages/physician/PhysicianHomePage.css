@@ -137,7 +137,7 @@
 
 .patients-table th {
   background-color: #e7eaf8;
-  color: #2F3B66;
+  color: #2f3b66;
   font-weight: bold;
 }
 
@@ -147,6 +147,11 @@
 
 .patients-table tr:hover {
   background-color: #ddd;
+}
+
+.patients-table th:nth-child(7),
+.patients-table td:nth-child(7) {
+  width: 50px;
 }
 
 .view-reports-btn {
