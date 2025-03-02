@@ -79,74 +79,79 @@ const MemoryVaultRecall = () => {
   const handleDone = async () => {
     const presentedWords = [word, audio, picture].filter(Boolean).join(", ");
     const recalledWords = [inputWord, inputAudio, inputPicture].filter(Boolean).join(", ");
-    
+
     const userAttempt = {
-      Presented: presentedWords,
-      Recalled: recalledWords,
-      HintsUsed: hintsUsed,
-      Timestamp: new Date().toISOString(),
+        Presented: presentedWords,
+        Recalled: recalledWords,
+        HintsUsed: hintsUsed,
+        Timestamp: new Date().toISOString(),
     };
 
     const formattedDate = new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
     }).replace(/\//g, '-');
 
-    const pathToDailyReports = `/users/${userId}/dailyReports/${formattedDate}/memoryVault/recallSpeedAndAccuracy`;
-    const pathToSeeMore = `/users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault/recallSpeedAndAccuracy`;
+    const userRef = doc(db, "users", userId);
+    const dailyReportsRef = doc(db, `users/${userId}/dailyReports/${formattedDate}`);
+    const dailyReportsSeeMoreRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}`);
 
     try {
-      await setDoc(doc(db, pathToDailyReports), userAttempt);
-      await setDoc(doc(db, pathToSeeMore), userAttempt);
+        // making sure parent documents exist
+        const dailyReportsDoc = await getDoc(dailyReportsRef);
+        const dailyReportsSeeMoreDoc = await getDoc(dailyReportsSeeMoreRef);
+
+        if (!dailyReportsDoc.exists()) {
+            await setDoc(dailyReportsRef, {});
+        }
+
+        if (!dailyReportsSeeMoreDoc.exists()) {
+            await setDoc(dailyReportsSeeMoreRef, {});
+        }
+
+        const dailyMemoryVaultRef = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/memoryVault`);
+        const seeMoreMemoryVaultRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/games/memoryVault`);
+
+        await setDoc(dailyMemoryVaultRef, userAttempt);
+        await setDoc(seeMoreMemoryVaultRef, userAttempt);
+
     } catch (error) {
-      console.error("Error saving response:", error);
+        console.error("Error saving response:", error);
     }
 
     const newCount = playCount + 1;
     setPlayCount(newCount);
 
-    const userRef = doc(db, "users", userId);
     const userDoc = await getDoc(userRef);
 
     if (userDoc.exists()) {
-      // today's date as a string adjusted to local time zone
-      const today = new Date();
-      today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+        const today = new Date();
+        today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+        const formattedToday = today.toISOString().split('T')[0];
 
-      // today's date in YYYY-MM-DD format
-      const formattedToday = today.toISOString().split('T')[0];
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        yesterday.setMinutes(yesterday.getMinutes() - yesterday.getTimezoneOffset());
+        const yesterdayStr = yesterday.toISOString().split("T")[0];
 
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      yesterday.setMinutes(yesterday.getMinutes() - yesterday.getTimezoneOffset());
-      const yesterdayStr = yesterday.toISOString().split("T")[0]; 
+        const lastPlayed = userDoc.data().lastPlayed || null;
+        const firstPlayed = userDoc.data().firstPlayed || formattedToday;
+        const completedDays = userDoc.data().completedDays || [];
 
-      const lastPlayed = userDoc.data().lastPlayed || null;
-      const firstPlayed = userDoc.data().firstPlayed || formattedToday;
-
-      const completedDays = userDoc.data().completedDays || [];
-
-      console.log('completedDays', completedDays);
-      console.log('completedDays.length', completedDays.length);
-
-
-      let newStreak = 1;
-
-      if (lastPlayed) {
+        let newStreak = 1;
         if (lastPlayed === yesterdayStr) {
-          newStreak = userDoc.currentStreak + 1;
+            newStreak = userDoc.data().currentStreak + 1;
         }
-      }
 
-      await updateDoc(userRef, {
-        completedDays: arrayUnion(formattedToday),
-        numCompletedDays: completedDays.includes(formattedToday) ? completedDays.length : completedDays.length + 1,
-        playCount: newCount,
-        lastPlayed: formattedToday,
-        firstPlayed: firstPlayed,
-        currentStreak: newStreak
-      });
+        await updateDoc(userRef, {
+            completedDays: arrayUnion(formattedToday),
+            numCompletedDays: completedDays.includes(formattedToday) ? completedDays.length : completedDays.length + 1,
+            playCount: newCount,
+            lastPlayed: formattedToday,
+            firstPlayed: firstPlayed,
+            currentStreak: newStreak
+        });
     }
 
     setInputWord("");
@@ -156,7 +161,7 @@ const MemoryVaultRecall = () => {
     setWordHint(null);
     setAudioHint(null);
     setPictureHint(null);
-  };
+};
 
   return (
     <div className="memory-vault-container">
