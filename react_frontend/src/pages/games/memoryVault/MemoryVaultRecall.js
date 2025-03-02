@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import titleImage from "../../../assets/title.svg";
 import RECALL_SESSIONS from './imports/recallSessions';
 import "./MemoryVault.css";
@@ -22,6 +23,8 @@ const MemoryVaultRecall = () => {
   const [wordHint, setWordHint] = useState(null);
   const [audioHint, setAudioHint] = useState(null);
   const [pictureHint, setPictureHint] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -77,6 +80,11 @@ const MemoryVaultRecall = () => {
   };
 
   const handleDone = async () => {
+    if (!inputWord || !inputAudio|| !inputPicture) {
+      alert("Please fill in all fields before proceeding!");
+      return;
+    }
+
     const presentedWords = [word, audio, picture].filter(Boolean).join(", ");
     const recalledWords = [inputWord, inputAudio, inputPicture].filter(Boolean).join(", ");
 
@@ -161,6 +169,8 @@ const MemoryVaultRecall = () => {
     setWordHint(null);
     setAudioHint(null);
     setPictureHint(null);
+
+    navigate("/patient-home-page");
 };
 
   return (
@@ -202,9 +212,7 @@ const MemoryVaultRecall = () => {
         </div>
 
         <div className="start-button-container">
-          <Link to="/patient-home-page">
-            <button className="start-button" onClick={handleDone}>Done</button>
-          </Link>
+          <button className="start-button" type="button" onClick={handleDone}>Done</button>
         </div>
       </div>
     </div>

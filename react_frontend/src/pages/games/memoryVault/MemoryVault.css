@@ -153,5 +153,15 @@
 }
 
 .audio-icon {
-    font-size: 35px;
+    font-size: 30px;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+.audio-icon-text {
+    font-size: 25px;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    font-weight: 500;
+    font-style: italic;
 }

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from 'react-router-dom';
 import { db } from "../../../firebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import titleImage from "../../../assets/title.svg";
 import {
   alarm, block, boat, brush, cloud, door, egg, frame, globe, grass, hammock,
@@ -16,12 +16,12 @@ const MemoryVaultStart = () => {
   const [picture, setPicture] = useState("");
   const [audio, setAudio] = useState("");
   const [userId, setUserId] = useState(null);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
-    
     if (storedUserId) {
-      setUserId(storedUserId); // setting userId from localStorage
+      setUserId(storedUserId);
     } else {
       console.log("User ID not found in localStorage");
     }
@@ -33,10 +33,8 @@ const MemoryVaultStart = () => {
         try {
           const docRef = doc(db, "users", userId);
           const docSnap = await getDoc(docRef);
-
           if (docSnap.exists()) {
-            const data = docSnap.data();
-            setPlayCount(data?.playCount || 0);
+            setPlayCount(docSnap.data()?.playCount || 0);
           } else {
             console.log("No document exists");
             setPlayCount(0);
@@ -68,6 +66,12 @@ const MemoryVaultStart = () => {
     return audioMap[audio] || "";
   };
 
+  const handlePlayAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
+  };
+
   return (
     <div className="memory-vault-container">
       <div className="title-container-instructions">
@@ -80,12 +84,13 @@ const MemoryVaultStart = () => {
         <div className="memory-items-container">
           <div className="memory-item">{word}</div>
           <div className="memory-item">
-            <p className="audio-icon">🔊</p>
-
-            <audio controls key={audio}>
-              <source src={getAudioSrc(audio)} type="audio/mpeg" />
-              Your browser does not support the audio element.
-            </audio>
+            <p className="audio-icon" onClick={handlePlayAudio} style={{ cursor: "pointer" }}>
+              🔊
+            </p>
+            <p className="audio-icon-text" onClick={handlePlayAudio} style={{ cursor: "pointer" }}>
+              click to listen
+            </p>
+            <audio ref={audioRef} src={getAudioSrc(audio)} />
           </div>
           <div className="memory-item">
             <img src={picture} alt="memory-image" className="memory-image" />
