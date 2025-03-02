@@ -54,10 +54,6 @@ const PhysicianHomePage = () => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
   const formatDateForDisplay = (isoString) => {
     if (!isoString) return "N/A";
     const date = new Date(isoString);
