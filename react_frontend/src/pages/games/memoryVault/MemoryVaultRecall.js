@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import titleImage from "../../../assets/title.svg";
 import RECALL_SESSIONS from './imports/recallSessions';

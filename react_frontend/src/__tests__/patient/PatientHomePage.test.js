@@ -1,7 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { act } from 'react';
 import PatientHomePage from "../../pages/patient/PatientHomePage";
 import { onSnapshot } from 'firebase/firestore';
 
@@ -12,7 +11,7 @@ jest.mock("firebase/firestore", () => ({
 }));
 
 jest.mock("../../firebaseConfig", () => ({
-  db: {}, // Mock db, you can leave it empty or make it more specific if needed
+  db: {},
 }));
 
 // Mocked data for Firestore
