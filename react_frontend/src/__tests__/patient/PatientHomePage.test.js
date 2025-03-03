@@ -3,6 +3,23 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import PatientHomePage from "../../pages/patient/PatientHomePage";
 
+jest.mock('../../firebaseConfig', () => ({
+  db: {
+    collection: jest.fn().mockReturnThis(),
+    doc: jest.fn().mockReturnThis(),
+    set: jest.fn().mockResolvedValue(),
+    get: jest.fn().mockResolvedValue({ data: jest.fn().mockReturnValue({}) }),
+  },
+  auth: {
+    currentUser: {
+      uid: 'mocked-id',
+    },
+    signInWithEmailAndPassword: jest.fn().mockResolvedValue({ user: { uid: 'mocked-id' } }),
+    createUserWithEmailAndPassword: jest.fn().mockResolvedValue({ user: { uid: 'mocked-id' } }),
+  }
+}));
+
+
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

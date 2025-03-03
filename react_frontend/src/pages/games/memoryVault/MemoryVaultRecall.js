@@ -92,7 +92,6 @@ const MemoryVaultRecall = () => {
         Presented: presentedWords,
         Recalled: recalledWords,
         HintsUsed: hintsUsed,
-        Timestamp: new Date().toISOString(),
     };
 
     const formattedDate = new Date().toLocaleDateString('en-US', {
@@ -104,11 +103,13 @@ const MemoryVaultRecall = () => {
     const userRef = doc(db, "users", userId);
     const dailyReportsRef = doc(db, `users/${userId}/dailyReports/${formattedDate}`);
     const dailyReportsSeeMoreRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}`);
+    const allTimeReportsRef = doc(db, `users/${userId}/allTimeReports/${formattedDate}`);
 
     try {
         // making sure parent documents exist
         const dailyReportsDoc = await getDoc(dailyReportsRef);
         const dailyReportsSeeMoreDoc = await getDoc(dailyReportsSeeMoreRef);
+        const allTimeReportsDoc = await getDoc(allTimeReportsRef);
 
         if (!dailyReportsDoc.exists()) {
             await setDoc(dailyReportsRef, {});
@@ -118,11 +119,17 @@ const MemoryVaultRecall = () => {
             await setDoc(dailyReportsSeeMoreRef, {});
         }
 
+        if (!allTimeReportsDoc.exists()) {
+          await setDoc(allTimeReportsRef, {});
+      }
+
         const dailyMemoryVaultRef = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/memoryVault`);
-        const seeMoreMemoryVaultRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/games/memoryVault`);
+        const seeMoreMemoryVaultRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault/recallSpeedAndAccuracy`);
+        const allTimeMemoryVaultRef = doc(db, `users/${userId}/allTimeReports/${formattedDate}/games/memoryVault`);
 
         await setDoc(dailyMemoryVaultRef, userAttempt);
         await setDoc(seeMoreMemoryVaultRef, userAttempt);
+        await setDoc(allTimeMemoryVaultRef, userAttempt);
 
     } catch (error) {
         console.error("Error saving response:", error);
