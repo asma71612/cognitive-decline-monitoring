@@ -1,37 +1,39 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { act } from 'react';
 import PatientHomePage from "../../pages/patient/PatientHomePage";
+import { onSnapshot } from 'firebase/firestore';
 
-jest.mock('../../firebaseConfig', () => ({
-  db: {
-    collection: jest.fn().mockReturnThis(),
-    doc: jest.fn().mockReturnThis(),
-    set: jest.fn().mockResolvedValue(),
-    get: jest.fn().mockResolvedValue({ data: jest.fn().mockReturnValue({}) }),
-  },
-  auth: {
-    currentUser: {
-      uid: 'mocked-id',
-    },
-    signInWithEmailAndPassword: jest.fn().mockResolvedValue({ user: { uid: 'mocked-id' } }),
-    createUserWithEmailAndPassword: jest.fn().mockResolvedValue({ user: { uid: 'mocked-id' } }),
-  }
+// Mock Firebase Firestore and firebaseConfig
+jest.mock("firebase/firestore", () => ({
+  doc: jest.fn(),
+  onSnapshot: jest.fn(),
 }));
 
-
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  Link: ({ to, children }) => (
-    <a href={to} data-testid={`link-${to}`}>
-      {children}
-    </a>
-  ),
+jest.mock("../../firebaseConfig", () => ({
+  db: {}, // Mock db, you can leave it empty or make it more specific if needed
 }));
+
+// Mocked data for Firestore
+const mockUserData = {
+  completedDays: ["2025-03-01", "2025-03-02"],
+  numCompletedDays: 2,
+  playFrequency: 6,
+  firstPlayed: "2025-01-01",
+};
 
 describe("PatientHomePage", () => {
   beforeEach(() => {
+    // Mock the onSnapshot function to call the provided callback with mock data
+    onSnapshot.mockImplementation((docRef, callback) => {
+      callback({
+        exists: () => true,
+        data: () => mockUserData,
+      });
+      return jest.fn(); // Return a mock unsubscribe function
+    });
+
     render(
       <MemoryRouter>
         <PatientHomePage />
