@@ -4,14 +4,23 @@ import { doc, setDoc, updateDoc } from "firebase/firestore";
 import UserIDModal from "../components/UserIDModal";
 import "./AddPatientsModal.css";
 
-const AddPatientsModal = ({ closeModal, setPatients, refreshPatients, editMode = false, patientData = {} }) => {
-  const [firstName, setFirstName] = useState(editMode ? patientData.firstName : "");
-  const [lastName, setLastName] = useState(editMode ? patientData.lastName : "");
+const AddPatientsModal = ({
+  closeModal,
+  refreshPatients,
+  editMode = false,
+  patientData = {},
+}) => {
+  const [firstName, setFirstName] = useState(
+    editMode ? patientData.firstName : ""
+  );
+  const [lastName, setLastName] = useState(
+    editMode ? patientData.lastName : ""
+  );
   const [dob, setDob] = useState(editMode ? patientData.dob : "");
   const [sex, setSex] = useState(editMode ? patientData.sex : "select");
   const [showUserIDModal, setShowUserIDModal] = useState(false);
-  const [generatedPatientID, setGeneratedPatientID] = useState("");
-  const [isAdding, setIsAdding] = useState(false); 
+  const [generatedUserId, setGeneratedUserId] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     if (editMode && patientData) {
@@ -31,14 +40,14 @@ const AddPatientsModal = ({ closeModal, setPatients, refreshPatients, editMode =
     }
   }, [editMode, patientData]);
 
-  const generatePatientID = () => {
+  const generateUserId = () => {
     return "ID-" + Math.random().toString(36).substring(2, 15);
   };
 
-  const addPatientToFirebase = async (patientID) => {
+  const addPatientToFirebase = async (userId) => {
     try {
       const sexStored = sex === "male" ? "M" : sex === "female" ? "F" : "O";
-      const userDoc = doc(db, "users", patientID);
+      const userDoc = doc(db, "users", userId);
       await setDoc(userDoc, {
         firstName,
         lastName,
@@ -79,9 +88,9 @@ const AddPatientsModal = ({ closeModal, setPatients, refreshPatients, editMode =
         alert("⚠️ Failed to update patient. Please try again.");
       }
     } else {
-      const patientID = generatePatientID();
-      setGeneratedPatientID(patientID);
-      const success = await addPatientToFirebase(patientID);
+      const userId = generateUserId();
+      setGeneratedUserId(userId);
+      const success = await addPatientToFirebase(userId);
       if (success) {
         setShowUserIDModal(true);
       } else {
@@ -98,7 +107,9 @@ const AddPatientsModal = ({ closeModal, setPatients, refreshPatients, editMode =
           <div className="modal-header">
             <h2>{editMode ? "Edit Patient" : "Add Patient"}</h2>
             <div className="close-btn-container">
-              <button className="close-btn" onClick={closeModal}>X</button>
+              <button className="close-btn" onClick={closeModal}>
+                X
+              </button>
             </div>
           </div>
           <p>Please enter the patient's information.</p>
@@ -142,14 +153,24 @@ const AddPatientsModal = ({ closeModal, setPatients, refreshPatients, editMode =
               <option value="other">Other</option>
             </select>
           </div>
-          <button className="add-patient-btn" onClick={handleSubmit} disabled={isAdding}>
-            {isAdding ? (editMode ? "Updating..." : "Adding...") : (editMode ? "Update" : "Add Patient")}
+          <button
+            className="add-patient-btn"
+            onClick={handleSubmit}
+            disabled={isAdding}
+          >
+            {isAdding
+              ? editMode
+                ? "Updating..."
+                : "Adding..."
+              : editMode
+              ? "Update"
+              : "Add Patient"}
           </button>
         </div>
       </div>
-      {(!editMode && showUserIDModal) && (
+      {!editMode && showUserIDModal && (
         <UserIDModal
-          patientID={generatedPatientID}
+          userId={generatedUserId}
           onClose={() => setShowUserIDModal(false)}
           onConfirm={() => {}}
         />

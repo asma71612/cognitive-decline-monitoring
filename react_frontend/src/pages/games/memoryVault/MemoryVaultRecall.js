@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import titleImage from "../../../assets/title.svg";
 import RECALL_SESSIONS from './imports/recallSessions';
 import "./MemoryVault.css";
 
 const MemoryVaultRecall = () => {
+  const { userId } = useParams();
   const [playCount, setPlayCount] = useState(0);
-  const [userId, setUserId] = useState(null);
   const [hintsUsed, setHintsUsed] = useState(0);
 
   const [word, setWord] = useState("");
@@ -26,16 +26,14 @@ const MemoryVaultRecall = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    if (storedUserId) {
-      setUserId(storedUserId);
-      fetchUserData(storedUserId);
+    if (userId) {
+      fetchUserData(userId);
     }
-  }, []);
+  }, [userId]);
 
-  const fetchUserData = async (userId) => {
+  const fetchUserData = async (uid) => {
     try {
-      const userRef = doc(db, "users", userId);
+      const userRef = doc(db, "users", uid);
       const userDoc = await getDoc(userRef);
   
       if (userDoc.exists()) {
@@ -201,7 +199,7 @@ const MemoryVaultRecall = () => {
     setAudioHint(null);
     setPictureHint(null);
 
-    navigate("/patient-home-page");
+    navigate(`/patient-home-page/${userId}`);
 };
 
   return (

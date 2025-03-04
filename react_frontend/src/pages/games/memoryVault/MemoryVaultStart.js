@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { db } from "../../../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import titleImage from "../../../assets/title.svg";
@@ -11,21 +11,12 @@ import SESSIONS from "./imports/startSessions";
 import "./MemoryVault.css";
 
 const MemoryVaultStart = () => {
+  const { userId } = useParams();
   const [playCount, setPlayCount] = useState(0);
   const [word, setWord] = useState("");
   const [picture, setPicture] = useState("");
   const [audio, setAudio] = useState("");
-  const [userId, setUserId] = useState(null);
   const audioRef = useRef(null);
-
-  useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    if (storedUserId) {
-      setUserId(storedUserId);
-    } else {
-      console.log("User ID not found in localStorage");
-    }
-  }, []);
 
   useEffect(() => {
     const fetchPlayCount = async () => {
@@ -98,7 +89,7 @@ const MemoryVaultStart = () => {
         </div>
 
         <div className="start-button-container">
-          <Link to="/memory-vault-recall-instructions">
+          <Link to={`/memory-vault-recall-instructions/${userId}`}>
             <button className="start-button">Next</button>
           </Link>
         </div>

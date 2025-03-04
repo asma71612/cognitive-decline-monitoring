@@ -158,7 +158,7 @@ const PatientHomePage = () => {
                   Complete My Task
                 </button>
 
-                <Link to="/instructions" className="complete-task-button">
+                <Link to={`/instructions/${userId}`} className="complete-task-button">
                   Instructions
                 </Link>
               </div>
@@ -180,20 +180,20 @@ const PatientHomePage = () => {
                       Complete My Task
                     </button>
 
-                    <Link to="/instructions" className="complete-task-button">
+                    <Link to={`/instructions/${userId}`} className="complete-task-button">
                       Instructions
                     </Link>
                   </>
                 ) : (
                   <>
                     <Link
-                      to="/memory-vault-start-instructions"
+                      to={`/memory-vault-start-instructions/${userId}`}
                       className="complete-task-button"
                     >
                       Complete My Task
                     </Link>
 
-                    <Link to="/instructions" className="complete-task-button">
+                    <Link to={`/instructions/${userId}`} className="complete-task-button">
                       Instructions
                     </Link>
                   </>

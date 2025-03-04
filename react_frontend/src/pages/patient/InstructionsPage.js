@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import titleImage from '../../assets/title.svg';
 import { db } from "../../firebaseConfig";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import './GeneralInstructionsPage.css';
 
 const GeneralInstructionsPage = () => {
-
-  const [userId, setUserId] = useState(null);
+  const { userId } = useParams(); 
   const [firstPlay, setFirstPlay] = useState(false);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    if (storedUserId) {
-      setUserId(storedUserId);
-      fetchUserData(storedUserId);
+    if (userId) {
+      fetchUserData(userId);
     }
-  }, []);
+  }, [userId]);
 
-  const fetchUserData = async (userId) => {
-    const userRef = doc(db, "users", userId);
+  const fetchUserData = async (uid) => {
+    const userRef = doc(db, "users", uid);
     const userDoc = await getDoc(userRef);
 
     if (userDoc.exists()) {
@@ -49,7 +46,7 @@ const GeneralInstructionsPage = () => {
         </p>
         <div className="side-by-side-buttons">
           <div className="instructions-button-container">
-            <Link to="/patient-home-page" className="start-button">Back to Home</Link>
+            <Link to={`/patient-home-page/${userId}`} className="start-button">Back to Home</Link>
           </div>
 
           {firstPlay && 

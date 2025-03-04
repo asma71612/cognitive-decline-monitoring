@@ -36,18 +36,18 @@ const App = () => {
         <Route path="/patient-home-page/:userId" element={<PatientHomePage />} />
         <Route path="/patient-report-page/:userId" element={<PatientReportPage />} />
         <Route path="/support-page" element={<SupportPage />} />
-        <Route path="/general-instructions" element={<GeneralInstructionsPage />} />
-        <Route path="/instructions" element={<InstructionsPage />} />
+        <Route path="/general-instructions/:userId" element={<GeneralInstructionsPage />} />
+        <Route path="/instructions/:userId" element={<InstructionsPage />} />
         <Route path="/lighting-calibration" element={<LightingCalibration />} />
         <Route path="/gaze-calibration" element={<GazeCalibration />} />
         <Route path="/natures-gaze-1-instructions" element={<NaturesGaze1Instructions />} />
         <Route path="/natures-gaze-1-game" element={<NaturesGaze1 />} />
         <Route path="/natures-gaze-2-instructions" element={<NaturesGaze2Instructions />} />
         <Route path="/natures-gaze-2-game" element={<NaturesGaze2 />} />
-        <Route path="/memory-vault-start-instructions" element={<MemoryVaultStartInstructions />} />
-        <Route path="/memory-vault-recall-instructions" element={<MemoryVaultRecallInstructions />} />
-        <Route path="/memory-vault-start" element={<MemoryVaultStart />} />
-        <Route path="/memory-vault-recall" element={<MemoryVaultRecall />} />
+        <Route path="/memory-vault-start-instructions/:userId" element={<MemoryVaultStartInstructions />} />
+        <Route path="/memory-vault-recall-instructions/:userId" element={<MemoryVaultRecallInstructions />} />
+        <Route path="/memory-vault-start/:userId" element={<MemoryVaultStart />} />
+        <Route path="/memory-vault-recall/:userId" element={<MemoryVaultRecall />} />
         <Route path="/physician-login" element={<PhysicianLoginPage />} />
         <Route path="/physician-signup" element={<PhysicianSignUp />} />
         <Route path="/physician-home-page" element={<PhysicianHomePage />} />

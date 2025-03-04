@@ -56,8 +56,6 @@ const formatFieldValue = (metric, value) => {
 };
 
 const DailyReportComponent = ({ userId, onSeeMore }) => {
-  const effectiveUserId = userId;
-
   const [patientData, setPatientData] = useState(null);
   const [dates, setDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
@@ -65,11 +63,10 @@ const DailyReportComponent = ({ userId, onSeeMore }) => {
   const [previousGameResults, setPreviousGameResults] = useState(null);
 
   useEffect(() => {
-    if (!effectiveUserId) return;
-
+    if (!userId) return;
     const fetchPatientData = async () => {
       try {
-        const patientDoc = await getDoc(doc(db, "users", effectiveUserId));
+        const patientDoc = await getDoc(doc(db, "users", userId));
         if (patientDoc.exists()) setPatientData(patientDoc.data());
       } catch (error) {
         console.error("Error fetching patient data:", error);
@@ -79,7 +76,7 @@ const DailyReportComponent = ({ userId, onSeeMore }) => {
     const fetchAvailableDates = async () => {
       try {
         const snapshot = await getDocs(
-          collection(db, `users/${effectiveUserId}/dailyReports`)
+          collection(db, `users/${userId}/dailyReports`)
         );
         const fetchedDates = snapshot.docs
           .map((doc) => doc.id)
@@ -93,28 +90,24 @@ const DailyReportComponent = ({ userId, onSeeMore }) => {
 
     fetchPatientData();
     fetchAvailableDates();
-  }, [effectiveUserId]);
+  }, [userId]);
 
   const fetchGameResults = async (date) => {
     setSelectedDate(date);
     setPreviousGameResults(null);
     try {
       const gamesSnapshot = await getDocs(
-        collection(db, `users/${effectiveUserId}/dailyReports/${date}/games`)
+        collection(db, `users/${userId}/dailyReports/${date}/games`)
       );
       let fetchedGames = {};
       gamesSnapshot.forEach((doc) => (fetchedGames[doc.id] = doc.data()));
       setGameResults(fetchedGames);
-
-      // Fetch previous session’s results if available
+      // Fetch previous session's results if available
       const currentIndex = dates.indexOf(date);
       if (currentIndex < dates.length - 1) {
         const previousDate = dates[currentIndex + 1];
         const prevSnapshot = await getDocs(
-          collection(
-            db,
-            `users/${effectiveUserId}/dailyReports/${previousDate}/games`
-          )
+          collection(db, `users/${userId}/dailyReports/${previousDate}/games`)
         );
         let prevGames = {};
         prevSnapshot.forEach((doc) => (prevGames[doc.id] = doc.data()));
@@ -122,6 +115,61 @@ const DailyReportComponent = ({ userId, onSeeMore }) => {
       }
     } catch (error) {
       console.error("Error fetching game results:", error);
+    }
+  };
+
+  const renderGameMetrics = (gameKey, gameData) => {
+    if (gameKey === "memoryVault") {
+      // Always show Presented and Recalled for Memory Vault
+      return ["Presented", "Recalled"].map((metric) => (
+        <div key={metric} className="metric-box">
+          <h4>{formatMetricName(metric)}</h4>
+          <p>
+            {gameData[metric] != null
+              ? formatFieldValue(metric, gameData[metric])
+              : "N/A"}
+          </p>
+        </div>
+      ));
+    } else {
+      // For other games, show all metrics
+      return Object.entries(gameData).map(([metric, value]) => {
+        let percentageChange = null;
+        if (
+          previousGameResults &&
+          previousGameResults[gameKey] &&
+          previousGameResults[gameKey][metric] !== undefined
+        ) {
+          const previousValue = previousGameResults[gameKey][metric];
+          percentageChange =
+            previousValue !== 0
+              ? ((value - previousValue) / previousValue) * 100
+              : null;
+        }
+        return (
+          <div key={metric} className="metric-box">
+            <h4>{formatMetricName(metric)}</h4>
+            <p>{formatFieldValue(metric, value)}</p>
+            {percentageChange !== null && (
+              <div className="comparison">
+                <div className="comparison-top">
+                  {percentageChange !== 0 && (
+                    <img
+                      src={percentageChange > 0 ? upArrow : downArrow}
+                      alt={percentageChange > 0 ? "Increase" : "Decrease"}
+                      className="arrow-icon"
+                    />
+                  )}
+                  <span className="percentage-change">
+                    {Math.abs(percentageChange.toFixed(0))}%
+                  </span>
+                </div>
+                <div className="comparison-text">from previous session</div>
+              </div>
+            )}
+          </div>
+        );
+      });
     }
   };
 
@@ -158,7 +206,7 @@ const DailyReportComponent = ({ userId, onSeeMore }) => {
             )}
           </h2>
           <p>
-            <strong>User ID:</strong> {effectiveUserId}
+            <strong>User ID:</strong> {userId}
           </p>
           <p>
             <strong>Date of Birth:</strong> {patientData.dob}
@@ -174,58 +222,7 @@ const DailyReportComponent = ({ userId, onSeeMore }) => {
               <div key={gameKey} className="game-box-neutral">
                 <h3 className="game-title">{gameName}</h3>
                 <div className="game-metrics">
-                  {(gameKey === "memoryVault"
-                    ? Object.entries(gameResults[gameKey]).filter(
-                        ([metric]) =>
-                          metric === "Presented" || metric === "Recalled"
-                      )
-                    : Object.entries(gameResults[gameKey])
-                  ).map(([metric, value]) => {
-                    let percentageChange = null;
-                    if (
-                      previousGameResults &&
-                      previousGameResults[gameKey] &&
-                      previousGameResults[gameKey][metric]
-                    ) {
-                      const previousValue =
-                        previousGameResults[gameKey][metric];
-                      percentageChange =
-                        previousValue !== 0
-                          ? ((value - previousValue) / previousValue) * 100
-                          : null;
-                    }
-                    return (
-                      <div key={metric} className="metric-box">
-                        <h4>{formatMetricName(metric)}</h4>
-                        <p>{formatFieldValue(metric, value)}</p>
-                        {percentageChange !== null && (
-                          <div className="comparison">
-                            <div className="comparison-top">
-                              {percentageChange !== 0 && (
-                                <img
-                                  src={
-                                    percentageChange > 0 ? upArrow : downArrow
-                                  }
-                                  alt={
-                                    percentageChange > 0
-                                      ? "Increase"
-                                      : "Decrease"
-                                  }
-                                  className="arrow-icon"
-                                />
-                              )}
-                              <span className="percentage-change">
-                                {Math.abs(percentageChange.toFixed(0))}%
-                              </span>
-                            </div>
-                            <div className="comparison-text">
-                              from previous session
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {renderGameMetrics(gameKey, gameResults[gameKey])}
                 </div>
               </div>
             );

@@ -1,8 +1,11 @@
 import React from "react";
+import { useParams } from 'react-router-dom';
 import InstructionsPage from "../../../components/InstructionsModal";
 import memoryVaultBackgroundDark from "../../../assets/memoryVaultBackgroundDark.png";
 
 const MemoryVaultInstructions = () => {
+  const { userId } = useParams();
+
   return (
       <InstructionsPage
       title="Unlock the Memory Vault"
@@ -15,7 +18,7 @@ const MemoryVaultInstructions = () => {
       ]}
       italicsText="(*) Don’t worry—you don’t need to describe the picture, just identify what it is."
       startButtonText="Start"
-      startButtonRoute="/memory-vault-recall"
+      startButtonRoute={`/memory-vault-recall/${userId}`}
       backgroundImage={memoryVaultBackgroundDark}
     />
   );

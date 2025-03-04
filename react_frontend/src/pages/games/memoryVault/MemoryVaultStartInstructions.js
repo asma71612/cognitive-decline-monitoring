@@ -1,8 +1,11 @@
 import React from "react";
+import { useParams } from 'react-router-dom';
 import InstructionsPage from "../../../components/InstructionsModal";
 import memoryVaultBackgroundDark from "../../../assets/memoryVaultBackgroundDark.png";
 
 const MemoryVaultInstructions = () => {
+  const { userId } = useParams();
+
   return (
     <InstructionsPage
       title="Memory Vault"
@@ -16,7 +19,7 @@ const MemoryVaultInstructions = () => {
       strongText="Your task is to remember these 3 items at the end of this session."
       italicsText="Do not write the words down, record them, or use any external aids to help you remember."
       startButtonText="Start"
-      startButtonRoute="/memory-vault-start"
+      startButtonRoute={`/memory-vault-start/${userId}`}
       backgroundImage={memoryVaultBackgroundDark}
     />
   );
