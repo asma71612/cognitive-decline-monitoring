@@ -8,42 +8,50 @@ import patientsIcon from "../../assets/my-patients-dark.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import searchIcon from "../../assets/search.svg";
+import editPatientIcon from "../../assets/edit-patient.svg";
 import "./PhysicianHomePage.css";
 
 const PhysicianHomePage = () => {
   const [patients, setPatients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Track the search input
+  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [patientToEdit, setPatientToEdit] = useState(null);
+
+  const fetchPatients = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "users"));
+      console.log("Is snapshot empty?", querySnapshot.empty);
+      const patientsData = querySnapshot.docs.map((doc) => {
+        console.log("Patient doc:", doc.id, doc.data());
+        return {
+          id: doc.id,
+          ...doc.data(),
+        };
+      });
+      if (querySnapshot.empty) {
+        console.log("No patients found in Firestore.");
+      }
+      setPatients(patientsData);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "users"));
-        console.log("Is snapshot empty?", querySnapshot.empty);
-        const patientsData = querySnapshot.docs.map((doc) => {
-          console.log("Patient doc:", doc.id, doc.data());
-          return {
-            id: doc.id,
-            ...doc.data(),
-          };
-        });
-        if (querySnapshot.empty) {
-          console.log("No patients found in Firestore.");
-        }
-        setPatients(patientsData);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
-      }
-    };
     fetchPatients();
   }, []);
 
-  const openModal = () => {
+  const openModalForAdd = () => {
+    setIsEditMode(false);
+    setPatientToEdit(null);
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const openModalForEdit = (patient) => {
+    setIsEditMode(true);
+    setPatientToEdit(patient);
+    setIsModalOpen(true);
   };
 
   const formatDateForDisplay = (isoString) => {
@@ -90,7 +98,7 @@ const PhysicianHomePage = () => {
 
           {/* Search and Add Patient Buttons */}
           <div className="search-add-container">
-            <button className="add-patient-btn-homepage" onClick={openModal}>
+            <button className="add-patient-btn-homepage" onClick={openModalForAdd}>
               Add Patient
             </button>
             <div className="search-bar">
@@ -114,6 +122,7 @@ const PhysicianHomePage = () => {
                 <th>Date of Birth</th>
                 <th>Enrolment Date</th>
                 <th>Reports</th>
+                <th>Edit</th> {/* new header */}
               </tr>
             </thead>
             <tbody>
@@ -134,11 +143,19 @@ const PhysicianHomePage = () => {
                         View Reports
                       </Link>
                     </td>
+                    <td>
+                      <img
+                        src={editPatientIcon}
+                        alt="Edit Patient"
+                        style={{ cursor: "pointer", width: "25px", height: "25px" }}
+                        onClick={() => openModalForEdit(patient)}
+                      />
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5">No patients found</td>
+                  <td colSpan="7">No patients found</td>
                 </tr>
               )}
             </tbody>
@@ -146,7 +163,13 @@ const PhysicianHomePage = () => {
         </div>
       </div>
       {isModalOpen && (
-        <AddPatientsModal closeModal={closeModal} setPatients={setPatients} />
+        <AddPatientsModal
+          closeModal={() => setIsModalOpen(false)}
+          setPatients={setPatients}
+          refreshPatients={fetchPatients}
+          editMode={isEditMode}
+          patientData={patientToEdit}
+        />
       )}
     </div>
   );

@@ -1,70 +1,93 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "../firebaseConfig.js";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, updateDoc } from "firebase/firestore";
 import UserIDModal from "../components/UserIDModal";
 import "./AddPatientsModal.css";
 
-const AddPatientsModal = ({ closeModal }) => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [dob, setDob] = useState("");
-  const [sex, setSex] = useState("select");
+const AddPatientsModal = ({ closeModal, setPatients, refreshPatients, editMode = false, patientData = {} }) => {
+  const [firstName, setFirstName] = useState(editMode ? patientData.firstName : "");
+  const [lastName, setLastName] = useState(editMode ? patientData.lastName : "");
+  const [dob, setDob] = useState(editMode ? patientData.dob : "");
+  const [sex, setSex] = useState(editMode ? patientData.sex : "select");
   const [showUserIDModal, setShowUserIDModal] = useState(false);
-  const [generatedUserId, setGeneratedUserId] = useState("");
-  const [isAdding, setIsAdding] = useState(false); // Prevent multiple submissions
+  const [generatedPatientID, setGeneratedPatientID] = useState("");
+  const [isAdding, setIsAdding] = useState(false); 
 
-  const generateUserId = () => {
-    return "ID-" + Math.random().toString(36).substring(2, 15); // Random patient ID
+  useEffect(() => {
+    if (editMode && patientData) {
+      setFirstName(patientData.firstName);
+      setLastName(patientData.lastName);
+      setDob(patientData.dob);
+      // I have to do this the brute force way because for some reason Male is always pre-selected...
+      setSex(
+        patientData.sex === "M"
+          ? "male"
+          : patientData.sex === "F"
+          ? "female"
+          : patientData.sex === "O"
+          ? "other"
+          : "select"
+      );
+    }
+  }, [editMode, patientData]);
+
+  const generatePatientID = () => {
+    return "ID-" + Math.random().toString(36).substring(2, 15);
   };
 
-  const addPatientToFirebase = async (userId) => {
-    let attempts = 0;
-    const maxAttempts = 3; // Retry up to 3 times in case of failure
-
-    while (attempts < maxAttempts) {
-      try {
-        const sexStored = sex === "male" ? "M" : sex === "female" ? "F" : "O";
-
-        const userDoc = doc(db, "users", userId);
-        await setDoc(userDoc, {
-          firstName,
-          lastName,
-          dob,
-          sex: sexStored,
-          enrolmentDate: new Date().toISOString(),
-        });
-
-        return true; // Success
-      } catch (error) {
-        attempts++;
-        await new Promise((res) => setTimeout(res, 500)); // Small delay before retry
-      }
+  const addPatientToFirebase = async (patientID) => {
+    try {
+      const sexStored = sex === "male" ? "M" : sex === "female" ? "F" : "O";
+      const userDoc = doc(db, "users", patientID);
+      await setDoc(userDoc, {
+        firstName,
+        lastName,
+        dob,
+        sex: sexStored,
+        enrolmentDate: new Date().toISOString(),
+      });
+      return true;
+    } catch (error) {
+      return false;
     }
+  };
 
-    return false; // Failure after retries
+  const updatePatientInFirebase = async () => {
+    try {
+      const sexStored = sex === "male" ? "M" : sex === "female" ? "F" : "O";
+      const userDoc = doc(db, "users", patientData.id);
+      await updateDoc(userDoc, { sex: sexStored });
+      return true;
+    } catch (error) {
+      return false;
+    }
   };
 
   const handleSubmit = async () => {
     if (!firstName || !lastName || !dob || sex === "select") {
-      alert("Please fill out all fields before adding a patient.");
+      alert("Please fill out all fields before proceeding.");
       return;
     }
-
-    if (isAdding) {
-      return; // Prevent duplicate submissions
-    }
-
+    if (isAdding) return;
     setIsAdding(true);
-    const userId = generateUserId();
-    setGeneratedUserId(userId);
-
-    const success = await addPatientToFirebase(userId);
-    if (success) {
-      setShowUserIDModal(true);
+    if (editMode) {
+      const success = await updatePatientInFirebase();
+      if (success) {
+        refreshPatients();
+        closeModal();
+      } else {
+        alert("⚠️ Failed to update patient. Please try again.");
+      }
     } else {
-      alert("⚠️ Failed to add patient. Please try again.");
+      const patientID = generatePatientID();
+      setGeneratedPatientID(patientID);
+      const success = await addPatientToFirebase(patientID);
+      if (success) {
+        setShowUserIDModal(true);
+      } else {
+        alert("⚠️ Failed to add patient. Please try again.");
+      }
     }
-
     setIsAdding(false);
   };
 
@@ -73,15 +96,12 @@ const AddPatientsModal = ({ closeModal }) => {
       <div className="modal-overlay">
         <div className="modal-container">
           <div className="modal-header">
-            <h2>Add Patient</h2>
+            <h2>{editMode ? "Edit Patient" : "Add Patient"}</h2>
             <div className="close-btn-container">
-              <button className="close-btn" onClick={closeModal}>
-                X
-              </button>
+              <button className="close-btn" onClick={closeModal}>X</button>
             </div>
           </div>
           <p>Please enter the patient's information.</p>
-
           <div className="form-group">
             <label>First Name</label>
             <input
@@ -89,9 +109,9 @@ const AddPatientsModal = ({ closeModal }) => {
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="First Name"
+              disabled={editMode}
             />
           </div>
-
           <div className="form-group">
             <label>Last Name</label>
             <input
@@ -99,18 +119,18 @@ const AddPatientsModal = ({ closeModal }) => {
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Last Name"
+              disabled={editMode}
             />
           </div>
-
           <div className="form-group">
             <label>Date of Birth</label>
             <input
               type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
+              disabled={editMode}
             />
           </div>
-
           <div className="form-group">
             <label>Sex</label>
             <select value={sex} onChange={(e) => setSex(e.target.value)}>
@@ -122,21 +142,14 @@ const AddPatientsModal = ({ closeModal }) => {
               <option value="other">Other</option>
             </select>
           </div>
-
-          <button
-            className="add-patient-btn"
-            onClick={handleSubmit}
-            disabled={isAdding}
-          >
-            {isAdding ? "Adding..." : "Add Patient"}
+          <button className="add-patient-btn" onClick={handleSubmit} disabled={isAdding}>
+            {isAdding ? (editMode ? "Updating..." : "Adding...") : (editMode ? "Update" : "Add Patient")}
           </button>
         </div>
       </div>
-
-      {/* Conditionally render the UserIDModal */}
-      {showUserIDModal && (
+      {(!editMode && showUserIDModal) && (
         <UserIDModal
-          userId={generatedUserId}
+          patientID={generatedPatientID}
           onClose={() => setShowUserIDModal(false)}
           onConfirm={() => {}}
         />
