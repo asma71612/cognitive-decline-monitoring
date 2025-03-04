@@ -37,7 +37,7 @@ const AllTimeTrends = () => {
             <span>Daily Reports</span>
           </Link>
           <Link
-            to="/weekly-reports"
+            to={`/physician-weekly-report/${patientId}`}
             className="menu-item-all-time-reports link weekly"
           >
             <img src={weeklyReportsIcon} alt="Weekly Reports" />

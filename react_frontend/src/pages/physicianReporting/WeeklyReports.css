@@ -1,0 +1,69 @@
+.weekly-reports-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+  
+.left-side-physician {
+    width: 25%;
+    background-color: #dfe5fb !important;
+    padding: 20px;
+    position: relative;
+}
+  
+.title-container {
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    margin-top: 0;
+    margin-left: 20px;
+}
+  
+.title-image {
+    margin-top: 20px;
+    width: 75%;
+    height: auto;
+}
+  
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 125px;
+}
+  
+.menu-item-weekly-reports {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 10px;
+}
+  
+.menu-item-weekly-reports img {
+    padding-left: 17px;
+    width: 35px;
+    height: 35px;
+}
+  
+.menu-item-weekly-reports.link span {
+    color: inherit;
+}
+  
+.logout {
+    position: absolute;
+    bottom: 20px;
+}
+  
+.right-side-physician {
+    width: 75%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    background-color: #fff3e3;
+    padding-bottom: 50px;
+}

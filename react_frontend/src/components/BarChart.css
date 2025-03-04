@@ -1,0 +1,72 @@
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+}
+  
+.barchart-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    position: relative;
+    margin-left: 75px;
+}
+  
+  .barchart-title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+  
+.barchart-title {
+    font-size: 20px;
+    font-family: "Inter", sans-serif;
+    color: #2f3b66;
+    font-weight: bold;
+}
+  
+.barchart-subtitle {
+    font-size: 14px;
+    font-family: "Inter", sans-serif;
+    color: #516a80;
+    align-self: center;
+    margin-top: 5px;
+}
+  
+.barchart-info-icon {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+  
+.barchart-info-icon:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
+  
+.barchart-info-popover {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.796);
+    border: 1px solid black;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-family: "Inter", sans-serif;
+    color: white;
+    border-radius: 4px;
+    white-space: wrap;
+    z-index: 10;
+    width: 100%;
+    text-align: center;
+}
+  
+.chart-box {
+    width: 600px;
+    width: 0 auto;
+}
+  

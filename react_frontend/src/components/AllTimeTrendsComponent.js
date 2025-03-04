@@ -962,27 +962,27 @@ const AllTimeTrendsComponent = ({ userId }) => {
               {
                 subtitle: "Noun",
                 rawData: lexNounData,
-                yAxisLabel: "Noun Count",
+                yAxisLabel: "Nouns Proportion (percent)",
               },
               {
                 subtitle: "Verb",
                 rawData: lexVerbData,
-                yAxisLabel: "Verb Count",
+                yAxisLabel: "Verbs Proportion (percent)",
               },
               {
                 subtitle: "Filler",
                 rawData: lexFillerData,
-                yAxisLabel: "Filler Count",
+                yAxisLabel: "Filler Proportion (percent)",
               },
               {
-                subtitle: "OpenClass",
+                subtitle: "Open Class",
                 rawData: lexOpenClassData,
-                yAxisLabel: "OpenClass Count",
+                yAxisLabel: "Open Class Proportion (percent)",
               },
               {
-                subtitle: "ClosedClass",
+                subtitle: "Closed Class",
                 rawData: lexClosedClassData,
-                yAxisLabel: "ClosedClass Count",
+                yAxisLabel: "Closed Class Proportion (percent)",
               },
             ];
             return (

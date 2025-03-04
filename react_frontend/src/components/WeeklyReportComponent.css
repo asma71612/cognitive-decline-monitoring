@@ -1,0 +1,54 @@
+.weekly-report-content {
+    margin-top: 100px;
+    margin-left: 80px;
+    margin-right: 80px;
+    text-align: left;
+    padding-bottom: 50px;
+    width: -webkit-fill-available;
+  }
+  
+.weekly-report-content h1 {
+    font-size: 50px;
+    font-weight: bold;
+}
+  
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.date-filter {
+    text-align: center;
+}
+
+.date-filter select {
+    border-radius: 20px;
+    font-size: 18px;
+    padding: 8px 12px;
+    border: 2px solid #516a80;
+    background-color: #e7eaf8;
+    color: #333;
+}
+
+
+.buttons-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+  
+.report-button {
+    flex: 1;
+    margin: 10px;
+    padding: 17px 20px;
+    margin-right: 20px;
+    margin-bottom: -15px;
+    background-color: #516a80;
+    color: #ffffff;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+}
