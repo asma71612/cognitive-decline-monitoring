@@ -33,7 +33,7 @@ const RECALL_SESSIONS = [
   },
   {
     word: "Crown",
-    audio: "Pinneaple",
+    audio: "Pineapple",
     picture: "Lamp",
     wordHint: "It is a decorative headpiece worn by kings and queens.",
     audioHint: "It is a tropical fruit with a spiky exterior.",
