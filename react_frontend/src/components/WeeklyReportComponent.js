@@ -989,9 +989,9 @@ const WeeklyReportComponent = ({ userId }) => {
                         xAxisLabel="Date"
                         yAxisLabel="Points"
                         seriesLabels={{
-                            text: "Text Word",
-                            audio: "Audio Word",
-                            picture: "Picture Word",
+                            text: "Text",
+                            audio: "Audio",
+                            picture: "Picture",
                         }}
                         memoryVault={true}
                         infoDescription={PlotDescriptions["Recall Score"]}
