@@ -216,7 +216,13 @@ const MemoryVaultRecall = () => {
             <p className='bold'>Enter the word you read</p>
             <input className='input-textbox' type="text" value={inputWord} onChange={(e) => setInputWord(e.target.value)} />
             <div className='hint-container'>
-              <button className='hint-button' onClick={() => handleHint("word")} disabled={wordHint}>Need a Hint?</button>
+              <button 
+                className={`hint-button ${wordHint ? 'disabledButtonStyle' : ''}`}
+                onClick={() => handleHint("word")} 
+                disabled={wordHint}
+              >
+                Need a Hint?
+              </button>
               {wordHint && <p className="hint-text">{wordHint}</p>}
             </div>
           </div>
@@ -225,7 +231,13 @@ const MemoryVaultRecall = () => {
             <p className='bold'>Enter the word you heard</p>
             <input className='input-textbox' type="text" value={inputAudio} onChange={(e) => setInputAudio(e.target.value)} />
             <div className='hint-container'>
-              <button className='hint-button' onClick={() => handleHint("audio")} disabled={audioHint}>Need a Hint?</button>
+              <button 
+                className={`hint-button ${audioHint ? 'disabledButtonStyle' : ''}`}
+                onClick={() => handleHint("audio")} 
+                disabled={audioHint}
+              >
+                Need a Hint?
+              </button>
               {audioHint && <p className="hint-text">{audioHint}</p>}
             </div>
           </div>
@@ -234,7 +246,13 @@ const MemoryVaultRecall = () => {
             <p className='bold'>Enter the picture you saw</p>
             <input className='input-textbox' type="text" value={inputPicture} onChange={(e) => setInputPicture(e.target.value)} />
             <div className='hint-container'>
-              <button className='hint-button' onClick={() => handleHint("picture")} disabled={pictureHint}>Need a Hint?</button>
+              <button 
+                className={`hint-button ${pictureHint ? 'disabledButtonStyle' : ''}`}
+                onClick={() => handleHint("picture")} 
+                disabled={pictureHint}
+              >
+                Need a Hint?
+              </button>
               {pictureHint && <p className="hint-text">{pictureHint}</p>}
             </div>
           </div>
