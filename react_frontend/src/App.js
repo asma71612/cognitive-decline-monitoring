@@ -52,7 +52,7 @@ const App = () => {
         <Route path="/physician-signup" element={<PhysicianSignUp />} />
         <Route path="/physician-home-page" element={<PhysicianHomePage />} />
         <Route path="/physician-daily-report/:userId" element={<PhysicianDailyReports />} />
-        <Route path="/physician-weekly-report" element={<PhysicianWeeklyReports />} />
+        <Route path="/physician-weekly-report/:userId" element={<PhysicianWeeklyReports />} />
         <Route path="/physician-all-time-trends/:userId" element={<PhysicianAllTimeTrends />} />
         <Route path="/physician-support" element={<PhysicianSupportPage />} />
       </Routes>

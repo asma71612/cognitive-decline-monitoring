@@ -162,3 +162,9 @@
   font-weight: 500;
   font-style: italic;
 }
+
+.disabledButtonStyle {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #777;
+};

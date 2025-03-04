@@ -5,7 +5,7 @@ import patientsIcon from "../../assets/my-patients-light.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import dailyReportsIcon from "../../assets/daily-reports-light.svg";
-import weeklyReportsIcon from "../../assets/weekly-reports.svg";
+import weeklyReportsIcon from "../../assets/weekly-reports-light.svg";
 import allTimeReportsIcon from "../../assets/all-time-reports-dark.svg";
 import AllTimeTrendsComponent from "../../components/AllTimeTrendsComponent";
 import "./AllTimeTrends.css";
@@ -37,7 +37,7 @@ const AllTimeTrends = () => {
             <span>Daily Reports</span>
           </Link>
           <Link
-            to="/weekly-reports"
+            to={`/physician-weekly-report/${userId}`}
             className="menu-item-all-time-reports link weekly"
           >
             <img src={weeklyReportsIcon} alt="Weekly Reports" />

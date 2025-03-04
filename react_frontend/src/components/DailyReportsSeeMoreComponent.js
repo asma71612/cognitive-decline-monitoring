@@ -429,8 +429,8 @@ const DailyReportsSeeMoreComponent = ({
         {Object.entries(landingAccuracy).map(([task, data]) => (
           <div key={task} className="table-row">
             <span>{task}</span>
-            <span>{data.LandingAccuracy}</span>
-            <span>{data.ConfidenceInterval}</span>
+            <span>{data.LandingAccuracy !== undefined ? data.LandingAccuracy : "N/A"}</span>
+            <span>{data.ConfidenceInterval !== undefined ? data.ConfidenceInterval : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -448,8 +448,8 @@ const DailyReportsSeeMoreComponent = ({
         {Object.entries(errors).map(([task, data]) => (
           <div key={task} className="table-row">
             <span>{task}</span>
-            <span>{data.ErrorCount}</span>
-            <span>{data.PercentError}</span>
+            <span>{data.ErrorCount !== undefined ? data.ErrorCount : "N/A"}</span>
+            <span>{data.PercentError !== undefined ? data.PercentError : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -466,7 +466,7 @@ const DailyReportsSeeMoreComponent = ({
         {Object.entries(durations).map(([task, data]) => (
           <div key={task} className="table-row">
             <span>{task}</span>
-            <span>{data.Duration}</span>
+            <span>{data.Duration !== undefined ? data.Duration : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -675,7 +675,7 @@ const DailyReportsSeeMoreComponent = ({
             <div key={index} className="table-row">
               <span>{presentedArray[index] || ""}</span>
               <span>{recalledArray[index] || ""}</span>
-              <span>{pointsArray[index] || ""}</span>
+              <span>{pointsArray[index] !== undefined ? pointsArray[index] : ""}</span>
             </div>
           ))}
         </div>
