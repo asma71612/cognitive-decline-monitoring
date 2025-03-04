@@ -1,7 +1,7 @@
 import React from "react";
 import "./UserIDModal.css";
 
-const UserIDModal = ({ patientID, onClose, onConfirm }) => {
+const UserIDModal = ({ userId, onClose, onConfirm }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-container">
@@ -14,7 +14,7 @@ const UserIDModal = ({ patientID, onClose, onConfirm }) => {
           </div>
         </div>
         <p>Your patient identification code is:</p>
-        <h3>{patientID}</h3>
+        <h3>{userId}</h3>
 
         <button
           className="done-btn"

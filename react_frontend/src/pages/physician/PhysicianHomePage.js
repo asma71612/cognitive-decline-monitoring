@@ -81,12 +81,12 @@ const PhysicianHomePage = () => {
             <img src={patientsIcon} alt="My Patients" />
             <span style={{ color: "#2F3B66" }}>My Patients</span>
           </Link>
-          <Link to="/physician-support" className="menu-item link colored">
+          <Link to="/physician-support" className="menu-item-my-patients link colored">
             <img src={supportIcon} alt="Support" />
             <span style={{ color: "#516A80" }}>Support</span>
           </Link>
         </div>
-        <Link to="/physician-login" className="menu-item link logout">
+        <Link to="/physician-login" className="menu-item-my-patients link logout">
           <img src={profileIcon} alt="Log Out" />
           <span>Log Out</span>
         </Link>

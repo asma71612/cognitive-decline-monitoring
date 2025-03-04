@@ -11,7 +11,7 @@ import AllTimeTrendsComponent from "../../components/AllTimeTrendsComponent";
 import "./AllTimeTrends.css";
 
 const AllTimeTrends = () => {
-  const { patientId } = useParams();
+  const { userId } = useParams();
   const [view] = useState("allTime");
 
   return (
@@ -30,7 +30,7 @@ const AllTimeTrends = () => {
             <span>My Patients</span>
           </Link>
           <Link
-            to={`/physician-daily-report/${patientId}`}
+            to={`/physician-daily-report/${userId}`}
             className="menu-item-all-time-reports link daily"
           >
             <img src={dailyReportsIcon} alt="Daily Reports" />
@@ -44,7 +44,7 @@ const AllTimeTrends = () => {
             <span>Weekly Reports</span>
           </Link>
           <Link
-            to={`/physician-all-time-trends/${patientId}`}
+            to={`/physician-all-time-trends/${userId}`}
             className="menu-item-all-time-reports link trends"
           >
             <img src={allTimeReportsIcon} alt="All-Time Trends" />
@@ -68,7 +68,7 @@ const AllTimeTrends = () => {
       </div>
       {/* Right Side: All Time Trends Report Content */}
       <div className="right-side-physician">
-        {view === "allTime" && <AllTimeTrendsComponent patientId={patientId} />}
+        {view === "allTime" && <AllTimeTrendsComponent userId={userId} />}
       </div>
     </div>
   );

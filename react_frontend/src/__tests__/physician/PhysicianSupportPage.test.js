@@ -1,4 +1,4 @@
-import React from "react";
+import { React } from 'react';
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter as Router, MemoryRouter } from "react-router-dom";
 import PhysicianSupportPage from "../../pages/physician/PhysicianSupportPage";

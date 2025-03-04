@@ -1,4 +1,4 @@
-import React from 'react';
+import { React } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import NaturesGaze1Instructions from '../../../pages/games/naturesGaze/NaturesGaze1Instructions';

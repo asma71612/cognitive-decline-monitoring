@@ -64,7 +64,7 @@
   margin-top: 175px;
 }
 
-.menu-item {
+.menu-item-support {
   display: flex;
   align-items: center;
   gap: 25px;
@@ -75,22 +75,23 @@
   margin-bottom: 10px;
 }
 
-.menu-item img {
+.menu-item-support img {
   padding-left: 17px;
   width: 35px;
   height: 35px;
 }
 
-.menu-item.link span {
-  color: inherit;
+.menu-item-support.link[href="/patient-home-page"] span.home-text,
+.menu-item-support.link[href="/patient-report-page"] span {
+  color: #516a80;
 }
 
-.menu-item.link[href="/patient-home-page"] span.home-text {
+.menu-item-support.link[href="/support-page"] span.support-text {
+  color: #2f3b66;
+}
+
+.menu-item-support .home-text {
   color: #516a80 !important;
-}
-
-.menu-item.link[href="/support-page"] span.support-text {
-  color: #2F3B66 !important;
 }
 
 .logout {
@@ -129,7 +130,7 @@
 
 .underline {
   text-decoration: underline;
-  color: #2F3B66;
+  color: #2f3b66;
 }
 
 .disclaimer-subheading {
@@ -160,11 +161,11 @@
     margin-left: 0px;
   }
 
-  .menu-item {
+  .menu-item-support {
     font-size: 15px;
   }
 
-  .menu-item img {
+  .menu-item-support img {
     width: 20px;
     height: 20px;
   }

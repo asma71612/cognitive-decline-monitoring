@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import titleImage from "../../assets/title.svg";
 import homeIcon from "../../assets/home-light.svg";
 import reportIcon from "../../assets/reports-light.svg";
@@ -9,6 +9,8 @@ import privacyPolicy from "../../assets/PrivacyPolicy.pdf";
 import "./SupportPage.css";
 
 const SupportPage = () => {
+  const { userId } = useParams();
+
   return (
     <div className="patient-home-container">
       <div className="left-side">
@@ -16,20 +18,29 @@ const SupportPage = () => {
           <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
-          <Link to="/patient-home-page" className="menu-item link">
+          <Link
+            to={`/patient-home-page/${userId}`}
+            className="menu-item-support link"
+          >
             <img src={homeIcon} alt="Home" />
             <span className="home-text">Home</span>
           </Link>
-          <Link to="/patient-report-page" className="menu-item link">
+          <Link
+            to={`/patient-report-page/${userId}`}
+            className="menu-item-support link"
+          >
             <img src={reportIcon} alt="My Reports" />
             <span style={{ color: "#516A80" }}>My Reports</span>
           </Link>
-          <Link to="/support-page" className="menu-item link">
+          <Link
+            to={`/support-page/${userId}`}
+            className="menu-item-support link"
+          >
             <img src={supportIcon} alt="Support" />
             <span className="support-text">Support</span>
           </Link>
         </div>
-        <Link to="/patient-login" className="menu-item link logout">
+        <Link to="/patient-login" className="menu-item-support link logout">
           <img src={profileIcon} alt="Log Out" />
           <span>Log Out</span>
         </Link>
