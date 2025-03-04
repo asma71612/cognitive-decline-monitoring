@@ -6,7 +6,7 @@ import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import dailyReportsIcon from "../../assets/daily-reports-light.svg";
 import weeklyReportsIcon from "../../assets/weekly-reports.svg";
-import allTimeReportsIcon from "../../assets/all-time-reports-dark.svg";
+import allTimeReportsIcon from "../../assets/all-time-reports-light.svg";
 import WeeklyReportComponent from "../../components/WeeklyReportComponent";
 import "./AllTimeTrends.css";
 import './WeeklyReports.css';
@@ -14,8 +14,7 @@ import './WeeklyReports.css';
 const WeeklyReports = () => {
     const { patientId } = useParams();
     const [view] = useState("weekly");
-    const [selectedDates, setSelectedDates] = useState("");
-  
+ 
     return (
       <div className="weekly-reports-container">
         {/* Left Menu */}
@@ -73,7 +72,6 @@ const WeeklyReports = () => {
         {view === "weekly" && (
           <WeeklyReportComponent
             patientId={patientId}
-            selectedDates={selectedDates}
           />
         )}
         </div>
