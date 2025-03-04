@@ -49,10 +49,6 @@
     height: 35px;
 }
   
-.menu-item-weekly-reports.link span {
-    color: inherit;
-}
-  
 .logout {
     position: absolute;
     bottom: 20px;

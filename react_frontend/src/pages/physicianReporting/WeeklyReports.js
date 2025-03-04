@@ -5,14 +5,14 @@ import patientsIcon from "../../assets/my-patients-light.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import dailyReportsIcon from "../../assets/daily-reports-light.svg";
-import weeklyReportsIcon from "../../assets/weekly-reports.svg";
+import weeklyReportsIcon from "../../assets/weekly-reports-dark.svg";
 import allTimeReportsIcon from "../../assets/all-time-reports-light.svg";
 import WeeklyReportComponent from "../../components/WeeklyReportComponent";
 import "./AllTimeTrends.css";
 import './WeeklyReports.css';
 
 const WeeklyReports = () => {
-    const { patientId } = useParams();
+    const { userId } = useParams();
     const [view] = useState("weekly");
  
     return (
@@ -25,35 +25,35 @@ const WeeklyReports = () => {
           <div className="menu">
             <Link
               to="/physician-home-page"
-              className="menu-item-weekly-reports link home"
+              className="menu-item-daily-reports link"
             >
               <img src={patientsIcon} alt="My Patients" />
               <span>My Patients</span>
             </Link>
             <Link
-              to={`/physician-daily-report/${patientId}`}
-              className="menu-item-weekly-reports link daily"
+              to={`/physician-daily-report/${userId}`}
+              className="menu-item-daily-reports link"
             >
               <img src={dailyReportsIcon} alt="Daily Reports" />
               <span>Daily Reports</span>
             </Link>
             <Link
-              to={`/physician-weekly-report/${patientId}`}
+              to={`/physician-weekly-report/${userId}`}
               className="menu-item-weekly-reports link weekly"
             >
               <img src={weeklyReportsIcon} alt="Weekly Reports" />
               <span>Weekly Reports</span>
             </Link>
             <Link
-              to={`/physician-all-time-trends/${patientId}`}
-              className="menu-item-all-time-reports link trends"
+              to={`/physician-all-time-trends/${userId}`}
+              className="menu-item-all-time-reports link"
             >
               <img src={allTimeReportsIcon} alt="All-Time Trends" />
               <span>All-Time Trends</span>
             </Link>
             <Link
               to="/physician-support"
-              className="menu-item-weekly-reports link support"
+              className="menu-item-daily-reports link"
             >
               <img src={supportIcon} alt="Support" />
               <span>Support</span>
@@ -71,7 +71,7 @@ const WeeklyReports = () => {
         <div className="right-side-physician">
         {view === "weekly" && (
           <WeeklyReportComponent
-            patientId={patientId}
+          userId={userId}
           />
         )}
         </div>

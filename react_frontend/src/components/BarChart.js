@@ -89,17 +89,19 @@ const BarChart = ({
             title: {
               display: true,
               text: xAxisLabel,
+              color: "black",
               font: { size: 16, weight: "bold" },
             },
-            ticks: { font: { size: 14 } },
+            ticks: { color: "black", font: { size: 14 }},
           },
           y: {
             title: {
               display: true,
               text: yAxisLabel,
-              font: { size: 16, weight: "bold" },
+              color: "black",
+              font: { size: 16, weight: "bold"  },
             },
-            ticks: { font: { size: 14 } },
+            ticks: { color:"black", font: { size: 14 } },
           },
         },
         plugins: {

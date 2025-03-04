@@ -18,11 +18,11 @@
     align-items: center;
 }
 
-.date-filter {
+.date-filter-weekly {
     text-align: center;
 }
 
-.date-filter select {
+.date-filter-weekly select {
     border-radius: 20px;
     font-size: 18px;
     padding: 8px 12px;

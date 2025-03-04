@@ -5,7 +5,7 @@ import patientsIcon from "../../assets/my-patients-light.svg";
 import supportIcon from "../../assets/support-light.svg";
 import profileIcon from "../../assets/profile-light.svg";
 import dailyReportsIcon from "../../assets/daily-reports-dark.svg";
-import weeklyReportsIcon from "../../assets/weekly-reports.svg";
+import weeklyReportsIcon from "../../assets/weekly-reports-light.svg";
 import allTimeReportsIcon from "../../assets/all-time-reports.svg";
 import DailyReportComponent from "../../components/DailyReportComponent";
 import DailyReportsSeeMoreComponent from "../../components/DailyReportsSeeMoreComponent";
@@ -47,7 +47,7 @@ const DailyReports = () => {
             <img src={dailyReportsIcon} alt="Daily Reports" />
             <span>Daily Reports</span>
           </Link>
-          <Link to={`/physician-weekly-report/${patientId}`} className="menu-item-daily-reports link">
+          <Link to={`/physician-weekly-report/${userId}`} className="menu-item-daily-reports link">
             <img src={weeklyReportsIcon} alt="Weekly Reports" />
             <span>Weekly Reports</span>
           </Link>
