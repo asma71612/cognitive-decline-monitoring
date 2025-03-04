@@ -527,42 +527,40 @@ const WeeklyReportComponent = ({ userId }) => {
                 console.log("Fetching MemoryVault Recall Scores...", effectiveUserId, filteredDates);
                 const reports = await getReports(effectiveUserId, filteredDates);
                 console.log("Fetched Reports:", reports); // Log reports
-                for (const { dateKey } of reports) {
-                    const mvDocRef = doc(
-                      db,
-                      `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/memoryVault/recallSpeedAndAccuracy`
-                    );
-                    const mvDoc = await getDoc(mvDocRef);
-                    const [month, day, year] = dateKey.split('-').map(Number);
-                    const formattedDate = new Date(year, month - 1, day);
+                
+for (const { dateKey } of reports) {
+  const [month, day, year] = dateKey.split('-').map(Number);
+  const formattedDate = new Date(year, month - 1, day);
 
-                    // Format the date into "Jan 1, 2025"
-                    const fullDateKey = formattedDate.toLocaleDateString("en-US", {
-                        month: "short", // Abbreviated month name (e.g., Jan, Feb)
-                        day: "numeric", // Numeric day
-                        year: "numeric", // Full year (e.g., 2025)
-                    });
-                    for (const { dateKey } of reports) {
-                      const mvDocRef = doc(
-                        db,
-                        `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/memoryVault/recallSpeedAndAccuracy`
-                      );
-                      const mvDoc = await getDoc(mvDocRef);
-                      if (mvDoc.exists()) {
-                        const { wordPoints, audioPoints, picturePoints } = mvDoc.data();
-                        const sessionPoints = [];
-                        if (typeof wordPoints === "number") sessionPoints.push(wordPoints);
-                        if (typeof audioPoints === "number") sessionPoints.push(audioPoints);
-                        if (typeof picturePoints === "number") sessionPoints.push(picturePoints);
-                        if (sessionPoints.length) {
-                          if (!dataPoints[dateKey]) dataPoints[dateKey] = [];
-                          dataPoints[dateKey].push(...sessionPoints);
-                        }
-                      }
-                    }
-                console.log("Final dataPoints:", dataPoints); // Log final dataPoints
-                setMemoryVaultRecallScoreData(dataPoints);
-            } setMemoryVaultRecallScoreData(dataPoints);
+  // Format the date into "Jan 1, 2025"
+  const fullDateKey = formattedDate.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+  });
+
+  const mvDocRef = doc(
+      db,
+      `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/memoryVault/recallSpeedAndAccuracy`
+  );
+  const mvDoc = await getDoc(mvDocRef);
+
+  if (mvDoc.exists()) {
+      const { wordPoints, audioPoints, picturePoints } = mvDoc.data();
+      const sessionPoints = [];
+
+      if (typeof wordPoints === "number") sessionPoints.push(wordPoints);
+      if (typeof audioPoints === "number") sessionPoints.push(audioPoints);
+      if (typeof picturePoints === "number") sessionPoints.push(picturePoints);
+
+      if (sessionPoints.length) {
+          dataPoints[fullDateKey] = sessionPoints; // Assign only the three numbers
+      }
+  }
+}
+              
+              console.log("Final dataPoints:", dataPoints); // Log final dataPoints
+              setMemoryVaultRecallScoreData(dataPoints);
            } catch (error) {
                 console.error("Error fetching or computing points:", error);
             }
