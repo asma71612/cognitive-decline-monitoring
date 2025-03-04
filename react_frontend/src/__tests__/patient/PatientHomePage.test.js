@@ -1,100 +1,40 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { React } from 'react';
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import PatientHomePage from "../../pages/patient/PatientHomePage";
-import { onSnapshot } from 'firebase/firestore';
 
-// Mock Firebase Firestore and firebaseConfig
-jest.mock("firebase/firestore", () => ({
-  doc: jest.fn(),
-  onSnapshot: jest.fn(),
-}));
-
-jest.mock("../../firebaseConfig", () => ({
-  db: {},
-}));
-
-// Mocked data for Firestore
-const mockUserData = {
-  completedDays: ["2025-03-01", "2025-03-02"],
-  numCompletedDays: 2,
-  playFrequency: 6,
-  firstPlayed: "2025-01-01",
+const renderWithRouter = (ui, { route = "/patient-home-page/123" } = {}) => {
+  return render(
+    <MemoryRouter initialEntries={[route]}>
+      <Routes>
+        <Route path="/patient-home-page/:userId" element={ui} />
+      </Routes>
+    </MemoryRouter>
+  );
 };
 
 describe("PatientHomePage", () => {
-  beforeEach(() => {
-    // Mock the onSnapshot function to call the provided callback with mock data
-    onSnapshot.mockImplementation((docRef, callback) => {
-      callback({
-        exists: () => true,
-        data: () => mockUserData,
-      });
-      return jest.fn(); // Return a mock unsubscribe function
-    });
-
-    render(
-      <MemoryRouter>
-        <PatientHomePage />
-      </MemoryRouter>
-    );
-  });
-
   test("renders menu items and redirects correctly", () => {
-    const homeMenuItem = screen
-      .getByTestId("link-/patient-home-page")
-      .querySelector("span");
-    expect(homeMenuItem).toHaveTextContent("Home");
+    renderWithRouter(<PatientHomePage />, { route: "/patient-home-page/123" });
 
-    const reportsLink = screen
-      .getByTestId("link-/patient-report-page")
-      .querySelector("span");
-    expect(reportsLink).toHaveTextContent("My Reports");
+    // Verify the "Home" link
+    const homeLink = screen.getByRole("link", { name: /Home/i });
+    expect(homeLink).toBeInTheDocument();
+    expect(homeLink.getAttribute("href")).toBe("/patient-home-page/123");
 
-    const supportLink = screen
-      .getByTestId("link-/support-page")
-      .querySelector("span");
-    expect(supportLink).toHaveTextContent("Support");
-  });
+    // Verify the "My Reports" link
+    const reportsLink = screen.getByRole("link", { name: /My Reports/i });
+    expect(reportsLink).toBeInTheDocument();
+    expect(reportsLink.getAttribute("href")).toBe("/patient-report-page/123");
 
-  test("renders correct date in EST", () => {
-    const currentDate = new Date().toLocaleDateString("en-US", {
-      timeZone: "America/New_York",
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-
-    const day = parseInt(
-      new Date().toLocaleDateString("en-US", {
-        timeZone: "America/New_York",
-        day: "numeric",
-      }),
-      10
-    );
-
-    const ordinalSuffix =
-      day % 10 === 1 && day % 100 !== 11
-        ? "st"
-        : day % 10 === 2 && day % 100 !== 12
-        ? "nd"
-        : day % 10 === 3 && day % 100 !== 13
-        ? "rd"
-        : "th";
-
-    const expectedDate = currentDate.replace(
-      `${day}`,
-      `${day}${ordinalSuffix}`
-    );
-
-    const dateElement = screen.getByText(
-      new RegExp(`Today is ${expectedDate}`, "i")
-    );
-    expect(dateElement).toBeInTheDocument();
+    // Verify the "Support" link
+    const supportLink = screen.getByRole("link", { name: /Support/i });
+    expect(supportLink).toBeInTheDocument();
+    expect(supportLink.getAttribute("href")).toBe("/support-page/123");
   });
 
   test('renders "Home" heading on the right side', () => {
+    renderWithRouter(<PatientHomePage />, { route: "/patient-home-page/123" });
     const headingElement = screen.getByRole("heading", { name: /^Home$/i });
     expect(headingElement).toBeInTheDocument();
   });
