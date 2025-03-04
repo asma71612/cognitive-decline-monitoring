@@ -15,16 +15,16 @@ const PhysicianSupportPage = () => {
           <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
-          <Link to="/physician-home-page" className="menu-item link">
+          <Link to="/physician-home-page" className="menu-item-physician-support link">
             <img src={patientsIcon} alt="My Patients" />
             <span style={{ color: "#516A80" }}>My Patients</span>
           </Link>
-          <Link to="/physician-support" className="menu-item link colored">
+          <Link to="/physician-support" className="menu-item-physician-support link colored">
             <img src={supportIcon} alt="Support" />
             <span style={{ color: "#2F3B66" }}>Support</span>
           </Link>
         </div>
-        <Link to="/physician-login" className="menu-item link logout">
+        <Link to="/physician-login" className="menu-item-physician-support link logout">
           <img src={profileIcon} alt="Log Out" />
           <span>Log Out</span>
         </Link>

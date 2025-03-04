@@ -31,23 +31,32 @@ const PatientReportPage = () => {
           <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
-          <Link to={`/patient-home-page/${userId}`} className="menu-item link">
+          <Link
+            to={`/patient-home-page/${userId}`}
+            className="menu-item-patient-report link"
+          >
             <img src={homeIcon} alt="Home" />
             <span className="home-text">Home</span>
           </Link>
           <Link
             to={`/patient-report-page/${userId}`}
-            className="menu-item link"
+            className="menu-item-patient-report link"
           >
             <img src={reportIcon} alt="My Reports" />
-            <span style={{ color: "#2F3B66" }}>My Reports</span>
+            <span className="my-reports-text">My Reports</span>
           </Link>
-          <Link to="/support-page" className="menu-item link">
+          <Link
+            to={`/support-page/${userId}`}
+            className="menu-item-patient-report link"
+          >
             <img src={supportIcon} alt="Support" />
-            <span style={{ color: "#516A80" }}>Support</span>
+            <span className="support-text">Support</span>
           </Link>
         </div>
-        <Link to="/patient-login" className="menu-item link logout">
+        <Link
+          to="/patient-login"
+          className="menu-item-patient-report link logout"
+        >
           <img src={profileIcon} alt="Log Out" />
           <span>Log Out</span>
         </Link>

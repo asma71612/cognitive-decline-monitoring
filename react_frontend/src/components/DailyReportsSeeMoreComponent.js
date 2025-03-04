@@ -663,7 +663,7 @@ const DailyReportsSeeMoreComponent = ({
     return (
       <>
         <p className="total-points">
-          Total Points Scored (out of 12): {totalPoints}
+          <strong>Total Points Scored (out of 12): </strong>{totalPoints}
         </p>
         <div className="table-container">
           <div className="table-header">

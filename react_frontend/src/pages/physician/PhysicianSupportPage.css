@@ -36,7 +36,7 @@
   margin-top: 125px;
 }
 
-.menu-item {
+.menu-item-physician-support {
   display: flex;
   align-items: center;
   gap: 25px;
@@ -47,14 +47,10 @@
   margin-bottom: 10px;
 }
 
-.menu-item img {
+.menu-item-physician-support img {
   padding-left: 17px;
   width: 35px;
   height: 35px;
-}
-
-.menu-item.link span {
-  color: inherit;
 }
 
 .logout {
@@ -84,7 +80,7 @@
 
 .underline {
   text-decoration: underline;
-  color: #2F3B66;
+  color: #2f3b66;
 }
 
 @media (max-width: 800px) {
@@ -119,11 +115,11 @@
     margin-left: 0px;
   }
 
-  .menu-item {
+  .menu-item-physician-support {
     font-size: 10px;
   }
 
-  .menu-item img {
+  .menu-item-physician-support img {
     width: 20px;
     height: 20px;
   }

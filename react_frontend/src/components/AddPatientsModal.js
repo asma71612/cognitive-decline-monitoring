@@ -26,7 +26,7 @@ const AddPatientsModal = ({
     if (editMode && patientData) {
       setFirstName(patientData.firstName);
       setLastName(patientData.lastName);
-      setDob(patientData.dob);
+      setDob(new Date(patientData.dob).toLocaleDateString("en-US"));
       // I have to do this the brute force way because for some reason Male is always pre-selected...
       setSex(
         patientData.sex === "M"
@@ -136,7 +136,7 @@ const AddPatientsModal = ({
           <div className="form-group">
             <label>Date of Birth</label>
             <input
-              type="date"
+              type={editMode ? "text" : "date"}
               value={dob}
               onChange={(e) => setDob(e.target.value)}
               disabled={editMode}

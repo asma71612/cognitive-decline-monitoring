@@ -35,7 +35,7 @@ const App = () => {
         <Route path="/patient-login" element={<PatientLoginPage />} />
         <Route path="/patient-home-page/:userId" element={<PatientHomePage />} />
         <Route path="/patient-report-page/:userId" element={<PatientReportPage />} />
-        <Route path="/support-page" element={<SupportPage />} />
+        <Route path="/support-page/:userId" element={<SupportPage />} />
         <Route path="/general-instructions/:userId" element={<GeneralInstructionsPage />} />
         <Route path="/instructions/:userId" element={<InstructionsPage />} />
         <Route path="/lighting-calibration" element={<LightingCalibration />} />

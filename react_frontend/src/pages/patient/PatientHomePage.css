@@ -12,7 +12,7 @@
   align-items: flex-start; /* Left align items */
   padding: 20px;
   position: relative;
-  background: #FFE7E9 !important;
+  background: #ffe7e9;
 }
 
 .right-side {
@@ -41,7 +41,7 @@
   margin-top: 175px;
 }
 
-.menu-item {
+.menu-item-patient-home {
   display: flex;
   align-items: center;
   gap: 25px;
@@ -52,20 +52,24 @@
   margin-bottom: 10px;
 }
 
-.menu-item img {
+.menu-item-patient-home img {
   padding-left: 17px;
   width: 35px;
   height: 35px;
 }
 
-.menu-item.link span {
-  color: inherit;
+.menu-item-patient-home.link[href="/patient-reporting-landing-page"] span,
+.menu-item-patient-home.link[href="/support-page"] span,
+.logout span {
+  color: #516a80;
 }
 
-.menu-item.link[href="/patient-reporting-landing-page"] span,
-.menu-item.link[href="/support-page"] span,
-.logout span {
-  color: #516A80 !important;
+.menu-item-patient-home .home-text {
+  color: #2f3b66;
+}
+
+.menu-item-patient-home .reports-support-text {
+  color: #516a80;
 }
 
 .logout {
@@ -136,7 +140,7 @@
 
 .task-progress h3 {
   font-size: 24px;
-  color: #2F3B66;
+  color: #2f3b66;
   margin-bottom: 17px;
 }
 
@@ -172,7 +176,7 @@
 }
 
 .disabled-task-button:disabled {
-  background-color: #D3D3D3;
+  background-color: #d3d3d3;
   cursor: not-allowed;
   margin-right: 20px;
 }
@@ -209,11 +213,11 @@
     margin-left: 0px;
   }
 
-  .menu-item {
+  .menu-item-patient-home {
     font-size: 10px;
   }
 
-  .menu-item img {
+  .menu-item-patient-home img {
     width: 20px;
     height: 20px;
   }

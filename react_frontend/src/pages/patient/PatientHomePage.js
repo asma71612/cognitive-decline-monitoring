@@ -115,23 +115,32 @@ const PatientHomePage = () => {
           <img src={titleImage} alt="Title" className="title-image" />
         </div>
         <div className="menu">
-          <Link to={`/patient-home-page/${userId}`} className="menu-item link">
+          <Link
+            to={`/patient-home-page/${userId}`}
+            className="menu-item-patient-home link"
+          >
             <img src={homeIcon} alt="Home" />
-            <span>Home</span>
+            <span className="home-text">Home</span>
           </Link>
           <Link
             to={`/patient-report-page/${userId}`}
-            className="menu-item link"
+            className="menu-item-patient-home link"
           >
             <img src={reportIcon} alt="My Reports" />
-            <span style={{ color: "#516A80" }}>My Reports</span>
+            <span className="reports-support-text">My Reports</span>
           </Link>
-          <Link to="/support-page" className="menu-item link">
+          <Link
+            to={`/support-page/${userId}`}
+            className="menu-item-patient-home link"
+          >
             <img src={supportIcon} alt="Support" />
-            <span>Support</span>
+            <span className="reports-support-text">Support</span>
           </Link>
         </div>
-        <Link to="/patient-login" className="menu-item link logout">
+        <Link
+          to="/patient-login"
+          className="menu-item-patient-home link logout"
+        >
           <img src={profileIcon} alt="Log Out" />
           <span>Log Out</span>
         </Link>
@@ -158,7 +167,10 @@ const PatientHomePage = () => {
                   Complete My Task
                 </button>
 
-                <Link to={`/instructions/${userId}`} className="complete-task-button">
+                <Link
+                  to={`/instructions/${userId}`}
+                  className="complete-task-button"
+                >
                   Instructions
                 </Link>
               </div>
@@ -180,7 +192,10 @@ const PatientHomePage = () => {
                       Complete My Task
                     </button>
 
-                    <Link to={`/instructions/${userId}`} className="complete-task-button">
+                    <Link
+                      to={`/instructions/${userId}`}
+                      className="complete-task-button"
+                    >
                       Instructions
                     </Link>
                   </>
@@ -193,7 +208,10 @@ const PatientHomePage = () => {
                       Complete My Task
                     </Link>
 
-                    <Link to={`/instructions/${userId}`} className="complete-task-button">
+                    <Link
+                      to={`/instructions/${userId}`}
+                      className="complete-task-button"
+                    >
                       Instructions
                     </Link>
                   </>

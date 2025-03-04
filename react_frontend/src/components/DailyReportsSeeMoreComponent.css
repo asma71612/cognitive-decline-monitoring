@@ -188,3 +188,7 @@
   z-index: 10;
   text-align: center;
 }
+
+.total-points {
+  margin-left: 20px !important;
+}
