@@ -10,14 +10,14 @@ const AddPatientsModal = ({ closeModal }) => {
   const [dob, setDob] = useState("");
   const [sex, setSex] = useState("select");
   const [showUserIDModal, setShowUserIDModal] = useState(false);
-  const [generatedPatientID, setGeneratedPatientID] = useState("");
+  const [generatedUserId, setGeneratedUserId] = useState("");
   const [isAdding, setIsAdding] = useState(false); // Prevent multiple submissions
 
-  const generatePatientID = () => {
+  const generateUserId = () => {
     return "ID-" + Math.random().toString(36).substring(2, 15); // Random patient ID
   };
 
-  const addPatientToFirebase = async (patientID) => {
+  const addPatientToFirebase = async (userId) => {
     let attempts = 0;
     const maxAttempts = 3; // Retry up to 3 times in case of failure
 
@@ -25,7 +25,7 @@ const AddPatientsModal = ({ closeModal }) => {
       try {
         const sexStored = sex === "male" ? "M" : sex === "female" ? "F" : "O";
 
-        const userDoc = doc(db, "users", patientID);
+        const userDoc = doc(db, "users", userId);
         await setDoc(userDoc, {
           firstName,
           lastName,
@@ -55,10 +55,10 @@ const AddPatientsModal = ({ closeModal }) => {
     }
 
     setIsAdding(true);
-    const patientID = generatePatientID();
-    setGeneratedPatientID(patientID);
+    const userId = generateUserId();
+    setGeneratedUserId(userId);
 
-    const success = await addPatientToFirebase(patientID);
+    const success = await addPatientToFirebase(userId);
     if (success) {
       setShowUserIDModal(true);
     } else {
@@ -135,11 +135,11 @@ const AddPatientsModal = ({ closeModal }) => {
 
       {/* Conditionally render the UserIDModal */}
       {showUserIDModal && (
-          <UserIDModal
-            patientID={generatedPatientID}
-            onClose={() => setShowUserIDModal(false)}
-            onConfirm={() => {}}
-          />
+        <UserIDModal
+          userId={generatedUserId}
+          onClose={() => setShowUserIDModal(false)}
+          onConfirm={() => {}}
+        />
       )}
     </>
   );

@@ -12,7 +12,7 @@ import DailyReportsSeeMoreComponent from "../../components/DailyReportsSeeMoreCo
 import "./DailyReports.css";
 
 const DailyReports = () => {
-  const { patientId } = useParams();
+  const { userId } = useParams();
   const [view, setView] = useState("daily");
   const [selectedDate, setSelectedDate] = useState("");
 
@@ -41,7 +41,7 @@ const DailyReports = () => {
             <span>My Patients</span>
           </Link>
           <Link
-            to={`/physician-daily-report/${patientId}`}
+            to={`/physician-daily-report/${userId}`}
             className="menu-item-daily-reports link daily"
           >
             <img src={dailyReportsIcon} alt="Daily Reports" />
@@ -52,7 +52,7 @@ const DailyReports = () => {
             <span>Weekly Reports</span>
           </Link>
           <Link
-            to={`/physician-all-time-trends/${patientId}`}
+            to={`/physician-all-time-trends/${userId}`}
             className="menu-item-daily-reports link"
           >
             <img src={allTimeReportsIcon} alt="All-Time Trends" />
@@ -77,10 +77,7 @@ const DailyReports = () => {
       {/* Right Side: Shared Daily Report Content */}
       <div className="right-side-physician">
         {view === "daily" && (
-          <DailyReportComponent
-            patientId={patientId}
-            onSeeMore={handleSeeMore}
-          />
+          <DailyReportComponent userId={userId} onSeeMore={handleSeeMore} />
         )}
         {view === "seeMore" && (
           <DailyReportsSeeMoreComponent

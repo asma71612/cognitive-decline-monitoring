@@ -46,3 +46,7 @@ build/
 
 # Ignore application.properties file
 src/main/resources/application.properties
+
+# Ignore python cache files
+__pycache__/
+*.pyc

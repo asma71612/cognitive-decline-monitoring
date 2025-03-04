@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 import PatientInfoBoxComponent from "./PatientInfoBoxComponent";
@@ -50,16 +50,18 @@ const TitleWithInfo = ({ title, description }) => {
         onMouseEnter={() => setShowInfo(true)}
         onMouseLeave={() => setShowInfo(false)}
       />
-      {showInfo && (
-        <div className="info-popover">
-          {description}
-        </div>
-      )}
+      {showInfo && <div className="info-popover">{description}</div>}
     </div>
   );
 };
 
-const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
+const DailyReportsSeeMoreComponent = ({
+  selectedDate,
+  onBack,
+  userId: propUserId,
+}) => {
+  const { userId } = useParams();
+  const effectiveUserId = propUserId || userId;
   const [selectedGame, setSelectedGame] = useState("");
   const [sceneData, setSceneData] = useState(null);
   const [processQuestData, setProcessQuestData] = useState(null);
@@ -67,13 +69,11 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
   const [naturesGazeData, setNaturesGazeData] = useState(null);
   const [patientData, setPatientData] = useState(null);
 
-  const effectivePatientId = localStorage.getItem("userId");
-
   useEffect(() => {
-    if (!effectivePatientId) return;
+    if (!effectiveUserId) return;
     const fetchPatientData = async () => {
       try {
-        const patientDoc = await getDoc(doc(db, "users", effectivePatientId));
+        const patientDoc = await getDoc(doc(db, "users", effectiveUserId));
         if (patientDoc.exists()) {
           setPatientData(patientDoc.data());
         }
@@ -82,16 +82,16 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       }
     };
     fetchPatientData();
-  }, [effectivePatientId]);
+  }, [effectiveUserId]);
 
   // Fetch Scene Detective Data
   useEffect(() => {
     const fetchSceneData = async () => {
-      if (!selectedDate || !effectivePatientId) return;
+      if (!selectedDate || !effectiveUserId) return;
       try {
         const sceneRef = collection(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/sceneDetective`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/sceneDetective`
         );
         const snapshot = await getDocs(sceneRef);
         let data = {};
@@ -102,7 +102,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
         if (data["temporalCharacteristics"]) {
           const pausesRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/sceneDetective/temporalCharacteristics/Pauses`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/sceneDetective/temporalCharacteristics/Pauses`
           );
           const pausesSnapshot = await getDocs(pausesRef);
           let pauses = [];
@@ -115,7 +115,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
         if (data["fluencyMetrics"]) {
           const stuttersRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/sceneDetective/fluencyMetrics/Stutters`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/sceneDetective/fluencyMetrics/Stutters`
           );
           const stuttersSnapshot = await getDocs(stuttersRef);
           let stutters = [];
@@ -133,16 +133,16 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     if (selectedGame === "sceneDetective") {
       fetchSceneData();
     }
-  }, [selectedGame, selectedDate, effectivePatientId]);
+  }, [selectedGame, selectedDate, effectiveUserId]);
 
   // Fetch Process Quest Data
   useEffect(() => {
     const fetchProcessQuestData = async () => {
-      if (!selectedDate || !effectivePatientId) return;
+      if (!selectedDate || !effectiveUserId) return;
       try {
         const questRef = collection(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/processQuest`
         );
         const snapshot = await getDocs(questRef);
         let data = {};
@@ -153,7 +153,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
         if (data["temporalCharacteristics"]) {
           const pausesRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest/temporalCharacteristics/Pauses`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/processQuest/temporalCharacteristics/Pauses`
           );
           const pausesSnapshot = await getDocs(pausesRef);
           let pauses = [];
@@ -166,7 +166,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
         if (data["fluencyMetrics"]) {
           const stuttersRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/processQuest/fluencyMetrics/Stutters`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/processQuest/fluencyMetrics/Stutters`
           );
           const stuttersSnapshot = await getDocs(stuttersRef);
           let stutters = [];
@@ -184,16 +184,16 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     if (selectedGame === "processQuest") {
       fetchProcessQuestData();
     }
-  }, [selectedGame, selectedDate, effectivePatientId]);
+  }, [selectedGame, selectedDate, effectiveUserId]);
 
   // Fetch Memory Vault Data
   useEffect(() => {
     const fetchMemoryVaultData = async () => {
-      if (!selectedDate || !effectivePatientId) return;
+      if (!selectedDate || !effectiveUserId) return;
       try {
         const vaultRef = collection(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/memoryVault`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/memoryVault`
         );
         const snapshot = await getDocs(vaultRef);
         let data = {};
@@ -209,25 +209,25 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     if (selectedGame === "memoryVault") {
       fetchMemoryVaultData();
     }
-  }, [selectedGame, selectedDate, effectivePatientId]);
+  }, [selectedGame, selectedDate, effectiveUserId]);
 
   // Fetch Natures Gaze Data
   useEffect(() => {
     const fetchNaturesGazeData = async () => {
-      if (!selectedDate || !effectivePatientId) return;
+      if (!selectedDate || !effectiveUserId) return;
       let data = {};
 
       try {
         const fixationAccuracyRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy`
         );
         const fixationAccuracySnap = await getDoc(fixationAccuracyRef);
         if (fixationAccuracySnap.exists()) {
           let fixationAccuracyData = fixationAccuracySnap.data();
           const landingAccuracyRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy/landingAccuracy`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy/landingAccuracy`
           );
           const landingAccuracySnapshot = await getDocs(landingAccuracyRef);
           let landingAccuracy = {};
@@ -247,14 +247,14 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       try {
         const fixationDurationRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration`
         );
         const fixationDurationSnap = await getDoc(fixationDurationRef);
         if (fixationDurationSnap.exists()) {
           let fixationDurationData = fixationDurationSnap.data();
           const durationsRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration/durations`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration/durations`
           );
           const durationsSnapshot = await getDocs(durationsRef);
           let durations = {};
@@ -274,14 +274,14 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       try {
         const fixationErrorRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError`
         );
         const fixationErrorSnap = await getDoc(fixationErrorRef);
         if (fixationErrorSnap.exists()) {
           let fixationErrorData = fixationErrorSnap.data();
           const errorsRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError/errors`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError/errors`
           );
           const errorsSnapshot = await getDocs(errorsRef);
           let errors = {};
@@ -298,7 +298,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       try {
         const reactionTimeRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/reactionTime`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/reactionTime`
         );
         const reactionTimeSnap = await getDoc(reactionTimeRef);
         if (reactionTimeSnap.exists()) {
@@ -311,7 +311,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       try {
         const saccadeDirectionAccuracyRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy`
         );
         const saccadeDirectionAccuracySnap = await getDoc(
           saccadeDirectionAccuracyRef
@@ -321,7 +321,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
             saccadeDirectionAccuracySnap.data();
           const accuracyRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy/accuracy`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy/accuracy`
           );
           const accuracySnapshot = await getDocs(accuracyRef);
           let accuracy = {};
@@ -341,7 +341,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       try {
         const saccadeDirectionErrorRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError`
         );
         const saccadeDirectionErrorSnap = await getDoc(
           saccadeDirectionErrorRef
@@ -350,7 +350,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
           let saccadeDirectionErrorData = saccadeDirectionErrorSnap.data();
           const errorsRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError/errors`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError/errors`
           );
           const errorsSnapshot = await getDocs(errorsRef);
           let errors = {};
@@ -370,14 +370,14 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       try {
         const saccadeDurationRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration`
         );
         const saccadeDurationSnap = await getDoc(saccadeDurationRef);
         if (saccadeDurationSnap.exists()) {
           let saccadeDurationData = saccadeDurationSnap.data();
           const durationsRef = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration/durations`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration/durations`
           );
           const durationsSnapshot = await getDocs(durationsRef);
           let durations = {};
@@ -394,7 +394,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
       try {
         const saccadeOmissionPercentagesRef = doc(
           db,
-          `users/${effectivePatientId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeOmissionPercentages`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeOmissionPercentages`
         );
         const saccadeOmissionPercentagesSnap = await getDoc(
           saccadeOmissionPercentagesRef
@@ -416,7 +416,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     if (selectedGame === "naturesGaze") {
       fetchNaturesGazeData();
     }
-  }, [selectedGame, selectedDate, effectivePatientId]);
+  }, [selectedGame, selectedDate, effectiveUserId]);
 
   const renderFixationAccuracyTable = (landingAccuracy) => {
     return (
@@ -646,20 +646,40 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
     const recalledArray = data.Recalled
       ? data.Recalled.split(",").map((item) => item.trim())
       : [];
-    const maxRows = Math.max(presentedArray.length, recalledArray.length);
+
+    // row 0: wordPoints, row 1: audioPoints, row 2: picturePoints
+    const pointsArray = [data.wordPoints, data.audioPoints, data.picturePoints];
+    const totalPoints =
+      (typeof data.wordPoints === "number" ? data.wordPoints : 0) +
+      (typeof data.audioPoints === "number" ? data.audioPoints : 0) +
+      (typeof data.picturePoints === "number" ? data.picturePoints : 0);
+
+    const maxRows = Math.max(
+      presentedArray.length,
+      recalledArray.length,
+      pointsArray.length
+    );
+
     return (
-      <div className="table-container">
-        <div className="table-header">
-          <span>Presented</span>
-          <span>Recalled</span>
-        </div>
-        {Array.from({ length: maxRows }).map((_, index) => (
-          <div key={index} className="table-row">
-            <span>{presentedArray[index] || ""}</span>
-            <span>{recalledArray[index] || ""}</span>
+      <>
+        <p className="total-points">
+          Total Points Scored (out of 12): {totalPoints}
+        </p>
+        <div className="table-container">
+          <div className="table-header">
+            <span>Presented</span>
+            <span>Recalled</span>
+            <span>Points Scored</span>
           </div>
-        ))}
-      </div>
+          {Array.from({ length: maxRows }).map((_, index) => (
+            <div key={index} className="table-row">
+              <span>{presentedArray[index] || ""}</span>
+              <span>{recalledArray[index] || ""}</span>
+              <span>{pointsArray[index] || ""}</span>
+            </div>
+          ))}
+        </div>
+      </>
     );
   };
 
@@ -676,7 +696,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
         reportTitle="Daily Reports"
         selectedDate={selectedDate}
         patientData={patientData}
-        effectivePatientId={effectivePatientId}
+        effectiveUserId={effectiveUserId}
       />
       {/* Game Buttons */}
       <div className="buttons-container">
@@ -729,14 +749,19 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 "semanticFeatures",
                 "structuralFeatures",
               ].map((metric) => {
-                let descriptionKey = metricTitles[metric] || formatMetricName(metric);
-                if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
+                let descriptionKey =
+                  metricTitles[metric] || formatMetricName(metric);
+                if (
+                  selectedGame === "processQuest" ||
+                  selectedGame === "sceneDetective"
+                ) {
                   if (metric === "fluencyMetrics") {
                     descriptionKey = "Fluency Metrics: " + selectedGame;
                   } else if (metric === "lexicalFeatures") {
                     descriptionKey = "Lexical Content: " + selectedGame;
                   } else if (metric === "temporalCharacteristics") {
-                    descriptionKey = "Temporal Characteristics: " + selectedGame;
+                    descriptionKey =
+                      "Temporal Characteristics: " + selectedGame;
                   }
                 }
                 return (
@@ -774,7 +799,8 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                         Object.entries(sceneData[metric]).map(
                           ([field, value]) => (
                             <p key={field}>
-                              <strong>{formatMetricName(field)}:</strong> {value}
+                              <strong>{formatMetricName(field)}:</strong>{" "}
+                              {value}
                             </p>
                           )
                         )
@@ -802,14 +828,19 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                 "semanticFeatures",
                 "structuralFeatures",
               ].map((metric) => {
-                let descriptionKey = metricTitles[metric] || formatMetricName(metric);
-                if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
+                let descriptionKey =
+                  metricTitles[metric] || formatMetricName(metric);
+                if (
+                  selectedGame === "processQuest" ||
+                  selectedGame === "sceneDetective"
+                ) {
                   if (metric === "fluencyMetrics") {
                     descriptionKey = "Fluency Metrics: " + selectedGame;
                   } else if (metric === "lexicalFeatures") {
                     descriptionKey = "Lexical Content: " + selectedGame;
                   } else if (metric === "temporalCharacteristics") {
-                    descriptionKey = "Temporal Characteristics: " + selectedGame;
+                    descriptionKey =
+                      "Temporal Characteristics: " + selectedGame;
                   }
                 }
                 return (
@@ -847,7 +878,8 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
                         Object.entries(processQuestData[metric]).map(
                           ([field, value]) => (
                             <p key={field}>
-                              <strong>{formatMetricName(field)}:</strong> {value}
+                              <strong>{formatMetricName(field)}:</strong>{" "}
+                              {value}
                             </p>
                           )
                         )
@@ -974,9 +1006,7 @@ const DailyReportsSeeMoreComponent = ({ selectedDate, onBack }) => {
               <div className="game-box">
                 <TitleWithInfo
                   title="Fixation Landing Accuracy"
-                  description={
-                    PlotDescriptions["Fixation Accuracy"] || ""
-                  }
+                  description={PlotDescriptions["Fixation Accuracy"] || ""}
                 />
                 {naturesGazeData.fixationAccuracy &&
                 naturesGazeData.fixationAccuracy.landingAccuracy ? (

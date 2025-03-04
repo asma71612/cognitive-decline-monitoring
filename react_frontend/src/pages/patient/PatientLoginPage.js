@@ -23,10 +23,8 @@ const PatientLoginPage = () => {
 
       if (docSnap.exists()) {
         console.log("User data:", docSnap.data());
-        // Store the user ID in localStorage
-        localStorage.setItem("userId", userId);
         setError("");
-        navigate("/patient-home-page");
+        navigate(`/patient-home-page/${userId}`);
       } else {
         setError("ERROR: Invalid User Identification Code.");
       }

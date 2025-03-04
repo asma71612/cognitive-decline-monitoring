@@ -39,3 +39,7 @@ yarn-error.log*
 
 # Ignore Firebase configuration file
 react_frontend/src/firebaseConfig.js
+
+# Ignore python cache files
+__pycache__/
+*.pyc

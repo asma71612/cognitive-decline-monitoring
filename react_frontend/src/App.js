@@ -33,8 +33,8 @@ const App = () => {
         <Route path="/" element={<HomeLandingPage />} />
         <Route path="/home" element={<HomeLandingPage />} />
         <Route path="/patient-login" element={<PatientLoginPage />} />
-        <Route path="/patient-home-page" element={<PatientHomePage />} />
-        <Route path="/patient-report-page" element={<PatientReportPage />} />
+        <Route path="/patient-home-page/:userId" element={<PatientHomePage />} />
+        <Route path="/patient-report-page/:userId" element={<PatientReportPage />} />
         <Route path="/support-page" element={<SupportPage />} />
         <Route path="/general-instructions" element={<GeneralInstructionsPage />} />
         <Route path="/instructions" element={<InstructionsPage />} />
@@ -51,9 +51,9 @@ const App = () => {
         <Route path="/physician-login" element={<PhysicianLoginPage />} />
         <Route path="/physician-signup" element={<PhysicianSignUp />} />
         <Route path="/physician-home-page" element={<PhysicianHomePage />} />
-        <Route path="/physician-daily-report/:patientId" element={<PhysicianDailyReports />} />
+        <Route path="/physician-daily-report/:userId" element={<PhysicianDailyReports />} />
         <Route path="/physician-weekly-report" element={<PhysicianWeeklyReports />} />
-        <Route path="/physician-all-time-trends/:patientId" element={<PhysicianAllTimeTrends />} />
+        <Route path="/physician-all-time-trends/:userId" element={<PhysicianAllTimeTrends />} />
         <Route path="/physician-support" element={<PhysicianSupportPage />} />
       </Routes>
     </Router>

@@ -79,24 +79,51 @@ const MemoryVaultRecall = () => {
   };
 
   const handleDone = async () => {
-    if (!inputWord || !inputAudio|| !inputPicture) {
+    if (!inputWord || !inputAudio || !inputPicture) {
       alert("Please fill in all fields before proceeding!");
       return;
     }
 
-    const presentedWords = [word, audio, picture].filter(Boolean).join(", ");
-    const recalledWords = [inputWord, inputAudio, inputPicture].filter(Boolean).join(", ");
+    const presentedArray = [word, audio, picture];
+    const recalledArray = [inputWord, inputAudio, inputPicture];
+    
+    // Compute points separately for each pair:
+    const computePointsForPair = async (presented, recalled, hintUsed) => {
+      const response = await fetch("http://127.0.0.1:5000/compute-points", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          presented_word: presented,
+          recalled_word: recalled,
+        }),
+      });
+      const { points } = await response.json();
+      return hintUsed ? Math.max(points - 1, 0) : points;
+    };
 
+    const wordPoints = await computePointsForPair(presentedArray[0], recalledArray[0], !!wordHint);
+    const audioPoints = await computePointsForPair(presentedArray[1], recalledArray[1], !!audioHint);
+    const picturePoints = await computePointsForPair(presentedArray[2], recalledArray[2], !!pictureHint);
+
+    const presentedWords = presentedArray.filter(Boolean).join(", ");
+    const recalledWords = recalledArray.filter(Boolean).join(", ");
+    
+    // New object with separate hint booleans and points fields
     const userAttempt = {
-        Presented: presentedWords,
-        Recalled: recalledWords,
-        HintsUsed: hintsUsed,
+      Presented: presentedWords,
+      Recalled: recalledWords,
+      wordPoints,
+      audioPoints,
+      picturePoints,
+      wordHint: !!wordHint,
+      audioHint: !!audioHint,
+      pictureHint: !!pictureHint,
     };
 
     const formattedDate = new Date().toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
     }).replace(/\//g, '-');
 
     const userRef = doc(db, "users", userId);
@@ -105,33 +132,31 @@ const MemoryVaultRecall = () => {
     const allTimeReportsRef = doc(db, `users/${userId}/allTimeReports/${formattedDate}`);
 
     try {
-        // making sure parent documents exist
-        const dailyReportsDoc = await getDoc(dailyReportsRef);
-        const dailyReportsSeeMoreDoc = await getDoc(dailyReportsSeeMoreRef);
-        const allTimeReportsDoc = await getDoc(allTimeReportsRef);
+      // Ensure parent documents exist
+      const dailyReportsDoc = await getDoc(dailyReportsRef);
+      const dailyReportsSeeMoreDoc = await getDoc(dailyReportsSeeMoreRef);
+      const allTimeReportsDoc = await getDoc(allTimeReportsRef);
 
-        if (!dailyReportsDoc.exists()) {
-            await setDoc(dailyReportsRef, {});
-        }
-
-        if (!dailyReportsSeeMoreDoc.exists()) {
-            await setDoc(dailyReportsSeeMoreRef, {});
-        }
-
-        if (!allTimeReportsDoc.exists()) {
-          await setDoc(allTimeReportsRef, {});
+      if (!dailyReportsDoc.exists()) {
+        await setDoc(dailyReportsRef, {});
+      }
+      if (!dailyReportsSeeMoreDoc.exists()) {
+        await setDoc(dailyReportsSeeMoreRef, {});
+      }
+      if (!allTimeReportsDoc.exists()) {
+        await setDoc(allTimeReportsRef, {});
       }
 
-        const dailyMemoryVaultRef = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/memoryVault`);
-        const seeMoreMemoryVaultRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault/recallSpeedAndAccuracy`);
-        const allTimeMemoryVaultRef = doc(db, `users/${userId}/allTimeReports/${formattedDate}/games/memoryVault`);
+      const dailyMemoryVaultRef = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/memoryVault`);
+      const seeMoreMemoryVaultRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault/recallSpeedAndAccuracy`);
+      const allTimeMemoryVaultRef = doc(db, `users/${userId}/allTimeReports/${formattedDate}/games/memoryVault`);
 
-        await setDoc(dailyMemoryVaultRef, userAttempt);
-        await setDoc(seeMoreMemoryVaultRef, userAttempt);
-        await setDoc(allTimeMemoryVaultRef, userAttempt);
+      await setDoc(dailyMemoryVaultRef, userAttempt);
+      await setDoc(seeMoreMemoryVaultRef, userAttempt);
+      await setDoc(allTimeMemoryVaultRef, userAttempt);
 
     } catch (error) {
-        console.error("Error saving response:", error);
+      console.error("Error saving response:", error);
     }
 
     const newCount = playCount + 1;

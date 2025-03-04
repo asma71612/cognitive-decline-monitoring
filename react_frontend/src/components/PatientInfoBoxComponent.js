@@ -32,7 +32,7 @@ const formatSelectedDate = (dateStr) => {
 const PatientInfoBoxComponent = ({
   selectedDate,
   patientData,
-  effectivePatientId,
+  effectiveUserId,
   reportTitle,
 }) => {
   return (
@@ -52,7 +52,7 @@ const PatientInfoBoxComponent = ({
             )}
           </h2>
           <p>
-            <strong>User ID:</strong> {effectivePatientId}
+            <strong>User ID:</strong> {effectiveUserId}
           </p>
           <p>
             <strong>Date of Birth:</strong> {patientData.dob}

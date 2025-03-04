@@ -55,8 +55,8 @@ const formatFieldValue = (metric, value) => {
   return value;
 };
 
-const DailyReportComponent = ({ patientId, onSeeMore }) => {
-  const effectivePatientId = patientId || localStorage.getItem("userId");
+const DailyReportComponent = ({ userId, onSeeMore }) => {
+  const effectiveUserId = userId;
 
   const [patientData, setPatientData] = useState(null);
   const [dates, setDates] = useState([]);
@@ -65,11 +65,11 @@ const DailyReportComponent = ({ patientId, onSeeMore }) => {
   const [previousGameResults, setPreviousGameResults] = useState(null);
 
   useEffect(() => {
-    if (!effectivePatientId) return;
+    if (!effectiveUserId) return;
 
     const fetchPatientData = async () => {
       try {
-        const patientDoc = await getDoc(doc(db, "users", effectivePatientId));
+        const patientDoc = await getDoc(doc(db, "users", effectiveUserId));
         if (patientDoc.exists()) setPatientData(patientDoc.data());
       } catch (error) {
         console.error("Error fetching patient data:", error);
@@ -79,7 +79,7 @@ const DailyReportComponent = ({ patientId, onSeeMore }) => {
     const fetchAvailableDates = async () => {
       try {
         const snapshot = await getDocs(
-          collection(db, `users/${effectivePatientId}/dailyReports`)
+          collection(db, `users/${effectiveUserId}/dailyReports`)
         );
         const fetchedDates = snapshot.docs
           .map((doc) => doc.id)
@@ -93,14 +93,14 @@ const DailyReportComponent = ({ patientId, onSeeMore }) => {
 
     fetchPatientData();
     fetchAvailableDates();
-  }, [effectivePatientId]);
+  }, [effectiveUserId]);
 
   const fetchGameResults = async (date) => {
     setSelectedDate(date);
     setPreviousGameResults(null);
     try {
       const gamesSnapshot = await getDocs(
-        collection(db, `users/${effectivePatientId}/dailyReports/${date}/games`)
+        collection(db, `users/${effectiveUserId}/dailyReports/${date}/games`)
       );
       let fetchedGames = {};
       gamesSnapshot.forEach((doc) => (fetchedGames[doc.id] = doc.data()));
@@ -113,7 +113,7 @@ const DailyReportComponent = ({ patientId, onSeeMore }) => {
         const prevSnapshot = await getDocs(
           collection(
             db,
-            `users/${effectivePatientId}/dailyReports/${previousDate}/games`
+            `users/${effectiveUserId}/dailyReports/${previousDate}/games`
           )
         );
         let prevGames = {};
@@ -158,7 +158,7 @@ const DailyReportComponent = ({ patientId, onSeeMore }) => {
             )}
           </h2>
           <p>
-            <strong>User ID:</strong> {effectivePatientId}
+            <strong>User ID:</strong> {effectiveUserId}
           </p>
           <p>
             <strong>Date of Birth:</strong> {patientData.dob}
@@ -174,54 +174,58 @@ const DailyReportComponent = ({ patientId, onSeeMore }) => {
               <div key={gameKey} className="game-box-neutral">
                 <h3 className="game-title">{gameName}</h3>
                 <div className="game-metrics">
-                  {Object.entries(gameResults[gameKey]).map(
-                    ([metric, value]) => {
-                      let percentageChange = null;
-                      if (
-                        previousGameResults &&
-                        previousGameResults[gameKey] &&
-                        previousGameResults[gameKey][metric]
-                      ) {
-                        const previousValue =
-                          previousGameResults[gameKey][metric];
-                        percentageChange =
-                          previousValue !== 0
-                            ? ((value - previousValue) / previousValue) * 100
-                            : null;
-                      }
-                      return (
-                        <div key={metric} className="metric-box">
-                          <h4>{formatMetricName(metric)}</h4>
-                          <p>{formatFieldValue(metric, value)}</p>
-                          {percentageChange !== null && (
-                            <div className="comparison">
-                              <div className="comparison-top">
-                                {percentageChange !== 0 && (
-                                  <img
-                                    src={
-                                      percentageChange > 0 ? upArrow : downArrow
-                                    }
-                                    alt={
-                                      percentageChange > 0
-                                        ? "Increase"
-                                        : "Decrease"
-                                    }
-                                    className="arrow-icon"
-                                  />
-                                )}
-                                <span className="percentage-change">
-                                  {Math.abs(percentageChange.toFixed(0))}%
-                                </span>
-                              </div>
-                              <div className="comparison-text">
-                                from previous session
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
+                  {(gameKey === "memoryVault"
+                    ? Object.entries(gameResults[gameKey]).filter(
+                        ([metric]) =>
+                          metric === "Presented" || metric === "Recalled"
+                      )
+                    : Object.entries(gameResults[gameKey])
+                  ).map(([metric, value]) => {
+                    let percentageChange = null;
+                    if (
+                      previousGameResults &&
+                      previousGameResults[gameKey] &&
+                      previousGameResults[gameKey][metric]
+                    ) {
+                      const previousValue =
+                        previousGameResults[gameKey][metric];
+                      percentageChange =
+                        previousValue !== 0
+                          ? ((value - previousValue) / previousValue) * 100
+                          : null;
                     }
-                  )}
+                    return (
+                      <div key={metric} className="metric-box">
+                        <h4>{formatMetricName(metric)}</h4>
+                        <p>{formatFieldValue(metric, value)}</p>
+                        {percentageChange !== null && (
+                          <div className="comparison">
+                            <div className="comparison-top">
+                              {percentageChange !== 0 && (
+                                <img
+                                  src={
+                                    percentageChange > 0 ? upArrow : downArrow
+                                  }
+                                  alt={
+                                    percentageChange > 0
+                                      ? "Increase"
+                                      : "Decrease"
+                                  }
+                                  className="arrow-icon"
+                                />
+                              )}
+                              <span className="percentage-change">
+                                {Math.abs(percentageChange.toFixed(0))}%
+                              </span>
+                            </div>
+                            <div className="comparison-text">
+                              from previous session
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );

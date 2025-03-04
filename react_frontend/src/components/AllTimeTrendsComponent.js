@@ -7,10 +7,10 @@ import carouselNextImg from "../assets/carousel-next-button.svg";
 import PlotDescriptions from "../components/PlotDescriptions";
 import "./AllTimeTrendsComponent.css";
 
-const getReports = async (effectivePatientId) => {
+const getReports = async (effectiveUserId) => {
   const reportsCollection = collection(
     db,
-    `users/${effectivePatientId}/dailyReportsSeeMore`
+    `users/${effectiveUserId}/dailyReportsSeeMore`
   );
   const reportSnapshots = await getDocs(reportsCollection);
   return reportSnapshots.docs.map((reportDoc) => {
@@ -24,8 +24,8 @@ const getReports = async (effectivePatientId) => {
   });
 };
 
-const AllTimeTrendsComponent = ({ patientId }) => {
-  const effectivePatientId = patientId || localStorage.getItem("userId");
+const AllTimeTrendsComponent = ({ userId }) => {
+  const effectiveUserId = userId;
   const [selectedGame, setSelectedGame] = useState("");
   const [patientData, setPatientData] = useState(null);
 
@@ -124,10 +124,10 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // Fetch patient data
   useEffect(() => {
-    if (!effectivePatientId) return;
+    if (!effectiveUserId) return;
     (async () => {
       try {
-        const patientDoc = await getDoc(doc(db, "users", effectivePatientId));
+        const patientDoc = await getDoc(doc(db, "users", effectiveUserId));
         if (patientDoc.exists()) {
           setPatientData(patientDoc.data());
         }
@@ -135,11 +135,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching patient data:", error);
       }
     })();
-  }, [effectivePatientId]);
+  }, [effectiveUserId]);
 
   // naturesGaze Reaction Time fetching
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    if (!effectiveUserId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
         const dataPoints = {
@@ -148,11 +148,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           proOverlap: {},
           antiOverlap: {},
         };
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const reactionDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/reactionTime`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/reactionTime`
           );
           const reactionDoc = await getDoc(reactionDocRef);
           if (reactionDoc.exists()) {
@@ -171,11 +171,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching reaction time data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectiveUserId]);
 
   // naturesGaze Saccade Omission Percentages fetching
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    if (!effectiveUserId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
         const dataPoints = {
@@ -184,11 +184,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           proOverlap: {},
           antiOverlap: {},
         };
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const saccadeDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeOmissionPercentages`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeOmissionPercentages`
           );
           const saccadeDoc = await getDoc(saccadeDocRef);
           if (saccadeDoc.exists()) {
@@ -207,11 +207,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching saccade omission data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectiveUserId]);
 
   // naturesGaze Saccade Duration fetching
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    if (!effectiveUserId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
         const durationPoints = {
@@ -220,11 +220,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           antiOverlap: {},
           proOverlap: {},
         };
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const sdDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDuration`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDuration`
           );
           const durationsCollection = collection(sdDocRef, "durations");
           const durationsSnapshots = await getDocs(durationsCollection);
@@ -247,22 +247,22 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching saccade duration data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectiveUserId]);
 
   // Fixation Accuracy fetching (2-series: gap and overlap)
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    if (!effectiveUserId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
         const accuracyPoints = {
           gap: {},
           overlap: {},
         };
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const fixAccDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationAccuracy`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationAccuracy`
           );
           const accuracyCollection = collection(
             fixAccDocRef,
@@ -288,11 +288,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching fixation accuracy data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectiveUserId]);
 
   // Saccade Direction Error fetching (4-series)
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "naturesGaze") return;
+    if (!effectiveUserId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
         const errorPoints = {
@@ -301,11 +301,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           antiOverlap: {},
           proOverlap: {},
         };
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const errorDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDirectionError`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDirectionError`
           );
           const errorsCollection = collection(errorDocRef, "errors");
           const errorsSnapshot = await getDocs(errorsCollection);
@@ -328,7 +328,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching saccade direction error data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId]);
+  }, [selectedGame, effectiveUserId]);
 
   // Process Quest Speaking Time fetching
   const isTemporalGame =
@@ -336,60 +336,48 @@ const AllTimeTrendsComponent = ({ patientId }) => {
 
   // MemoryVault Recall Score fetching
   useEffect(() => {
-    if (!effectivePatientId || selectedGame !== "memoryVault") return;
+    if (!effectiveUserId || selectedGame !== "memoryVault") return;
     (async () => {
       try {
         const dataPoints = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
-          const mvCollection = collection(
+          const mvDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/memoryVault`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/memoryVault/recallSpeedAndAccuracy`
           );
-          const mvSnapshots = await getDocs(mvCollection);
-          for (const mvDoc of mvSnapshots.docs) {
-            const { Presented, Recalled } = mvDoc.data();
-            const presentedWords = Presented.split(",").map((w) => w.trim());
-            const recalledWords = Recalled.split(",").map((w) => w.trim());
-            let sessionPoints = [];
-            for (let i = 0; i < presentedWords.length; i++) {
-              const response = await fetch(
-                "http://127.0.0.1:5000/compute-points",
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    presented_word: presentedWords[i],
-                    recalled_word: recalledWords[i],
-                  }),
-                }
-              );
-              const { points } = await response.json();
-              sessionPoints.push(points);
+          const mvDoc = await getDoc(mvDocRef);
+          if (mvDoc.exists()) {
+            const { wordPoints, audioPoints, picturePoints } = mvDoc.data();
+            const sessionPoints = [];
+            if (typeof wordPoints === "number") sessionPoints.push(wordPoints);
+            if (typeof audioPoints === "number")
+              sessionPoints.push(audioPoints);
+            if (typeof picturePoints === "number")
+              sessionPoints.push(picturePoints);
+            if (sessionPoints.length) {
+              if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
+              dataPoints[monthYear].push(...sessionPoints);
             }
-            if (!dataPoints[monthYear]) {
-              dataPoints[monthYear] = [];
-            }
-            dataPoints[monthYear].push(...sessionPoints);
           }
         }
         setMemoryVaultRecallScoreData(dataPoints);
       } catch (error) {
-        console.error("Error fetching or computing points:", error);
+        console.error("Error fetching memory vault points:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId]);
 
   useEffect(() => {
-    if (!effectivePatientId || !isTemporalGame) return;
+    if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
         const dataPoints = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const tpDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics`
           );
           const tpDoc = await getDoc(tpDocRef);
           console.log(
@@ -437,19 +425,19 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching Speaking Time data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Pause Count data
   useEffect(() => {
-    if (!effectivePatientId || !isTemporalGame) return;
+    if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
         const dataPoints = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const pausesCollection = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics/Pauses`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics/Pauses`
           );
           const pausesSnapshots = await getDocs(pausesCollection);
           const count = pausesSnapshots.docs.length; // number of pause documents
@@ -462,19 +450,19 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching Pause Count data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Pause Duration data
   useEffect(() => {
-    if (!effectivePatientId || !isTemporalGame) return;
+    if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
         const dataPoints = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const pausesCollection = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics/Pauses`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/temporalCharacteristics/Pauses`
           );
           const pausesSnapshots = await getDocs(pausesCollection);
           pausesSnapshots.docs.forEach((pauseDoc) => {
@@ -501,11 +489,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching Pause Duration data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Lexical Features data
   useEffect(() => {
-    if (!effectivePatientId || !isTemporalGame) return;
+    if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
         const nounData = {};
@@ -513,11 +501,11 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         const fillerData = {};
         const openClassData = {};
         const verbData = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const lexicalDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/lexicalFeatures`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/lexicalFeatures`
           );
           const lexicalDoc = await getDoc(lexicalDocRef);
           if (lexicalDoc.exists()) {
@@ -553,20 +541,20 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching lexical features data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Structural Features data
   useEffect(() => {
-    if (!effectivePatientId || !isTemporalGame) return;
+    if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
         const meanDataPoints = {};
         const sentenceDataPoints = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const structuralDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/structuralFeatures`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/structuralFeatures`
           );
           const structuralDoc = await getDoc(structuralDocRef);
           if (structuralDoc.exists()) {
@@ -588,21 +576,21 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching structural features data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Fluency Metrics data
   useEffect(() => {
-    if (!effectivePatientId || !isTemporalGame) return;
+    if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
         const revisionData = {};
         const wordsData = {};
         const stutterData = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const fluencyDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics`
           );
           const fluencyDoc = await getDoc(fluencyDocRef);
           if (fluencyDoc.exists()) {
@@ -616,7 +604,7 @@ const AllTimeTrendsComponent = ({ patientId }) => {
           }
           const stuttersCollection = collection(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics/Stutters`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics/Stutters`
           );
           const stuttersSnapshots = await getDocs(stuttersCollection);
           if (!stutterData[monthYear]) stutterData[monthYear] = [];
@@ -633,21 +621,21 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching fluency metrics data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame]);
 
   // New effect: Fetch Process Quest Semantic Features data
   useEffect(() => {
-    if (!effectivePatientId || !isTemporalGame) return;
+    if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
         const lexFreqData = {};
         const efficiencyData = {};
         const ideaDensityData = {};
-        const reports = await getReports(effectivePatientId);
+        const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const semanticDocRef = doc(
             db,
-            `users/${effectivePatientId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/semanticFeatures`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/semanticFeatures`
           );
           const semanticDoc = await getDoc(semanticDocRef);
           if (semanticDoc.exists()) {
@@ -673,13 +661,13 @@ const AllTimeTrendsComponent = ({ patientId }) => {
         console.error("Error fetching semantic features data:", error);
       }
     })();
-  }, [selectedGame, effectivePatientId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame]);
 
   return (
     <div className="all-time-trends-container">
       <PatientInfoBoxComponent
         patientData={patientData}
-        effectivePatientId={effectivePatientId}
+        effectiveUserId={effectiveUserId}
         reportTitle={"All Time Reports"}
         selectedDate={null}
       />
