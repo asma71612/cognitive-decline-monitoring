@@ -120,9 +120,8 @@ const DailyReportComponent = ({ userId, onSeeMore }) => {
 
   const renderGameMetrics = (gameKey, gameData) => {
     if (gameKey === "memoryVault") {
-      // Always show Presented and Recalled for Memory Vault
       return ["Presented", "Recalled"].map((metric) => (
-        <div key={metric} className="metric-box">
+        <div key={metric} className="metric-box memory-vault-metric">
           <h4>{formatMetricName(metric)}</h4>
           <p>
             {gameData[metric] != null
