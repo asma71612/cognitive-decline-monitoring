@@ -102,7 +102,12 @@ const PhysicianLoginPage = () => {
           onKeyDown={handleKeyDown}
         />
         <div className="forgot-text-physician">
-          <a href="#" onClick={handlePasswordReset}>Forgot your password?</a>
+          <button 
+            onClick={handlePasswordReset}
+            className="link-button"
+          >
+            Forgot your password?
+          </button>
         </div>
         {error && <div className="error-text-physician-login">{error}</div>}
         {message && <div className="message-text-physician">{message}</div>}
@@ -120,7 +125,7 @@ const PhysicianLoginPage = () => {
           Sign in with Google
         </button>
         <div className="signup-text-physician-login">
-          Don’t have an account? <a href="/physician-signup">Sign up here</a>
+          Don't have an account? <a href="/physician-signup">Sign up here</a>
         </div>
       </div>
     </div>

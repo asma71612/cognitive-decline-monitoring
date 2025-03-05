@@ -30,10 +30,13 @@ const LightingCalibration = () => {
 
     startCamera();
 
+    // Capture the current value of videoRef to use in cleanup
+    const videoElement = videoRef.current;
+
     // Cleanup: Stop the camera when the component unmounts
     return () => {
-      if (videoRef.current && videoRef.current.srcObject) {
-        const stream = videoRef.current.srcObject;
+      if (videoElement && videoElement.srcObject) {
+        const stream = videoElement.srcObject;
         const tracks = stream.getTracks();
         tracks.forEach((track) => track.stop()); // Stop each track
       }
