@@ -4,6 +4,9 @@ This repository contains the code for the **Cognitive Decline Monitoring** appli
 - **Backend**: A Spring Boot application using Python and Flask to handle the logic and API endpoints.
 - **Frontend**: A React application using JavaScript for the user interface.
 
+![image](https://github.com/user-attachments/assets/0c9fd956-1fce-4bcb-b822-85517fde41ac)
+
+
 *Please make sure you are working on a separate branch and not commiting to main - See 'Git Basics' below for instructions**
 
 ## Prerequisites
