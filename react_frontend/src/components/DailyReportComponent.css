@@ -154,3 +154,19 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.memory-vault-metric {
+  font-size: 14px;
+}
+
+.memory-vault-metric h4 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.memory-vault-metric p {
+  font-size: 25px;
+  margin-top: 15px;
+  margin-left: 10px;
+  margin-right: 10px;
+}

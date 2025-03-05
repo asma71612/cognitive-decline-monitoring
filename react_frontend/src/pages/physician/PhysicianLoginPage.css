@@ -173,6 +173,22 @@ html {
   font-weight: bold;
 }
 
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #2f3b66;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 16px;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.link-button:hover {
+  background: none;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .title-image-physician {
