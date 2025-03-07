@@ -16,7 +16,7 @@ Before you start, ensure you have the following installed on your system:
 - **Java 11 or higher**
 - **Maven** (for building the backend)
 - **Node.js and npm** (for running the frontend)
-- **Python 3.11.6** (for running the backend modelling)
+- **Python 3.9** (for running the backend)
 
 ## Current Versions
 Here are the versions of the tools and technologies currently being used for this project. You do not have to use these version, but just ensure to update your dependencies locally if you choose to deviate.
