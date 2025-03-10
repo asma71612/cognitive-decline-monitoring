@@ -215,6 +215,113 @@ npm test -- --testPathPattern=src/__tests__/pathToTest/TestName.test.js --watchA
 
 Note: The flag ensures that the console exists after running the test and is not on watch mode.
 
+## Step 9: AWS Setup
+
+Begin by signing up for a free tier [AWS account](https://signin.aws.amazon.com/signup?request_type=register) if you haven't already. This gives us:
+- 5 GB of standard storage for our S3 bucket, and
+- 60 minutes per month free on AWS transcribe
+
+At this point, you should be able to sign into your account and access [your console](https://us-east-2.console.aws.amazon.com/console). This is where you can access and manage all your AWS services. The 3 that will pertain to us are S3 (storage), IAM (identity and access management) and Transcribe.
+
+You can search for these services on your console using the search bar. Otherwise they have been linked below for convenience:
+- S3: https://us-east-2.console.aws.amazon.com/s3
+- IAM: https://us-east-1.console.aws.amazon.com/iam
+- Transcribe: https://us-east-2.console.aws.amazon.com/transcribe
+
+First, we'll head to the Identity and Access Management dashboard to set up your user and define access to our S3 bucket. 
+
+From the left-hand panel, click on **Users > Create User**. You don't need to change any of the default settings. When you're done, click on your newly-created user. Noting a few important things here:
+- A top Summary panel with your **ARN (Amazon Resource Name)** and on the right the ability to **Create Access Key**
+- Under the **Permission** tab, **Permission Policies** (by default you should have 0, but we're going to add some soon).
+
+### **CREATE ACCESS KEY**
+
+Start by clicking **Create Access Key** in your Summary panel of your user. It will ask you for your use case for which you can specify "Local Code".
+
+**ONCE YOUR ACCESS KEY IS CREATED MAKE NOTE OF BOTH YOUR ACCESS KEY AND SECRET ACCESS KEY.** Sorry for yelling but this is the only time you can view your access keys here so write them down.
+
+### **ATTACHING USER POLICIES**
+
+This step ensures your user has access to the appropriate AWS services. Go to **Permission Policies > Add Permission > Create Inline Policy**.
+
+#### **a) S3 & Transcribe Full Access**
+
+In Policy Editor, "Visual" should be selected.
+
+Under "Select a Service", choose **S3**. Some new dropdowns will pop up:
+- For "Actions Allowed", click on **All S3 actions (s3:*)**
+- For "Resources", click on **All**
+
+Scroll down to the "Add More Permissions" to which you're going to repeat the same steps for **Select a Service > Transcribe**
+
+You can name your policy whatever you want (eg. s3AndTranscribeFullAccess).
+
+#### **b) Cognify S3 Bucket Full Access**
+
+In Policy Editor, "JSON" should be selected.
+
+Paste the following JSON statement into the editor:
+
+```JSON
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:ListBucket",
+				"s3:GetObject",
+				"s3:DeleteObject",
+				"s3:GetObjectAcl",
+				"s3:PutObjectAcl",
+				"s3:PutObject"
+			],
+			"Resource": [
+				"arn:aws:s3:::cognify-capstone",
+				"arn:aws:s3:::cognify-capstone/*"
+			]
+		}
+	]
+}
+
+```
+
+\You can name your policy whatever you want (eg. cognifyBucketAccess).
+
+**You should now be able to [access the Cognify S3 Bucket](https://us-east-2.console.aws.amazon.com/s3/buckets/cognify-capstone?region=us-east-2&bucketType=general&tab=objects). If you can't reach out to Amena.**
+
+### **VERIFY**
+Next, based on your operating system install the AWS CLI. The steps are detailed here: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+Configure your AWS credentials using `aws configure` using your access key and secret access key. Ensure your region is set to `us-east-2`.
+
+To verify you can read access from the S3 bucket, run `aws s3 ls s3://cognify-capstone` (with proper setup, this should return `cognify-capstone`).
+
+To verify write access to the S3 bucket, run `echo "test file" > test.txt
+aws s3 cp test.txt s3://cognify-capstone/`. (with proper setup, this should return upload: `./test.txt to s3://cognify-capstone/test.txt`).
+
+### **LOCAL REPO CHANGES**
+
+In your root directory (aka at the same level as your `package.json` file), create a new file called `.env` and paste the following below:
+
+```.env
+AWS_ACCESS_KEY_ID={YOUR AWS ACCESS KEY GENERATED ABOVE}
+AWS_SECRET_ACCESS_KEY={YOUR AWS SECRET ACCESS KEY GENERATED ABOVE}
+AWS_REGION=us-east-2
+S3_BUCKET_NAME=cognify-capstone
+PORT=5001
+```
+
+To automatically install all the important libraries, run:
+```bash
+npm install
+```
+
+To run the Node.js server with Express, run:
+```bash
+node server.cjs
+```
+
 ## Troubleshooting
 **Issue: Backend or Frontend not starting**
 
