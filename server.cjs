@@ -28,14 +28,14 @@ const upload = multer({ dest: "uploads/" });
 // uploading audio to S3 and starting aws transcribe job
 app.post("/transcribe", upload.single("audio"), async (req, res) => {
   try {
-    const { userId, date, sessionNumber } = req.body;
+    const { game, userId, date, sessionNumber } = req.body;
 
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
     const filePath = req.file.path;
-    const fileName = `${userId}_${date}_session${sessionNumber}.wav`;
+    const fileName = `${game}_${userId}_${date}_session${sessionNumber}.wav`;
 
     // uploading file to S3
     const fileContent = fs.readFileSync(filePath);
@@ -50,7 +50,7 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
     fs.unlinkSync(filePath);
 
     const s3Uri = `s3://${process.env.S3_BUCKET_NAME}/${fileName}`;
-    const jobName = `${userId}_${date}_session${sessionNumber}`;
+    const jobName = `${game}_${userId}_${date}_session${sessionNumber}`;
 
     // starting aws transcribe job and storing transcript in s3 bucket
     const transcribeParams = {

@@ -118,6 +118,7 @@ const ProcessQuest = () => {
       day: '2-digit'
     }).replace(/\//g, '-');
 
+    formData.append("game", "processQuest");
     formData.append("userId", userId);
     formData.append("date", date);
     formData.append("sessionNumber", playCount+1); // since playCount isnt incremented until memory vault at the end
