@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "../../firebaseConfig.js";
 import titleImage from "../../assets/title.svg";
@@ -43,7 +43,9 @@ const PatientLoginPage = () => {
   return (
     <div className="login-container">
       <div className="left-half">
-        <img src={titleImage} alt="Title" className="title-image-login" />
+        <Link to="/">
+          <img src={titleImage} alt="Title" className="title-image-login" />
+        </Link>
         <div className="login-description">
           Bringing clarity to cognitive health.
         </div>

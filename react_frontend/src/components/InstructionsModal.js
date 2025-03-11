@@ -27,7 +27,7 @@ const InstructionsModal = ({
         <h2>{howToPlay}</h2>
         <p>{firstText}</p>
         <ol>
-          {instructionsList.map((instruction, index) => (
+          {instructionsList?.map((instruction, index) => (
             <li key={index}>{instruction}</li>
           ))}
         </ol>

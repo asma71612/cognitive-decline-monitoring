@@ -89,7 +89,7 @@ const MemoryVaultStart = () => {
         </div>
 
         <div className="start-button-container">
-          <Link to={`/memory-vault-recall-instructions/${userId}`}>
+          <Link to={`/process-quest-instructions/${userId}`}>
             <button className="start-button">Next</button>
           </Link>
         </div>
