@@ -17,50 +17,6 @@ const ProcessQuest = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPlayCount = async () => {
-      if (userId) {
-        try {
-          const docRef = doc(db, "users", userId);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setPlayCount(docSnap.data()?.playCount || 0);
-          } else {
-            setPlayCount(0);
-          }
-        } catch (error) {
-          console.error("Error fetching playCount:", error);
-          setPlayCount(0);
-        }
-      }
-    };
-
-    fetchPlayCount();
-    startRecording();
-
-    return () => stopRecording();
-  }, [userId]);
-
-  useEffect(() => {
-    if (secondsRemaining === 0) {
-      handleNext();
-      return;
-    }
-  
-    timerRef.current = setTimeout(() => {
-      setSecondsRemaining((prev) => prev - 1);
-    }, 1000);
-  
-    return () => clearTimeout(timerRef.current);
-  }, [secondsRemaining]);
-
-  useEffect(() => {
-    const sessionIndex = playCount % SESSION_PROMPTS.length;
-    const currentSession = SESSION_PROMPTS[sessionIndex];
-
-    setPrompt(currentSession.prompt);
-  }, [playCount]);
-
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -108,6 +64,55 @@ const ProcessQuest = () => {
     }
   };
 
+  const handleDone = () => {
+    stopRecording();
+    navigate(`/memory-vault-recall-instructions/${userId}`);
+  };
+
+  useEffect(() => {
+    const fetchPlayCount = async () => {
+      if (userId) {
+        try {
+          const docRef = doc(db, "users", userId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setPlayCount(docSnap.data()?.playCount || 0);
+          } else {
+            setPlayCount(0);
+          }
+        } catch (error) {
+          console.error("Error fetching playCount:", error);
+          setPlayCount(0);
+        }
+      }
+    };
+
+    fetchPlayCount();
+    startRecording();
+
+    return () => stopRecording();
+  }, [userId, startRecording]);
+
+  useEffect(() => {
+    if (secondsRemaining === 0) {
+      handleDone();
+      return;
+    }
+  
+    timerRef.current = setTimeout(() => {
+      setSecondsRemaining((prev) => prev - 1);
+    }, 1000);
+  
+    return () => clearTimeout(timerRef.current);
+  }, [secondsRemaining, handleDone]);
+
+  useEffect(() => {
+    const sessionIndex = playCount % SESSION_PROMPTS.length;
+    const currentSession = SESSION_PROMPTS[sessionIndex];
+
+    setPrompt(currentSession.prompt);
+  }, [playCount]);
+
   const uploadAudioForTranscription = async (audioBlob) => {
     const formData = new FormData();
     formData.append("audio", audioBlob);
@@ -150,6 +155,7 @@ const ProcessQuest = () => {
 
     } catch (error) {
       console.error("Error analyzing lexical content:", error);
+      return { error: error.message };
     }
   };
   
@@ -295,11 +301,6 @@ const ProcessQuest = () => {
     }
   }; 
 
-  const handleNext = () => {
-    stopRecording();
-    navigate(`/memory-vault-recall-instructions/${userId}`);
-  };
-
   const formatTime = (secs) => {
     const minutes = Math.floor(secs / 60);
     const seconds = secs % 60;
@@ -326,7 +327,7 @@ const ProcessQuest = () => {
         </div>
 
         <div className="start-button-container">
-          <button className="start-button" onClick={handleNext}>Next</button>
+          <button className="start-button" onClick={handleDone}>Done</button>
         </div>
       </div>
     </div>

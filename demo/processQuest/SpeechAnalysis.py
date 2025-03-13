@@ -33,101 +33,106 @@ def lexical_content_with_pos_analysis_spacy(text):
     total_open_class_words = 0
     total_closed_class_words = 0
     repetitions = 0
-    previous_word = None
     morpheme_count = 0
 
+    previous_word = None
+    tokens_alpha_lower = []  # for phrase repetition detection later
+
+    noun_tags = {"NOUN", "PROPN"}
+    verb_tags = {"VERB", "AUX"}
+    filler_words_tags = {"INTJ"}
+    open_class_tags = noun_tags | {"VERB", "ADJ", "ADV"}
+
     for sentence in doc.sents:
-        tokens = [token.text for token in sentence]
-        pos_tags = [(token.text, token.pos_) for token in sentence]
+        # We're going to loop through tokens in the sentence and gather all stats
+        sentence_nouns = []
+        sentence_verbs = []
+        sentence_filler_words = []
+        sentence_open_class_words = []
+        sentence_closed_class_words = []
 
-        total_tokens += len(tokens)
+        for token in sentence:
+            if not token.is_alpha:
+                continue
 
-        noun_tags = {"NOUN", "PROPN"}  # Nouns (common, proper)
-        verb_tags = {"VERB", "AUX"}  # Verbs
-        filler_words_tags = {"INTJ"}
+            word = token.text
+            tag = token.pos_
 
-        nouns = [word for word, tag in pos_tags if tag in noun_tags]
-        print("nouns: " + ", ".join(nouns))
-        verbs = [word for word, tag in pos_tags if tag in verb_tags]
-        print("verbs: " + ", ".join(verbs))
-        filler_words = [word for word, tag in pos_tags if tag in filler_words_tags]
-        print("filler_words: " + ", ".join(filler_words))
+            # Token counts
+            total_tokens += 1
+            tokens_alpha_lower.append(word.lower())
 
-        # Open-class words: nouns, verbs, adjectives, adverbs
-        open_class_tags = noun_tags | {"VERB", "ADJ", "ADV"}
-        open_class_words = [word for word, tag in pos_tags if tag in open_class_tags]
-        print("open_class_words: " + ", ".join(open_class_words))
+            # Nouns
+            if tag in noun_tags:
+                total_nouns += 1
+                sentence_nouns.append(word)
 
-        # Closed-class words: determiners, prepositions, conjunctions, pronouns, etc.
-        closed_class_words = [word for word, tag in pos_tags if word.isalpha() and word not in open_class_words]
-        print("closed_class_words: " + ", ".join(closed_class_words))
+            # Verbs
+            if tag in verb_tags:
+                total_verbs += 1
+                sentence_verbs.append(word)
 
-        # Total words: sum of open-class and closed-class words
-        total_words = len(open_class_words) + len(closed_class_words)
+            # Filler words
+            if tag in filler_words_tags:
+                total_filler_words += 1
+                sentence_filler_words.append(word)
 
-        total_nouns += len(nouns)
-        total_verbs += len(verbs)
-        total_filler_words += len(filler_words)
-        total_open_class_words += len(open_class_words)
-        total_closed_class_words += len(closed_class_words)
+            # Open/closed class words
+            if tag in open_class_tags:
+                total_open_class_words += 1
+                sentence_open_class_words.append(word)
+            else:
+                sentence_closed_class_words.append(word)
+                total_closed_class_words += 1
+
+            # Repetitions (immediate word repeats)
+            if word.lower() == previous_word:
+                repetitions += 1
+            previous_word = word.lower()
+
+            # Morpheme analysis
+            base_morphemes = 1  
+            bound_morphemes = 0
+            morph_dict = token.morph.to_dict()
+
+            if "Number" in morph_dict and morph_dict["Number"] == "Plur":
+                bound_morphemes += 1
+            if "Tense" in morph_dict:
+                if "Past" in morph_dict["Tense"]:
+                    bound_morphemes += 1
+                if "Pres" in morph_dict["Tense"] and token.tag_ not in ["VBZ", "VBP"]:
+                    bound_morphemes += 1
+            if "Degree" in morph_dict:
+                bound_morphemes += 1
+            if "Poss" in morph_dict:
+                bound_morphemes += 1
+
+            for suffix, description in DERIVATIONAL_SUFFIXES.items():
+                if word.endswith(suffix) and len(word) > len(suffix) + 1:
+                    bound_morphemes += 1
+
+            total_morphemes = base_morphemes + bound_morphemes
+            morpheme_count += total_morphemes
+
+        # Debug prints (optional)
+        print("nouns: " + ", ".join(sentence_nouns))
+        print("verbs: " + ", ".join(sentence_verbs))
+        print("filler_words: " + ", ".join(sentence_filler_words))
+        print("open_class_words: " + ", ".join(sentence_open_class_words))
+        print("closed_class_words: " + ", ".join(sentence_closed_class_words))
 
     open_closed_ratio = (
         total_open_class_words / total_closed_class_words if total_closed_class_words else 0
     )
 
-    for token in doc:
-        if token.is_alpha:  
-            if token.text.lower() == previous_word:
-                repetitions += 1
-            previous_word = token.text.lower()
-        
-        if token.pos_ in ["INTJ", "PUNCT"] or token.is_space:  # Ignore fillers & punctuation
-            continue
-
-        base_morphemes = 1  
-        bound_morphemes = 0
-        bound_morpheme_list = []
-
-        morph_dict = token.morph.to_dict()
-
-        # Inflectional Morphemes
-        if "Number" in morph_dict and morph_dict["Number"] == "Plur":  
-            bound_morphemes += 1
-            bound_morpheme_list.append("Plural -s")
-
-        if "Tense" in morph_dict:  
-            if "Past" in morph_dict["Tense"]:
-                bound_morphemes += 1
-                bound_morpheme_list.append("Past Tense")
-            if "Pres" in morph_dict["Tense"] and token.tag_ not in ["VBZ", "VBP"]:
-                bound_morphemes += 1
-                bound_morpheme_list.append("Present Tense")
-
-        if "Degree" in morph_dict:  
-            bound_morphemes += 1
-            bound_morpheme_list.append("Degree")
-
-        if "Poss" in morph_dict:  
-            bound_morphemes += 1
-            bound_morpheme_list.append("Possessive")
-
-        for suffix, description in DERIVATIONAL_SUFFIXES.items():
-            if token.text.endswith(suffix) and len(token.text) > len(suffix) + 1:
-                bound_morphemes += 1
-                bound_morpheme_list.append(description)
-
-        total_morphemes = base_morphemes + bound_morphemes
-        morpheme_count += total_morphemes
-
-    tokens = [token.text.lower() for token in doc if token.is_alpha]
-    
+    # Phrase repetitions (after collecting all lowercased alpha tokens)
     phrase_reps = 0
     i = 0
-    n = len(tokens)
+    n = len(tokens_alpha_lower)
     while i < n:
         event_detected = False
-        for L in range(min(5, (n - i) // 2), 2 - 1, -1):
-            if tokens[i:i+L] == tokens[i+L:i+2*L]:
+        for L in range(min(5, (n - i) // 2), 1, -1):
+            if tokens_alpha_lower[i:i+L] == tokens_alpha_lower[i+L:i+2*L]:
                 phrase_reps += 1
                 i += 2 * L
                 event_detected = True
@@ -144,10 +149,9 @@ def lexical_content_with_pos_analysis_spacy(text):
         "Open-Class Words": total_open_class_words,
         "Closed-Class Words": total_closed_class_words,
         "Open/Closed Class Ratio": round(open_closed_ratio, 3),
-        "Total Words": total_words,
+        "Total Words": total_open_class_words + total_closed_class_words,
         "Repetition Ratio": round(((repetitions + phrase_reps) / morpheme_count), 3),
     }
-
 
 def syntactic_complexity_analysis_spacy(text):
     """
@@ -229,12 +233,37 @@ def get_average_noun_frequency(transcript, subtlexus_df):
 def analyze_pauses(json, pause_threshold=0.5):
     """
     Analyze pauses based on the time gaps in the transcript.
+
+    Parameters:
+    - json (dict): The AWS Transcribe JSON response
+    - pause_threshold (float): Minimum gap (in seconds) to be considered a pause
+
+    Returns:
+    - list: List of dict objects containing start and end times of pauses
     """
 
-    items = json['results']['items']
+    # Validate the structure of the JSON
+    if not isinstance(json, dict):
+        raise ValueError("Expected 'json' to be a dictionary.")
+
+    results = json.get('results')
+    if not results or not isinstance(results, dict):
+        raise ValueError("Missing or invalid 'results' field in JSON.")
+
+    items = results.get('items')
+    if not items or not isinstance(items, list):
+        raise ValueError("Missing or invalid 'items' field in 'results'.")
 
     # filter out only 'pronunciation' items, since punctuation has no timing
-    words = [item for item in items if item['type'] == 'pronunciation']
+    words = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        if item.get('type') == 'pronunciation':
+            # Validate timing keys
+            if 'start_time' not in item or 'end_time' not in item:
+                continue
+            words.append(item)
 
     pauses = []
 
@@ -242,9 +271,12 @@ def analyze_pauses(json, pause_threshold=0.5):
         current_word = words[i]
         next_word = words[i + 1]
 
-        current_end = float(current_word['end_time'])
-
-        next_start = float(next_word['start_time'])
+        try:
+            current_end = float(current_word['end_time'])
+            next_start = float(next_word['start_time'])
+        except (KeyError, ValueError, TypeError) as e:
+            # Skip if the time values are missing or invalid
+            continue
 
         gap = next_start - current_end
 
