@@ -4,7 +4,7 @@ This repository contains the code for the **Cognitive Decline Monitoring** appli
 - **Backend**: A Spring Boot application using Python and Flask to handle the logic and API endpoints.
 - **Frontend**: A React application using JavaScript for the user interface.
 
-![image](https://github.com/user-attachments/assets/0c9fd956-1fce-4bcb-b822-85517fde41ac)
+![image](https://github.com/user-attachments/assets/0be2c38b-4098-4f70-b8d7-8b6d960cbe33)
 
 
 *Please make sure you are working on a separate branch and not commiting to main - See 'Git Basics' below for instructions**
@@ -204,17 +204,6 @@ cd demo/flask_api/
 python app.py
 ```
 
-## Stopping the Server
-Simply do `Ctrl + C` or `Cmd + C` in the terminal to terminate the batch job
-
-## Running Tests
-Navigate to the react_frontend folder and run the following command:
-```bash
-npm test -- --testPathPattern=src/__tests__/pathToTest/TestName.test.js --watchAll=false
-```
-
-Note: The flag ensures that the console exists after running the test and is not on watch mode.
-
 ## Step 9: AWS Setup
 
 Begin by signing up for a free tier [AWS account](https://signin.aws.amazon.com/signup?request_type=register) if you haven't already. This gives us:
@@ -321,6 +310,17 @@ To run the Node.js server with Express, run:
 ```bash
 node server.cjs
 ```
+
+## Stopping the Server
+Simply do `Ctrl + C` or `Cmd + C` in the terminal to terminate the batch job
+
+## Running Tests
+Navigate to the react_frontend folder and run the following command:
+```bash
+npm test -- --testPathPattern=src/__tests__/pathToTest/TestName.test.js --watchAll=false
+```
+
+Note: The flag ensures that the console exists after running the test and is not on watch mode.
 
 ## Troubleshooting
 **Issue: Backend or Frontend not starting**
