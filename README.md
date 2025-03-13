@@ -31,6 +31,8 @@ Here are the versions of the tools and technologies currently being used for thi
 - **chart.js** 4.4.8
 - **react-chartjs-2** 5.3.0
 - **@sgratzl/chartjs-chart-boxplot** 4.4.4
+- **Express.js** 4.21.2
+- **pandas** 0.0.3
 
 These will be included in the package files so if you use a different version, make sure to not commit and push that to the main branch.
 
@@ -206,6 +208,8 @@ python app.py
 
 ## Step 9: AWS Setup
 
+Before proceeding, ensure you have pulled the latest changes from `server.cjs` locally.
+
 Begin by signing up for a free tier [AWS account](https://signin.aws.amazon.com/signup?request_type=register) if you haven't already. This gives us:
 - 5 GB of standard storage for our S3 bucket, and
 - 60 minutes per month free on AWS transcribe
@@ -275,19 +279,18 @@ Paste the following JSON statement into the editor:
 
 ```
 
-\You can name your policy whatever you want (eg. cognifyBucketAccess).
+You can name your policy whatever you want (eg. cognifyBucketAccess).
 
-**You should now be able to [access the Cognify S3 Bucket](https://us-east-2.console.aws.amazon.com/s3/buckets/cognify-capstone?region=us-east-2&bucketType=general&tab=objects). If you can't reach out to Amena.**
+**To [access the Cognify S3 Bucket](https://us-east-2.console.aws.amazon.com/s3/buckets/cognify-capstone?region=us-east-2&bucketType=general&tab=objects), reach out to Amena with your ARN so she can add it to the S3 bucket policy.**
 
 ### **VERIFY**
 Next, based on your operating system install the AWS CLI. The steps are detailed here: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
 Configure your AWS credentials using `aws configure` using your access key and secret access key. Ensure your region is set to `us-east-2`.
 
-To verify you can read access from the S3 bucket, run `aws s3 ls s3://cognify-capstone` (with proper setup, this should return `cognify-capstone`).
+To verify you can read access from the S3 bucket, run `aws s3 ls s3://cognify-capstone` (with proper setup, this should return all the objects currently in the bucket ie. wav files and json files).
 
-To verify write access to the S3 bucket, run `echo "test file" > test.txt
-aws s3 cp test.txt s3://cognify-capstone/`. (with proper setup, this should return upload: `./test.txt to s3://cognify-capstone/test.txt`).
+To verify write access to the S3 bucket, run `echo "test file" | aws s3 cp - s3://cognify-capstone/test.txt`. Navigate to the bucket to ensure that it was uploaded.
 
 ### **LOCAL REPO CHANGES**
 
