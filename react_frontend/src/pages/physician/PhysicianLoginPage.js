@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../firebaseConfig.js';
 import titleImage from '../../assets/title.svg';
@@ -68,7 +68,9 @@ const PhysicianLoginPage = () => {
   return (
     <div className="login-container-physician">
       <div className="left-half-physician">
-        <img src={titleImage} alt="Title" className="title-image-login-physician" />
+        <Link to="/">
+          <img src={titleImage} alt="Title" className="title-image-login-physician" />
+        </Link>
         <div className="login-description-physician">Bringing clarity to cognitive health.</div>
       </div>
       <div className="right-half-physician">

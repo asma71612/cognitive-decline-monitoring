@@ -1,0 +1,105 @@
+.process-quest-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff3e3;
+  position: relative;
+}
+
+.title-container-instructions {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  justify-content: left;
+}
+
+.process-quest-title {
+  font-size: 42px;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.game-instructions-text {
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.process-quest-prompt-container {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  margin: 100px 0;
+  text-align: center;
+}
+
+.process-quest-prompt {
+  font-style: bold;
+  font-size: 24px;
+  color: #516A80;
+  width: 50%;
+  text-align: center;
+}
+
+.done-button {
+  font-weight: bold;
+  width: auto;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 50px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+}
+
+.done-button:hover {
+  background-color: #8496aa;
+}
+
+.timer {
+  position: absolute;
+  color: #fff3e3;
+  font-weight: bold;
+  right: 5%;
+  top: 5%;
+  font-size: 20px;
+  background-color: #516a80;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  border-style: solid;
+  border-radius: 30px;
+  border-width: 5px;
+  border-color: #2f3b66;
+}
+
+.memory-vault-content {
+  justify-content: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.start-button-container {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.transcription.container {
+  text-align: center;
+}
+
+
