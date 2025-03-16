@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../../firebaseConfig";
 import { doc, getDoc, setDoc } from "firebase/firestore";
@@ -16,132 +16,6 @@ const ProcessQuest = () => {
   const audioChunksRef = useRef([]);
 
   const navigate = useNavigate();
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  
-      const options = { mimeType: 'audio/webm;codecs=opus' };
-  
-      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-        console.warn(`${options.mimeType} is not supported on this browser`);
-        return;
-      }
-  
-      mediaRecorderRef.current = new MediaRecorder(stream, options);
-  
-      mediaRecorderRef.current.ondataavailable = (event) => {
-        if (event.data && event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        } else {
-          console.warn("Empty data chunk received:", event.data);
-        }
-      };
-  
-      mediaRecorderRef.current.onstop = async () => {
-  
-        const audioBlob = new Blob(audioChunksRef.current, { type: options.mimeType });
-  
-        if (audioBlob.size === 0) {
-          console.warn("Audio blob is empty!");
-          return;
-        }
-  
-        uploadAudioForTranscription(audioBlob);
-        audioChunksRef.current = [];
-      };
-
-      mediaRecorderRef.current.start(1000); // Collect chunks every second
-  
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
-    }
-  };  
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
-  const handleDone = () => {
-    stopRecording();
-    navigate(`/memory-vault-recall-instructions/${userId}`);
-  };
-
-  useEffect(() => {
-    const fetchPlayCount = async () => {
-      if (userId) {
-        try {
-          const docRef = doc(db, "users", userId);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            setPlayCount(docSnap.data()?.playCount || 0);
-          } else {
-            setPlayCount(0);
-          }
-        } catch (error) {
-          console.error("Error fetching playCount:", error);
-          setPlayCount(0);
-        }
-      }
-    };
-
-    fetchPlayCount();
-    startRecording();
-
-    return () => stopRecording();
-  }, [userId]);
-
-  useEffect(() => {
-    if (secondsRemaining === 0) {
-      handleDone();
-      return;
-    }
-  
-    timerRef.current = setTimeout(() => {
-      setSecondsRemaining((prev) => prev - 1);
-    }, 1000);
-  
-    return () => clearTimeout(timerRef.current);
-  }, [secondsRemaining, handleDone]);
-
-  useEffect(() => {
-    const sessionIndex = playCount % SESSION_PROMPTS.length;
-    const currentSession = SESSION_PROMPTS[sessionIndex];
-
-    setPrompt(currentSession.prompt);
-  }, [playCount]);
-
-  const uploadAudioForTranscription = async (audioBlob) => {
-    const formData = new FormData();
-    formData.append("audio", audioBlob);
-
-    const date = new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).replace(/\//g, '-');
-
-    formData.append("game", "processQuest");
-    formData.append("userId", userId);
-    formData.append("date", date);
-    formData.append("sessionNumber", playCount+1); // since playCount isnt incremented until memory vault at the end
-  
-    try {
-      const response = await fetch("http://localhost:5001/transcribe", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-  
-      if (data.jobName) {
-        checkTranscriptionStatus(data.jobName);
-      }
-    } catch (error) {
-      console.error("Error uploading audio:", error);
-    }
-  };
 
   const analyzeText = async (transcript, audio_segments) => {
     try {
@@ -171,10 +45,11 @@ const ProcessQuest = () => {
 
     } catch (error) {
       console.error("Error analyzing pauses:", error);
+      return { error: error.message };
     }
-  };  
-  
-  const checkTranscriptionStatus = async (jobName) => {
+  };
+
+  const checkTranscriptionStatus = useCallback(async (jobName) => {
     try {
       const response = await fetch(`http://localhost:5001/transcription/${jobName}`);
       const data = await response.json();
@@ -267,7 +142,132 @@ const ProcessQuest = () => {
     } catch (error) {
       console.error("Error fetching transcription:", error);
     }
-  }; 
+  }, [userId]);
+
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  
+      const options = { mimeType: 'audio/webm;codecs=opus' };
+  
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        console.warn(`${options.mimeType} is not supported on this browser`);
+        return;
+      }
+  
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
+  
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        } else {
+          console.warn("Empty data chunk received:", event.data);
+        }
+      };
+  
+      mediaRecorderRef.current.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: options.mimeType });
+  
+        if (audioBlob.size === 0) {
+          console.warn("Audio blob is empty!");
+          return;
+        }
+  
+        const uploadAudioForTranscription = async (audioBlob) => {
+          const formData = new FormData();
+          formData.append("audio", audioBlob);
+
+          const date = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          }).replace(/\//g, '-');
+
+          formData.append("game", "processQuest");
+          formData.append("userId", userId);
+          formData.append("date", date);
+          formData.append("sessionNumber", playCount+1);
+        
+          try {
+            const response = await fetch("http://localhost:5001/transcribe", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+        
+            if (data.jobName) {
+              checkTranscriptionStatus(data.jobName);
+            }
+          } catch (error) {
+            console.error("Error uploading audio:", error);
+          }
+        };
+        
+        uploadAudioForTranscription(audioBlob);
+        audioChunksRef.current = [];
+      };
+
+      mediaRecorderRef.current.start(1000); // Collect chunks every second
+  
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+    }
+  }, [userId, playCount, checkTranscriptionStatus]);
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    }
+  };
+
+  const handleDone = useCallback(() => {
+    stopRecording();
+    navigate(`/memory-vault-recall-instructions/${userId}`);
+  }, [navigate, userId]);
+
+  useEffect(() => {
+    const fetchPlayCount = async () => {
+      if (userId) {
+        try {
+          const docRef = doc(db, "users", userId);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            setPlayCount(docSnap.data()?.playCount || 0);
+          } else {
+            setPlayCount(0);
+          }
+        } catch (error) {
+          console.error("Error fetching playCount:", error);
+          setPlayCount(0);
+        }
+      }
+    };
+
+    fetchPlayCount();
+    startRecording();
+
+    return () => stopRecording();
+  }, [userId, startRecording]);
+
+  useEffect(() => {
+    if (secondsRemaining === 0) {
+      handleDone();
+      return;
+    }
+  
+    timerRef.current = setTimeout(() => {
+      setSecondsRemaining((prev) => prev - 1);
+    }, 1000);
+  
+    return () => clearTimeout(timerRef.current);
+  }, [secondsRemaining, handleDone]);
+
+  useEffect(() => {
+    const sessionIndex = playCount % SESSION_PROMPTS.length;
+    const currentSession = SESSION_PROMPTS[sessionIndex];
+
+    setPrompt(currentSession.prompt);
+  }, [playCount]);
 
   const formatTime = (secs) => {
     const minutes = Math.floor(secs / 60);
