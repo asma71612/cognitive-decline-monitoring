@@ -210,9 +210,9 @@ def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similar
     )
 
     return {
-        "Number of Semantic Units": num_semantic_units,
-        "Semantic Idea Density (Semantic Units / Total Words)": round(idea_density, 2),
-        "Semantic Efficiency (Semantic Units / Speech Duration)": round(semantic_efficiency, 2)
+        "Semantic Units": num_semantic_units,
+        "Semantic Idea Density": round(idea_density, 2),
+        "Semantic Efficiency": round(semantic_efficiency, 2)
         if semantic_efficiency is not None else "Duration not provided",
     }
 

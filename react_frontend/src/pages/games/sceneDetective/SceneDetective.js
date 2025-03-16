@@ -3,17 +3,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../../firebaseConfig";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import titleImage from "../../../assets/title.svg";
-import SESSION_PROMPTS from "./imports/sessionPrompts";
-import "./ProcessQuest.css";
+import "./sceneDetective.css";
+import SESSIONS from "./imports/sessionData";
 
-const ProcessQuest = () => {
+const SceneDetective = () => {
   const { userId } = useParams();
   const [playCount, setPlayCount] = useState(0);
-  const [prompt, setPrompt] = useState("");
+  const [bank, setBank] = useState([])
+  const [picture, setPicture] = useState("");
   const [secondsRemaining, setSecondsRemaining] = useState(900);
   const timerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const bankRef = useRef(bank);
 
   const navigate = useNavigate();
 
@@ -49,6 +51,23 @@ const ProcessQuest = () => {
     }
   };
 
+  const analyzeSemanticContent = async (transcript, audio_segments, word_bank) => {
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/semantic-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ transcript, audio_segments, word_bank }),
+      });
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error("Error analyzing semantic content with word bank:", error);
+      return { error: error.message };
+    }
+  };
+
   const checkTranscriptionStatus = useCallback(async (jobName) => {
     try {
       const response = await fetch(`http://localhost:5001/transcription/${jobName}`);
@@ -66,6 +85,7 @@ const ProcessQuest = () => {
       if (data.transcript) {
         const analyzeTextResult = await analyzeText(data.transcript, data.audio_segments);
         const analyzePausesResult = await analyzePauses(data.full_transcription);
+        const analyzeSemanticContentResult = await analyzeSemanticContent(data.transcript, data.audio_segments, bankRef.current);
 
         try {
           const dailyReportsDoc = await getDoc(dailyReportsRef);
@@ -78,17 +98,18 @@ const ProcessQuest = () => {
             await setDoc(dailyReportsSeeMoreRef, {});
           }
 
-          const dailyReportsProcessQuest = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/processQuest`);
-          const fluencyMetricsProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/fluencyMetrics`);
-          const lexicalFeaturesProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/lexicalFeatures`);
-          const semanticFeaturesProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/semanticFeatures`);
-          const structuralFeaturesProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/structuralFeatures`);
-          const temporalCharacteristicsProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/temporalCharacteristics`);
+          const dailyReportsSceneDetective = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/sceneDetective`);
+          const fluencyMetricsSceneDetective = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/sceneDetective/fluencyMetrics`);
+          const lexicalFeaturesSceneDetective = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/sceneDetective/lexicalFeatures`);
+          const semanticFeaturesSceneDetective = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/sceneDetective/semanticFeatures`);
+          const structuralFeaturesSceneDetective = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/sceneDetective/structuralFeatures`);
+          const temporalCharacteristicsSceneDetective = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/sceneDetective/temporalCharacteristics`);
 
           const dailyReportsMetrics = {
             AverageNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
             OpenedClosedRatio: analyzeTextResult["Open/Closed Class Ratio"],
-            RepetitionRatio: analyzeTextResult["Repetition Ratio"]
+            RepetitionRatio: analyzeTextResult["Repetition Ratio"],
+            SemanticEfficiency: analyzeSemanticContentResult['Semantic Efficiency']
           };
           const fluencyMetrics = {
             RepetitionRatio: analyzeTextResult["Repetition Ratio"],
@@ -102,7 +123,10 @@ const ProcessQuest = () => {
             Verb: analyzeTextResult["Frequency of Verbs and auxillary verbs"]
           };
           const semanticFeatures = {
-            LexicalFrequencyOfNouns: analyzeTextResult['Average Noun Frequency']
+            LexicalFrequencyOfNouns: analyzeTextResult['Average Noun Frequency'],
+            SemanticEfficiency: analyzeSemanticContentResult['Semantic Efficiency'],
+            SemanticIdeaDensity: analyzeSemanticContentResult['Semantic Idea Density'],
+            SemanticUnits: analyzeSemanticContentResult['Semantic Units']
           };
           const structuralFeatures = {
             MeanLengthOfOccurrence: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
@@ -112,17 +136,17 @@ const ProcessQuest = () => {
             SpeakingTime: analyzeTextResult["Speech Duration"]
           };
 
-          await setDoc(dailyReportsProcessQuest, dailyReportsMetrics);
-          await setDoc(fluencyMetricsProcessQuest, fluencyMetrics);
-          await setDoc(lexicalFeaturesProcessQuest, lexicalFeatures);
-          await setDoc(semanticFeaturesProcessQuest, semanticFeatures);
-          await setDoc(structuralFeaturesProcessQuest, structuralFeatures);
-          await setDoc(temporalCharacteristicsProcessQuest, temporalCharacteristics);
+          await setDoc(dailyReportsSceneDetective, dailyReportsMetrics);
+          await setDoc(fluencyMetricsSceneDetective, fluencyMetrics);
+          await setDoc(lexicalFeaturesSceneDetective, lexicalFeatures);
+          await setDoc(semanticFeaturesSceneDetective, semanticFeatures);
+          await setDoc(structuralFeaturesSceneDetective, structuralFeatures);
+          await setDoc(temporalCharacteristicsSceneDetective, temporalCharacteristics);
 
           for (let i = 0; i < analyzePausesResult?.length; i++) {
 
             const pause = analyzePausesResult[i];
-            const pauseRef = doc(db,`users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/temporalCharacteristics/Pauses/${i + 1}`);
+            const pauseRef = doc(db,`users/${userId}/dailyReportsSeeMore/${formattedDate}/sceneDetective/temporalCharacteristics/Pauses/${i + 1}`);
             
             await setDoc(pauseRef, {
               StartTime: pause.StartTime,
@@ -130,10 +154,10 @@ const ProcessQuest = () => {
             });
           }
 
-          console.log("Reporting for Process Quest saved successfully to Firebase.");
+          console.log("Reporting for Scene Detective saved successfully to Firebase.");
 
         } catch (error) {
-          console.error("Error saving reports for Process Quest:", error);
+          console.error("Error saving reports for Scene Detective:", error);
         }
         
       } else {
@@ -183,7 +207,7 @@ const ProcessQuest = () => {
             day: '2-digit'
           }).replace(/\//g, '-');
 
-          formData.append("game", "processQuest");
+          formData.append("game", "sceneDetective");
           formData.append("userId", userId);
           formData.append("date", date);
           formData.append("sessionNumber", playCount+1);
@@ -222,7 +246,7 @@ const ProcessQuest = () => {
 
   const handleDone = useCallback(() => {
     stopRecording();
-    navigate(`/scene-detective-instructions/${userId}`);
+    navigate(`/memory-vault-recall-instructions/${userId}`);
   }, [navigate, userId]);
 
   useEffect(() => {
@@ -263,11 +287,16 @@ const ProcessQuest = () => {
   }, [secondsRemaining, handleDone]);
 
   useEffect(() => {
-    const sessionIndex = playCount % SESSION_PROMPTS.length;
-    const currentSession = SESSION_PROMPTS[sessionIndex];
+    const sessionIndex = playCount % SESSIONS.length;
+    const currentSession = SESSIONS[sessionIndex];
 
-    setPrompt(currentSession.prompt);
+    setBank(currentSession.bank);
+    setPicture(currentSession.picture);
   }, [playCount]);
+
+  useEffect(() => {
+    bankRef.current = bank;
+  }, [bank]);  
 
   const formatTime = (secs) => {
     const minutes = Math.floor(secs / 60);
@@ -278,7 +307,7 @@ const ProcessQuest = () => {
   };
   
   return (
-    <div className="process-quest-container">
+    <div className="scene-detective-container">
       <div className="title-container-instructions">
         <img src={titleImage} alt="Title" className="title-image-small" />
       </div>
@@ -287,11 +316,11 @@ const ProcessQuest = () => {
         <p>{formatTime(secondsRemaining)}</p>
       </div>
 
-      <div className="process-quest-content">
-        <h1 className="process-quest-title">Process Quest</h1>
-        <p className="game-instructions-text">Verbally respond to the prompt below:</p>
-        <div className="process-quest-prompt-container">
-          <p className="process-quest-prompt">{prompt}</p>
+      <div className="scene-detective-content">
+        <h1 className="scene-detective-title">Scene Detective</h1>
+        <p className="game-instructions-text">Observe the scene below and describe it in as much detail as possible:</p>
+        <div className="scene-detective-image-container">
+          <img src={picture} className="scene-detective-image" alt="scene-detective-image"></img>
         </div>
 
         <div className="start-button-container">
@@ -302,4 +331,4 @@ const ProcessQuest = () => {
   );
 };
 
-export default ProcessQuest;
+export default SceneDetective;
