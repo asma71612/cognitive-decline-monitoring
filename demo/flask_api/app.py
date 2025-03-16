@@ -9,10 +9,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from memoryVault.GeneratePoints import compute_points
 from processQuest.SpeechAnalysis import (
-    lexical_content_with_pos_analysis_spacy,
-    syntactic_complexity_analysis_spacy,
+    analyze_text,
     analyze_semantic_content_with_word_bank,
-    get_average_noun_frequency,
     analyze_pauses,
 )
 
@@ -37,48 +35,32 @@ def compute_points_endpoint():
     points = compute_points(presented_word, recalled_word)
     return jsonify({'points': points})
 
-@app.route('/lexical-content', methods=['POST'])
-def lexical_content_endpoint():
+@app.route('/analyze-text', methods=['POST'])
+def analyze_text_endpoint():
     data = request.get_json()
-    
+
     text = data.get('transcript')
     if not text:
-        return jsonify({'error': 'Missing parameters'}), 400
-    
-    try:
-        audio_segments = data.get('audio_segments')
-        if not audio_segments:
-            return jsonify({'error': 'Missing audio segment data'}), 400
+        return jsonify({'error': 'Missing transcript'}), 400
 
-        # assuming the last segment's end_time represents total speech duration (in minutes)
-        speech_duration = (float(audio_segments[-1]['end_time']))/60
+    audio_segments = data.get('audio_segments')
+    speech_duration_minutes = None
+    words_per_minute = None
 
-    except (KeyError, ValueError, TypeError) as e:
-        return jsonify({'error': f'Invalid speech duration: {str(e)}'}), 400
+    if audio_segments:
+        try:
+            speech_duration_minutes = float(audio_segments[-1]['end_time']) / 60
+        except (KeyError, ValueError, TypeError) as e:
+            return jsonify({'error': f'Invalid audio segment data: {str(e)}'}), 400
 
-    results = lexical_content_with_pos_analysis_spacy(text)
+    results = analyze_text(text, subtlexus_df)
 
-    words_per_minute = results["Total Words"]/speech_duration
+    if speech_duration_minutes:
+        total_words = results.get('Total Tokens', 0)
+        words_per_minute = total_words / speech_duration_minutes
+        results['Speech Duration'] = round(speech_duration_minutes, 2)
+        results['Words per Minute'] = round(words_per_minute, 2)
 
-    if isinstance(results, set):
-        results = list(results)
-
-    response_payload = {
-        'Results': results,
-        'Speech Duration': round(speech_duration, 2),
-        'Words per Minute': round(words_per_minute, 2)
-    }
-
-    return jsonify(response_payload)
-
-@app.route('/syntactic-complexity', methods=['POST'])
-def syntactic_complexity_endpoint():
-    data = request.get_json()
-    text = data.get('transcript')
-    if not text:
-        return jsonify({'error': 'Missing parameters'}), 400
-
-    results = syntactic_complexity_analysis_spacy(text)
     return jsonify(results)
 
 @app.route('/semantic-content', methods=['POST'])
@@ -105,17 +87,6 @@ def semantic_content_endpoint():
 
     results = analyze_semantic_content_with_word_bank(text, word_bank, speech_duration)
 
-    return jsonify(results)
-
-@app.route('/noun-frequency', methods=['POST'])
-def noun_frequency_endpoint():
-    data = request.get_json()
-    text = data.get('transcript')
-
-    if not text or subtlexus_df.empty:
-        return jsonify({'error': 'Missing parameters'}), 400
-
-    results = get_average_noun_frequency(text, subtlexus_df)
     return jsonify(results)
 
 @app.route('/analyze-pauses', methods=['POST'])

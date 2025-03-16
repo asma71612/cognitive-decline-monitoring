@@ -1,6 +1,5 @@
 import spacy
 from collections import Counter
-import re
 import pandas as pd
 
 # Load the model
@@ -20,12 +19,20 @@ DERIVATIONAL_SUFFIXES = {
     "er": "Agentive -er",
 }
 
-def lexical_content_with_pos_analysis_spacy(text):
+def analyze_text(text, subtlexus_df=None):
     """
-    Analyzes lexical content with part-of-speech tagging, processing sentence by sentence using spaCy.
+    Consolidated analysis of lexical content, syntactic complexity, and noun frequency.
+    
+    Args:
+        text (str): Transcript text.
+        subtlexus_df (pd.DataFrame): SUBTLEXus dataset (optional).
+    
+    Returns:
+        dict: Aggregated analysis results.
     """
     doc = nlp(text)
-
+    
+    ### Initialize counts and containers
     total_tokens = 0
     total_nouns = 0
     total_verbs = 0
@@ -34,99 +41,101 @@ def lexical_content_with_pos_analysis_spacy(text):
     total_closed_class_words = 0
     repetitions = 0
     morpheme_count = 0
-
-    previous_word = None
-    tokens_alpha_lower = []  # for phrase repetition detection later
-
+    phrase_reps = 0
+    
     noun_tags = {"NOUN", "PROPN"}
     verb_tags = {"VERB", "AUX"}
     filler_words_tags = {"INTJ"}
     open_class_tags = noun_tags | {"VERB", "ADJ", "ADV"}
-
-    for sentence in doc.sents:
-        # We're going to loop through tokens in the sentence and gather all stats
-        sentence_nouns = []
-        sentence_verbs = []
-        sentence_filler_words = []
-        sentence_open_class_words = []
-        sentence_closed_class_words = []
-
+    
+    previous_word = None
+    tokens_alpha_lower = []
+    
+    sentences = list(doc.sents)
+    subordinating_conjunctions = {"although", "because", "since", "unless", "while", "if", "when", "that", "which", "who"}
+    
+    embedded_clauses = 0
+    total_sentence_words = 0
+    total_verbs_doc = 0
+    
+    nouns_for_frequency = []
+    
+    ### Loop through sentences and tokens
+    for sentence in sentences:
         for token in sentence:
             if not token.is_alpha:
                 continue
-
+            
             word = token.text
             tag = token.pos_
-
+            
             # Token counts
             total_tokens += 1
             tokens_alpha_lower.append(word.lower())
-
-            # Nouns
+            
+            # Nouns & verbs
             if tag in noun_tags:
                 total_nouns += 1
-                sentence_nouns.append(word)
-
-            # Verbs
+                nouns_for_frequency.append(word)
             if tag in verb_tags:
                 total_verbs += 1
-                sentence_verbs.append(word)
-
+            
             # Filler words
             if tag in filler_words_tags:
                 total_filler_words += 1
-                sentence_filler_words.append(word)
-
+            
             # Open/closed class words
             if tag in open_class_tags:
                 total_open_class_words += 1
-                sentence_open_class_words.append(word)
             else:
-                sentence_closed_class_words.append(word)
                 total_closed_class_words += 1
-
-            # Repetitions (immediate word repeats)
+            
+            # Repetitions (immediate)
             if word.lower() == previous_word:
                 repetitions += 1
             previous_word = word.lower()
-
-            # Morpheme analysis
-            base_morphemes = 1  
+            
+            # Morphemes
+            base_morphemes = 1
             bound_morphemes = 0
             morph_dict = token.morph.to_dict()
-
-            if "Number" in morph_dict and morph_dict["Number"] == "Plur":
+            
+            if morph_dict.get("Number") == "Plur":
                 bound_morphemes += 1
             if "Tense" in morph_dict:
                 if "Past" in morph_dict["Tense"]:
                     bound_morphemes += 1
                 if "Pres" in morph_dict["Tense"] and token.tag_ not in ["VBZ", "VBP"]:
                     bound_morphemes += 1
-            if "Degree" in morph_dict:
+            if morph_dict.get("Degree"):
                 bound_morphemes += 1
-            if "Poss" in morph_dict:
+            if morph_dict.get("Poss"):
                 bound_morphemes += 1
-
-            for suffix, description in DERIVATIONAL_SUFFIXES.items():
+            
+            for suffix in DERIVATIONAL_SUFFIXES.keys():
                 if word.endswith(suffix) and len(word) > len(suffix) + 1:
                     bound_morphemes += 1
-
+            
             total_morphemes = base_morphemes + bound_morphemes
             morpheme_count += total_morphemes
-
-        # Debug prints (optional)
-        print("nouns: " + ", ".join(sentence_nouns))
-        print("verbs: " + ", ".join(sentence_verbs))
-        print("filler_words: " + ", ".join(sentence_filler_words))
-        print("open_class_words: " + ", ".join(sentence_open_class_words))
-        print("closed_class_words: " + ", ".join(sentence_closed_class_words))
-
-    open_closed_ratio = (
-        total_open_class_words / total_closed_class_words if total_closed_class_words else 0
-    )
-
-    # Phrase repetitions (after collecting all lowercased alpha tokens)
-    phrase_reps = 0
+        
+        # Syntactic complexity sentence analysis
+        sentence_words = len([token for token in sentence if token.is_alpha])
+        total_sentence_words += sentence_words
+        
+    # Embedded clauses & verbs (document-level)
+    embedded_clauses = sum(1 for token in doc if token.text.lower() in subordinating_conjunctions)
+    total_verbs_doc = total_verbs
+    num_sentences = len(sentences)
+    
+    # Mean length of utterance & verb index
+    mean_length_of_utterance = (total_sentence_words / num_sentences) if num_sentences else 0
+    verb_index = (total_verbs_doc / num_sentences) if num_sentences else 0
+    
+    # Open/Closed class ratio
+    open_closed_ratio = (total_open_class_words / total_closed_class_words) if total_closed_class_words else 0
+    
+    # Phrase repetitions
     i = 0
     n = len(tokens_alpha_lower)
     while i < n:
@@ -139,40 +148,40 @@ def lexical_content_with_pos_analysis_spacy(text):
                 break
         if not event_detected:
             i += 1
-
+    
+    repetition_ratio = ((repetitions + phrase_reps) / morpheme_count) if morpheme_count else 0
+    
+    # Average noun frequency from SUBTLEXus
+    avg_noun_frequency = None
+    if subtlexus_df is not None and not subtlexus_df.empty:
+        frequencies = []
+        for noun in nouns_for_frequency:
+            match = subtlexus_df[subtlexus_df['Word'].str.lower() == noun.lower()]
+            freq = match['SUBTLWF'].values[0] if not match.empty else 0
+            frequencies.append(freq)
+        avg_noun_frequency = (sum(frequencies) / len(frequencies)) if frequencies else 0
+    
+    # Results
     return {
-        "Total Sentences": len(list(doc.sents)),
+        # Lexical content
+        "Total Sentences": num_sentences,
         "Total Tokens": total_tokens,
         "Frequency of Nouns": total_nouns,
-        "Frequency of Verbs and auxillary verbs": total_verbs,
+        "Frequency of Verbs and auxillary verbs": total_verbs_doc,
         "Frequency of Filler Words": total_filler_words,
         "Open-Class Words": total_open_class_words,
         "Closed-Class Words": total_closed_class_words,
         "Open/Closed Class Ratio": round(open_closed_ratio, 3),
         "Total Words": total_open_class_words + total_closed_class_words,
-        "Repetition Ratio": round(((repetitions + phrase_reps) / morpheme_count), 3),
-    }
-
-def syntactic_complexity_analysis_spacy(text):
-    """
-    Analyzes the syntactic complexity of a speech/text sample using spaCy.
-    """
-    doc = nlp(text)
-
-    sentences = list(doc.sents)
-    mean_length_of_utterance = sum(len([token for token in sentence if token.is_alpha]) for sentence in sentences) / len(sentences) if sentences else 0
-
-    subordinating_conjunctions = ["although", "because", "since", "unless", "while", "if", "when", "that", "which", "who"]
-    embedded_clauses = sum(1 for token in doc if token.text.lower() in subordinating_conjunctions)
-
-    total_verbs = sum(1 for token in doc if token.pos_ in ["VERB", "AUX"])
-    verb_index = total_verbs / len(sentences) if sentences else 0
-
-    return {
-        "Total Sentences": len(sentences),
+        "Repetition Ratio": round(repetition_ratio, 3),
+        
+        # Syntactic complexity
         "Mean Length of Utterance (MLU) (Average number of words per sentence)": round(mean_length_of_utterance, 2),
         "Embedded Clauses": embedded_clauses,
         "Verb Index (verbs to utterances ratio)": round(verb_index, 2),
+        
+        # Average noun frequency
+        "Average Noun Frequency": round(avg_noun_frequency, 2) if avg_noun_frequency is not None else "N/A",
     }
 
 def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similarity_threshold=0.5):
@@ -206,29 +215,6 @@ def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similar
         "Semantic Efficiency (Semantic Units / Speech Duration)": round(semantic_efficiency, 2)
         if semantic_efficiency is not None else "Duration not provided",
     }
-
-def get_average_noun_frequency(transcript, subtlexus_df):
-    """
-    Retrieves the frequency of nouns
-    from the SUBTLEXus dataset, and returns the average frequency of the nouns.
-    """
-    def extract_nouns(transcript):
-        doc = nlp(transcript)
-        nouns = [token.text for token in doc if token.pos_ in ['NOUN', 'PROPN']]
-        return nouns
-
-    def get_frequency(word, subtlexus_df):
-        word = word.lower()
-        match = subtlexus_df[subtlexus_df['Word'].str.lower() == word]
-        if not match.empty:
-            return match['SUBTLWF'].values[0]
-        else:
-            return 0
-    
-    nouns = extract_nouns(transcript)
-    frequencies = [get_frequency(noun, subtlexus_df) for noun in nouns]
-    average_frequency = sum(frequencies) / len(frequencies) if frequencies else 0
-    return round(average_frequency, 2)
 
 def analyze_pauses(json, pause_threshold=0.5):
     """

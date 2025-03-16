@@ -35,7 +35,7 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
     }
 
     const filePath = req.file.path;
-    const fileName = `${game}_${userId}_${date}_session${sessionNumber}.wav`;
+    const fileName = `${game}_${userId}_${date}_session${sessionNumber}_${Date.now()}.wav`;
 
     // uploading file to S3
     const fileContent = fs.readFileSync(filePath);
@@ -50,7 +50,7 @@ app.post("/transcribe", upload.single("audio"), async (req, res) => {
     fs.unlinkSync(filePath);
 
     const s3Uri = `s3://${process.env.S3_BUCKET_NAME}/${fileName}`;
-    const jobName = `${game}_${userId}_${date}_session${sessionNumber}`;
+    const jobName = `${game}_${userId}_${date}_session${sessionNumber}_${Date.now()}`;
 
     // starting aws transcribe job and storing transcript in s3 bucket
     const transcribeParams = {
@@ -78,15 +78,28 @@ app.get("/transcription/:jobName", async (req, res) => {
       .getTranscriptionJob({ TranscriptionJobName: jobName })
       .promise();
 
-    if (result.TranscriptionJob.TranscriptionJobStatus === "COMPLETED") {
-      const transcriptUrl = result.TranscriptionJob.Transcript.TranscriptFileUri;
+    const jobStatus = result.TranscriptionJob.TranscriptionJobStatus;
 
-      const response = await fetch(transcriptUrl);
-      const transcriptData = await response.json();
+    if (jobStatus === "COMPLETED") {
+      const outputKey = `${jobName}.json`;
+      const bucketName = process.env.S3_BUCKET_NAME;
 
-      res.json({ transcript: transcriptData.results.transcripts[0].transcript, audio_segments: transcriptData.results.audio_segments, full_transcription: transcriptData });
+      const s3Response = await s3
+        .getObject({
+          Bucket: bucketName,
+          Key: outputKey,
+        })
+        .promise();
+
+      const transcriptData = JSON.parse(s3Response.Body.toString('utf-8'));
+
+      res.json({
+        transcript: transcriptData.results.transcripts[0]?.transcript || '',
+        audio_segments: transcriptData.results.audio_segments,
+        full_transcription: transcriptData,
+      });
     } else {
-      res.json({ status: result.TranscriptionJob.TranscriptionJobStatus });
+      res.json({ status: jobStatus });
     }
   } catch (error) {
     console.error("Error fetching transcription:", error);

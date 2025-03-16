@@ -91,7 +91,7 @@ const ProcessQuest = () => {
     startRecording();
 
     return () => stopRecording();
-  }, [userId, startRecording]);
+  }, [userId]);
 
   useEffect(() => {
     if (secondsRemaining === 0) {
@@ -143,9 +143,9 @@ const ProcessQuest = () => {
     }
   };
 
-  const analyzeLexicalContent = async (transcript, audio_segments) => {
+  const analyzeText = async (transcript, audio_segments) => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/lexical-content", {
+      const response = await fetch("http://127.0.0.1:5000/analyze-text", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transcript, audio_segments }),
@@ -154,41 +154,11 @@ const ProcessQuest = () => {
       return data;
 
     } catch (error) {
-      console.error("Error analyzing lexical content:", error);
+      console.error("Error analyzing speech content:", error);
       return { error: error.message };
     }
   };
   
-  const analyzeSyntacticComplexity = async (transcript) => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/syntactic-complexity", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript }),
-      });
-      const data = await response.json();
-      return data;
-
-    } catch (error) {
-      console.error("Error analyzing syntactic complexity:", error);
-    }
-  };
-  
-  const analyzeNounFrequency = async (transcript) => {
-    try {
-      const response = await fetch("http://127.0.0.1:5000/noun-frequency", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript }),
-      });
-      const data = await response.json();
-      return data;
-
-    } catch (error) {
-      console.error("Error analyzing noun frequency:", error);
-    }
-  };  
-
   const analyzePauses = async (full_transcription) => {
     try {
       const response = await fetch("http://127.0.0.1:5000/analyze-pauses", {
@@ -219,9 +189,7 @@ const ProcessQuest = () => {
       const dailyReportsSeeMoreRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}`);
   
       if (data.transcript) {
-        const lexicalContentResult = await analyzeLexicalContent(data.transcript, data.audio_segments);
-        const syntacticComplexityResult = await analyzeSyntacticComplexity(data.transcript);
-        const nounFrequencyResult = await analyzeNounFrequency(data.transcript);
+        const analyzeTextResult = await analyzeText(data.transcript, data.audio_segments);
         const analyzePausesResult = await analyzePauses(data.full_transcription);
 
         try {
@@ -243,30 +211,30 @@ const ProcessQuest = () => {
           const temporalCharacteristicsProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/temporalCharacteristics`);
 
           const dailyReportsMetrics = {
-            AverageNounLexicalFrequency: lexicalContentResult["Results"]["Frequency of Nouns"],
-            OpenedClosedRatio: lexicalContentResult["Results"]["Open/Closed Class Ratio"],
-            RepetitionRatio: lexicalContentResult["Results"]["Repetition Ratio"]
+            AverageNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
+            OpenedClosedRatio: analyzeTextResult["Open/Closed Class Ratio"],
+            RepetitionRatio: analyzeTextResult["Repetition Ratio"]
           };
           const fluencyMetrics = {
-            RepetitionRatio: lexicalContentResult["Results"]["Repetition Ratio"],
-            WordsPerMin: lexicalContentResult["Words per Minute"]
+            RepetitionRatio: analyzeTextResult["Repetition Ratio"],
+            WordsPerMin: analyzeTextResult["Words per Minute"]
           };
           const lexicalFeatures = {
-            ClosedClass: lexicalContentResult["Results"]["Closed-Class Words"],
-            Filler: lexicalContentResult["Results"]["Frequency of Filler Words"],
-            Noun: lexicalContentResult["Results"]["Frequency of Nouns"],
-            OpenClass: lexicalContentResult["Results"]["Open-Class Words"],
-            Verb: lexicalContentResult["Results"]["Frequency of Verbs and auxillary verbs"]
+            ClosedClass: analyzeTextResult["Closed-Class Words"],
+            Filler: analyzeTextResult["Frequency of Filler Words"],
+            Noun: analyzeTextResult["Frequency of Nouns"],
+            OpenClass: analyzeTextResult["Open-Class Words"],
+            Verb: analyzeTextResult["Frequency of Verbs and auxillary verbs"]
           };
           const semanticFeatures = {
-            LexicalFrequencyOfNouns: nounFrequencyResult
+            LexicalFrequencyOfNouns: analyzeTextResult['Average Noun Frequency']
           };
           const structuralFeatures = {
-            MeanLengthOfOccurrence: syntacticComplexityResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
-            NumOfSentences: syntacticComplexityResult["Total Sentences"]
+            MeanLengthOfOccurrence: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
+            NumOfSentences: analyzeTextResult["Total Sentences"]
           };
           const temporalCharacteristics = {
-            SpeakingTime: lexicalContentResult["Speech Duration"]
+            SpeakingTime: analyzeTextResult["Speech Duration"]
           };
 
           await setDoc(dailyReportsProcessQuest, dailyReportsMetrics);
@@ -294,7 +262,7 @@ const ProcessQuest = () => {
         }
         
       } else {
-        setTimeout(() => checkTranscriptionStatus(jobName), 5001);
+        setTimeout(() => checkTranscriptionStatus(jobName), 5000);
       }
     } catch (error) {
       console.error("Error fetching transcription:", error);
