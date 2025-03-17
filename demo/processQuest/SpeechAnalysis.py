@@ -2,6 +2,7 @@ import spacy
 from collections import Counter
 import pandas as pd
 from statistics import median
+from statistics import median
 
 # Load the model
 nlp = spacy.load("en_core_web_lg")
@@ -154,6 +155,7 @@ def analyze_text(text, subtlexus_df=None):
     
     # Average noun frequency from SUBTLEXus
     median_noun_frequency = None
+    median_noun_frequency = None
     if subtlexus_df is not None and not subtlexus_df.empty:
         frequencies = []
         for noun in nouns_for_frequency:
@@ -162,8 +164,6 @@ def analyze_text(text, subtlexus_df=None):
             frequencies.append(freq)
         median_noun_frequency = median(frequencies) if frequencies else 0
     
-    total_words = total_open_class_words + total_closed_class_words
-
     # Results
     return {
         # Lexical content
@@ -184,7 +184,7 @@ def analyze_text(text, subtlexus_df=None):
         "Verb Index (verbs to utterances ratio)": round(verb_index, 2),
         
         # Average noun frequency
-        "Median Noun Frequency": round(median_noun_frequency, 2) if median_noun_frequency is not None else "N/A"
+        "Median Noun Frequency": round(median_noun_frequency, 2) if median_noun_frequency is not None else "N/A",
     }
 
 def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similarity_threshold=0.5):
