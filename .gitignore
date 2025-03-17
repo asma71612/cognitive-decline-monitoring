@@ -43,6 +43,7 @@ react_frontend/src/firebaseConfig.js
 # Ignore python cache files
 __pycache__/
 *.pyc
+**/__pycache__/
 
 # Ignore eye tracking data
 demo/flask_api/*.pkl
