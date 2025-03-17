@@ -86,7 +86,7 @@ const ProcessQuest = () => {
           const temporalCharacteristicsProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/temporalCharacteristics`);
 
           const dailyReportsMetrics = {
-            AverageNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
+            MedianNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
             OpenedClosedRatio: analyzeTextResult["Open/Closed Class Ratio"],
             RepetitionRatio: analyzeTextResult["Repetition Ratio"]
           };
@@ -102,7 +102,7 @@ const ProcessQuest = () => {
             Verb: analyzeTextResult["Frequency of Verbs and auxillary verbs"]
           };
           const semanticFeatures = {
-            LexicalFrequencyOfNouns: analyzeTextResult['Average Noun Frequency']
+            LexicalFrequencyOfNouns: analyzeTextResult['Median Noun Frequency']
           };
           const structuralFeatures = {
             MeanLengthOfOccurrence: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
