@@ -51,7 +51,8 @@ demo/flask_api/outputs/
 outputs/
 */gaze_calibration_collection_train.csv
 */gaze_calibration_collection_unseen.csv
-
+demo/gazeCalibration/gaze_calibration_collection_train.csv
+demo/gazeCalibration/gaze_calibration_collection_unseen.csv
 # Virtual Environments
 *_env/
 ptgaze_env/
