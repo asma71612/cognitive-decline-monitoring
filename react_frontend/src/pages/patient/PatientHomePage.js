@@ -173,13 +173,6 @@ const PatientHomePage = () => {
                 >
                   Instructions
                 </Link>
-                
-                <Link
-                  to={`/gaze-calibration-instructions/${userId}`}
-                  className="complete-task-button"
-                >
-                  Calibrate
-                </Link>
               </div>
             ) : (
               <div>
@@ -205,13 +198,6 @@ const PatientHomePage = () => {
                     >
                       Instructions
                     </Link>
-                    
-                    <Link
-                      to={`/gaze-calibration-instructions/${userId}`}
-                      className="complete-task-button"
-                    >
-                      Calibrate
-                    </Link>
                   </>
                 ) : (
                   <>
@@ -227,13 +213,6 @@ const PatientHomePage = () => {
                       className="complete-task-button"
                     >
                       Instructions
-                    </Link>
-                    
-                    <Link
-                      to={`/gaze-calibration-instructions/${userId}`}
-                      className="complete-task-button"
-                    >
-                      Calibrate
                     </Link>
                   </>
                 )}
