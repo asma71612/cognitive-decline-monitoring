@@ -19,6 +19,8 @@ import MemoryVaultStart from './pages/games/memoryVault/MemoryVaultStart';
 import MemoryVaultRecall from './pages/games/memoryVault/MemoryVaultRecall';
 import ProcessQuestInstructions from './pages/games/processQuest/ProcessQuestInstructions';
 import ProcessQuest from './pages/games/processQuest/ProcessQuest';
+import SceneDetective from './pages/games/sceneDetective/SceneDetective';
+import SceneDetectiveInstructions from './pages/games/sceneDetective/SceneDetectiveInstructions';
 import PhysicianLoginPage from './pages/physician/PhysicianLoginPage';
 import PhysicianSignUp from './pages/physician/PhysicianSignUp';
 import PhysicianHomePage from './pages/physician/PhysicianHomePage';
@@ -52,6 +54,8 @@ const App = () => {
         <Route path="/memory-vault-recall/:userId" element={<MemoryVaultRecall />} />
         <Route path="/process-quest-instructions/:userId" element={<ProcessQuestInstructions />} />
         <Route path="/process-quest/:userId" element={<ProcessQuest />} />
+        <Route path="/scene-detective-instructions/:userId" element={<SceneDetectiveInstructions />} />
+        <Route path="/scene-detective/:userId" element={<SceneDetective />} />
         <Route path="/physician-login" element={<PhysicianLoginPage />} />
         <Route path="/physician-signup" element={<PhysicianSignUp />} />
         <Route path="/physician-home-page" element={<PhysicianHomePage />} />
