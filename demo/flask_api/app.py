@@ -1,8 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 import pandas as pd
 import sys
 import os
+import subprocess
+import threading
+import time
+import json
+import csv
+import numpy as np
 
 # Add  parent directory of flask_api ("demo") to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -12,6 +18,15 @@ from processQuest.SpeechAnalysis import (
     analyze_text,
     analyze_semantic_content_with_word_bank,
     analyze_pauses,
+)
+
+# Import gaze calibration functions - will be created next
+from gazeCalibration.gaze_calibration_api import (
+    start_gaze_tracking,
+    stop_gaze_tracking,
+    collect_calibration_point,
+    check_calibration_status,
+    get_calibration_results
 )
 
 app = Flask(__name__)
@@ -101,6 +116,70 @@ def analyze_pauses_endpoint():
     pauses = analyze_pauses(full_transcription)
 
     return jsonify(pauses)
+
+# Gaze Calibration Routes
+@app.route('/gaze-calibration-test')
+def gaze_calibration_page():
+    """Serve the gaze calibration test page"""
+    return render_template('gaze_calibration.html')
+
+@app.route('/api/gaze/start', methods=['POST'])
+def start_gaze_calibration():
+    """Start the gaze tracking process"""
+    try:
+        result = start_gaze_tracking()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/gaze/stop', methods=['POST'])
+def stop_gaze_calibration():
+    """Stop the gaze tracking process"""
+    try:
+        result = stop_gaze_tracking()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/gaze/collect-point', methods=['POST'])
+def collect_point():
+    """Collect data for a calibration point"""
+    data = request.get_json()
+    point_key = data.get('point_key')
+    x_position = data.get('x_position')
+    y_position = data.get('y_position')
+    
+    if not all([point_key, x_position, y_position]):
+        return jsonify({'error': 'Missing parameters'}), 400
+    
+    try:
+        result = collect_calibration_point(point_key, x_position, y_position)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/gaze/status', methods=['GET'])
+def check_status():
+    """Check the status of the calibration"""
+    try:
+        result = check_calibration_status()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/gaze/results', methods=['GET'])
+def get_results():
+    """Get the calibration results"""
+    try:
+        result = get_calibration_results()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Serve static files for the calibration page
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('static', path)
 
 if __name__ == '__main__':
     app.run(debug=True)

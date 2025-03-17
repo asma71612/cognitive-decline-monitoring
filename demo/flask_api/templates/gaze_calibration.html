@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gaze Calibration Test</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #fff3e3;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #fff3e3;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #516A80;
+            text-align: center;
+            font-size: 24px;
+            margin: 0;
+            margin-top: 5px;
+        }
+        .controls {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 15px 0;
+            position: relative;
+            z-index: 10;
+        }
+        .calibration-area {
+            position: relative;
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            background-color: #DFE5FB;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .dot {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #F8727B;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #516A80;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #3a4c5c;
+        }
+        .status {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            opacity: 0;
+            height: 0;
+            width: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        #statusText {
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal h2 {
+            color: #516A80;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        
+        .modal p {
+            margin: 15px 0;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .modal button {
+            margin-top: 15px;
+        }
+        
+        .spinner {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #516A80;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 15px auto;
+        }
+        
+        .success-icon {
+            color: #4CAF50;
+            font-size: 50px;
+            margin: 10px 0;
+        }
+        
+        .error-icon {
+            color: #F44336;
+            font-size: 50px;
+            margin: 10px 0;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #startBtn {
+            background-color: #516A80;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 15px 0;
+            transition: background-color 0.3s;
+        }
+
+        #startBtn:hover {
+            background-color: #3A4D5E;
+        }
+
+        #startBtn:disabled {
+            background-color: #95A5B3;
+            cursor: not-allowed;
+        }
+
+        /* Completely hide the status container but keep it functional */
+        .status {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            opacity: 0;
+            height: 0;
+            width: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        /* Improved modal styles */
+        .loading-overlay, .success-overlay, .error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(81, 106, 128, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">        
+        <div class="controls">
+            <button id="startBtn">Start Calibration</button>
+            <!-- <button id="stopBtn">Stop Calibration</button>
+            <button id="checkStatusBtn">Check Status</button>
+            <button id="resultsBtn">Get Results</button> -->
+        </div>
+        
+        <div class="calibration-area" id="calibrationArea">
+            <!-- Dots will be dynamically added here -->
+        </div>
+    </div>
+    
+    <!-- Hidden status area (moved outside visible flow but kept for functionality) -->
+    <div class="status" aria-hidden="true">
+        <pre id="statusText">Ready to start calibration...</pre>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="overlay">
+        <div class="modal">
+            <h2>Processing Calibration</h2>
+            <p>Training models based on collected data...</p>
+            <div class="spinner"></div>
+            <p id="loadingStatus">This may take a few minutes. Please don't close this window.</p>
+        </div>
+    </div>
+    
+    <!-- Success Overlay -->
+    <div id="successOverlay" class="overlay">
+        <div class="modal">
+            <h2>Calibration Complete</h2>
+            <div class="success-icon">✓</div>
+            <p>Gaze calibration has been successfully completed.</p>
+            <p id="successDetails">Both X and Y models have been trained.</p>
+            <button id="successOkBtn">OK</button>
+        </div>
+    </div>
+    
+    <!-- Error Overlay -->
+    <div id="errorOverlay" class="overlay">
+        <div class="modal">
+            <h2>Calibration Failed</h2>
+            <div class="error-icon">⚠</div>
+            <p>Unable to complete calibration successfully.</p>
+            <p id="errorDetails">Please try again.</p>
+            <button id="errorOkBtn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const calibrationArea = document.getElementById('calibrationArea');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const checkStatusBtn = document.getElementById('checkStatusBtn');
+        const resultsBtn = document.getElementById('resultsBtn');
+        const statusText = document.getElementById('statusText');
+        
+        // Modal elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const successOverlay = document.getElementById('successOverlay');
+        const errorOverlay = document.getElementById('errorOverlay');
+        const loadingStatus = document.getElementById('loadingStatus');
+        const successDetails = document.getElementById('successDetails');
+        const errorDetails = document.getElementById('errorDetails');
+        const successOkBtn = document.getElementById('successOkBtn');
+        const errorOkBtn = document.getElementById('errorOkBtn');
+        
+        // Calibration state
+        let calibrationStarted = false;
+        let currentPointIndex = 0;
+        let gridPoints = {};
+        
+        // Generate grid points
+        function generatePoints() {
+            const area = calibrationArea.getBoundingClientRect();
+            const width = area.width;
+            const height = area.height;
+            const marginX = width * 0.05;
+            const marginY = height * 0.05;
+            const cols = 4;
+            const rows = 3;
+            
+            // Create grid points
+            let index = 1;
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const x = marginX + col * ((width - 2 * marginX) / (cols - 1));
+                    const y = marginY + row * ((height - 2 * marginY) / (rows - 1));
+                    gridPoints[`pt${index}`] = { x_position: x, y_position: y };
+                    index++;
+                }
+            }
+            
+            // Add random points for testing
+            for (let i = 0; i < 6; i++) {
+                const x = marginX + Math.random() * (width - 2 * marginX);
+                const y = marginY + Math.random() * (height - 2 * marginY);
+                gridPoints[`pt${index}`] = { x_position: x, y_position: y };
+                index++;
+            }
+            
+            return Object.keys(gridPoints);
+        }
+        
+        // Show a dot at the specified position
+        function showDot(pointKey) {
+            // Clear previous dots
+            calibrationArea.innerHTML = '';
+            
+            const point = gridPoints[pointKey];
+            if (!point) return;
+            
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.left = `${point.x_position}px`;
+            dot.style.top = `${point.y_position}px`;
+            
+            dot.addEventListener('click', () => onDotClick(pointKey));
+            
+            calibrationArea.appendChild(dot);
+            updateStatus(`Click on the dot (${pointKey}): ${currentPointIndex + 1}/${Object.keys(gridPoints).length}`);
+        }
+        
+        // Handle dot click
+        async function onDotClick(pointKey) {
+            const point = gridPoints[pointKey];
+            
+            updateStatus(`Collecting data for ${pointKey}...`);
+            
+            try {
+                const response = await fetch('/api/gaze/collect-point', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        point_key: pointKey,
+                        x_position: point.x_position,
+                        y_position: point.y_position
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Poll for completion of this point
+                    pollPointCompletion();
+                } else {
+                    updateStatus(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`);
+            }
+        }
+        
+        // Poll for point completion
+        function pollPointCompletion() {
+            const pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/api/gaze/status');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        updateStatus(`Progress: ${data.points_completed}/${data.total_points} points collected`);
+                        
+                        // If we've collected enough data for this point
+                        if (data.points_completed > currentPointIndex) {
+                            clearInterval(pollInterval);
+                            currentPointIndex++;
+                            
+                            // If all points are done
+                            if (currentPointIndex >= Object.keys(gridPoints).length) {
+                                updateStatus('All points collected! Processing calibration...');
+                                showLoadingModal();
+                                getResults();
+                            } else {
+                                // Show next point
+                                showDot(Object.keys(gridPoints)[currentPointIndex]);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    updateStatus(`Error checking status: ${error.message}`);
+                    clearInterval(pollInterval);
+                }
+            }, 1000);
+        }
+        
+        // Start calibration
+        async function startCalibration() {
+            updateStatus('Starting calibration...');
+            
+            try {
+                const response = await fetch('/api/gaze/start', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    calibrationStarted = true;
+                    updateStatus('Calibration started. Generating points...');
+                    
+                    // Generate points
+                    const pointKeys = generatePoints();
+                    currentPointIndex = 0;
+                    
+                    // Show first point
+                    showDot(pointKeys[currentPointIndex]);
+                } else {
+                    updateStatus(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`);
+            }
+        }
+        
+        // Stop calibration
+        async function stopCalibration() {
+            updateStatus('Stopping calibration...');
+            
+            try {
+                const response = await fetch('/api/gaze/stop', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    calibrationStarted = false;
+                    updateStatus('Calibration stopped');
+                    calibrationArea.innerHTML = '';
+                } else {
+                    updateStatus(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`);
+            }
+        }
+        
+        // Check status
+        async function checkStatus() {
+            updateStatus('Checking status...');
+            
+            try {
+                const response = await fetch('/api/gaze/status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateStatus(`Status: ${data.points_completed}/${data.total_points} points collected`);
+                } else {
+                    updateStatus(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`);
+            }
+        }
+        
+        // Get results
+        async function getResults() {
+            updateStatus('Getting results... (This may take several minutes)');
+            
+            try {
+                const response = await fetch('/api/gaze/results');
+                const data = await response.json();
+                
+                // Hide loading overlay
+                hideLoadingModal();
+                
+                if (data.success) {
+                    updateStatus(`Calibration successful!\nX: ${data.calibration_x}\nY: ${data.calibration_y}`);
+                    showSuccessModal("Both X and Y models have been successfully trained.");
+                } else if (data.status === "partial") {
+                    updateStatus(`Partial calibration: ${data.message}`);
+                    showErrorModal(`X Model: ${data.calibration_x ? 'Success' : 'Failed'}, Y Model: ${data.calibration_y ? 'Success' : 'Failed'}\n${data.message}`);
+                } else if (data.status === "failed") {
+                    updateStatus(`Calibration failed: ${data.message}`);
+                    showErrorModal(`Calibration failed after ${data.attempts} attempts.\nPlease try again.`);
+                } else {
+                    // Still in progress, show loading and check again in a few seconds
+                    updateStatus(`Calibration in progress: ${data.message}`);
+                    showLoadingModal();
+                    setTimeout(getResults, 5000);
+                }
+            } catch (error) {
+                hideLoadingModal();
+                updateStatus(`Error: ${error.message}`);
+                showErrorModal(`Error during calibration: ${error.message}`);
+            }
+        }
+        
+        // Show loading modal
+        function showLoadingModal() {
+            loadingStatus.textContent = "Training models based on collected data. This may take a few minutes...";
+            loadingOverlay.style.display = "flex";
+        }
+        
+        // Hide loading modal
+        function hideLoadingModal() {
+            loadingOverlay.style.display = "none";
+        }
+        
+        // Show success modal
+        function showSuccessModal(message) {
+            successDetails.textContent = message;
+            successOverlay.style.display = "flex";
+            
+            // Auto-dismiss after 3 seconds
+            setTimeout(() => {
+                successOverlay.style.display = "none";
+                startBtn.disabled = false;
+                startBtn.textContent = "Start Calibration";
+            }, 3000);
+        }
+        
+        // Show error modal
+        function showErrorModal(message) {
+            errorDetails.textContent = message;
+            errorOverlay.style.display = "flex";
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                errorOverlay.style.display = "none";
+                startBtn.disabled = false;
+                startBtn.textContent = "Start Calibration";
+            }, 5000);
+        }
+        
+        // Update status text
+        function updateStatus(message) {
+            statusText.textContent = message;
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', function() {
+            // Display initial instruction
+            calibrationArea.innerHTML = '<div style="position: absolute; top: 45%; left: 0; width: 100%; text-align: center; color: #516A80; font-weight: bold; font-size: 16px;">Starting calibration...<br>Click each red dot as it appears</div>';
+            
+            // Start calibration after a short delay
+            setTimeout(startCalibration, 1500);
+            
+            // Disable button
+            this.disabled = true;
+            this.textContent = "Calibration in progress...";
+        });
+        
+        stopBtn.addEventListener('click', stopCalibration);
+        checkStatusBtn.addEventListener('click', checkStatus);
+        resultsBtn.addEventListener('click', () => {
+            showLoadingModal();
+            getResults();
+        });
+        
+        // Modal button listeners
+        successOkBtn.addEventListener('click', () => {
+            successOverlay.style.display = "none";
+        });
+        
+        errorOkBtn.addEventListener('click', () => {
+            errorOverlay.style.display = "none";
+        });
+
+        // Notify parent frame that we're loaded
+        window.addEventListener('load', function() {
+            if (window.parent && window.parent !== window) {
+                console.log("Iframe content fully loaded");
+                // If needed, send a message to parent
+                // window.parent.postMessage('calibration-loaded', '*');
+            }
+        });
+    </script>
+</body>
+</html> 

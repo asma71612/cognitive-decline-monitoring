@@ -43,3 +43,17 @@ react_frontend/src/firebaseConfig.js
 # Ignore python cache files
 __pycache__/
 *.pyc
+**/__pycache__/
+
+# Ignore eye tracking data
+demo/flask_api/*.pkl
+demo/flask_api/outputs/
+outputs/
+
+# Virtual Environments
+*_env/
+ptgaze_env/
+new_ptgaze_env/
+
+# Log files
+*.log
