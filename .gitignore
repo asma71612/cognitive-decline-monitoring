@@ -49,6 +49,8 @@ __pycache__/
 demo/flask_api/*.pkl
 demo/flask_api/outputs/
 outputs/
+*/gaze_calibration_collection_train.csv
+*/gaze_calibration_collection_unseen.csv
 
 # Virtual Environments
 *_env/

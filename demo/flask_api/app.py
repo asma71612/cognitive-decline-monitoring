@@ -20,7 +20,7 @@ from processQuest.SpeechAnalysis import (
     analyze_pauses,
 )
 
-# Import gaze calibration functions - will be created next
+# Import gaze calibration functions
 from gazeCalibration.gaze_calibration_api import (
     start_gaze_tracking,
     stop_gaze_tracking,

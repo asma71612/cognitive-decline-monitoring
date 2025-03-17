@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './GazeCalibration.css';
 
 const GazeCalibration = () => {
   const navigate = useNavigate();
   const { userId } = useParams();
-  const [calibrationComplete, setCalibrationComplete] = useState(false);
   const iframeRef = useRef(null);
 
   // For future enhancement: We'll eventually move all logic from gaze_calibration.html here
@@ -19,15 +18,31 @@ const GazeCalibration = () => {
     }
   };
 
+  // This listens for any messages from the iframe directly
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === 'CALIBRATION_COMPLETE') {
+        console.log('Received calibration complete message:', event.data);
+        
+        // Redirect back to patient home page after calibration is complete
+        if (userId) {
+          navigate(`/patient-home-page/${userId}`);
+        } else {
+          navigate('/patient-login');
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [navigate, userId]);
+
   return (
     <div className="gaze-calibration-container">
-      {/* <div className="header">
-        <h1>Gaze Calibration</h1>
-        <button className="back-button" onClick={() => navigate(-1)}>
-          ← Back
-        </button>
-      </div> */}
-      
       <div className="calibration-frame-container">
         <iframe 
           ref={iframeRef}

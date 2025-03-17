@@ -10,7 +10,6 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            font-family: Arial, sans-serif;
             background-color: #fff3e3;
         }
         
@@ -109,33 +108,47 @@
         }
         
         .modal {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 350px;
+            background-color: #fff3e3;
+            padding: 40px;
+            border-radius: 45px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            width: 350px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .modal h2 {
-            color: #516A80;
+            color: #2f3b66;
             margin-top: 0;
-            font-size: 20px;
+            font-size: 22px;
+            margin-bottom: 10px;
         }
         
         .modal p {
-            margin: 15px 0;
-            color: #333;
-            font-size: 14px;
+            margin: 10px 0;
+            color: #516A80;
+            font-size: 16px;
+            line-height: 1.5;
         }
         
         .modal button {
+            padding: 10px 25px;
+            font-size: 16px;
+            background-color: #576a7f;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
             margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        
+        .modal button:hover {
+            background-color: #7F96AB;
         }
         
         .spinner {
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #516A80;
+            border: 6px solid #d9d9d9;
+            border-top: 6px solid #576a7f;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -144,13 +157,13 @@
         }
         
         .success-icon {
-            color: #4CAF50;
+            color: #576a7f;
             font-size: 50px;
             margin: 10px 0;
         }
         
         .error-icon {
-            color: #F44336;
+            color: #f8727b;
             font-size: 50px;
             margin: 10px 0;
         }
@@ -193,7 +206,6 @@
             pointer-events: none;
         }
 
-        /* Improved modal styles */
         .loading-overlay, .success-overlay, .error-overlay {
             position: fixed;
             top: 0;
@@ -220,15 +232,9 @@
 </head>
 <body>
     <div class="container">        
-        <div class="controls">
-            <button id="startBtn">Start Calibration</button>
-            <!-- <button id="stopBtn">Stop Calibration</button>
-            <button id="checkStatusBtn">Check Status</button>
-            <button id="resultsBtn">Get Results</button> -->
-        </div>
-        
         <div class="calibration-area" id="calibrationArea">
             <!-- Dots will be dynamically added here -->
+            <div style="position: absolute; top: 45%; left: 0; width: 100%; text-align: center; color: #516A80; font-weight: bold; font-size: 16px;">Starting calibration...<br>Click each red dot as it appears</div>
         </div>
     </div>
     
@@ -272,10 +278,6 @@
     <script>
         // DOM elements
         const calibrationArea = document.getElementById('calibrationArea');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const checkStatusBtn = document.getElementById('checkStatusBtn');
-        const resultsBtn = document.getElementById('resultsBtn');
         const statusText = document.getElementById('statusText');
         
         // Modal elements
@@ -327,7 +329,7 @@
         
         // Show a dot at the specified position
         function showDot(pointKey) {
-            // Clear previous dots
+            // Clear previous dots and messages
             calibrationArea.innerHTML = '';
             
             const point = gridPoints[pointKey];
@@ -514,7 +516,7 @@
         
         // Show loading modal
         function showLoadingModal() {
-            loadingStatus.textContent = "Training models based on collected data. This may take a few minutes...";
+            loadingStatus.textContent = "This may take a few minutes. Please don't close this window.";
             loadingOverlay.style.display = "flex";
         }
         
@@ -527,13 +529,7 @@
         function showSuccessModal(message) {
             successDetails.textContent = message;
             successOverlay.style.display = "flex";
-            
-            // Auto-dismiss after 3 seconds
-            setTimeout(() => {
-                successOverlay.style.display = "none";
-                startBtn.disabled = false;
-                startBtn.textContent = "Start Calibration";
-            }, 3000);
+            // No auto-dismiss timeout - modal stays until user clicks OK
         }
         
         // Show error modal
@@ -544,8 +540,6 @@
             // Auto-dismiss after 5 seconds
             setTimeout(() => {
                 errorOverlay.style.display = "none";
-                startBtn.disabled = false;
-                startBtn.textContent = "Start Calibration";
             }, 5000);
         }
         
@@ -554,43 +548,41 @@
             statusText.textContent = message;
         }
         
-        // Event listeners
-        startBtn.addEventListener('click', function() {
-            // Display initial instruction
-            calibrationArea.innerHTML = '<div style="position: absolute; top: 45%; left: 0; width: 100%; text-align: center; color: #516A80; font-weight: bold; font-size: 16px;">Starting calibration...<br>Click each red dot as it appears</div>';
-            
-            // Start calibration after a short delay
-            setTimeout(startCalibration, 1500);
-            
-            // Disable button
-            this.disabled = true;
-            this.textContent = "Calibration in progress...";
-        });
-        
-        stopBtn.addEventListener('click', stopCalibration);
-        checkStatusBtn.addEventListener('click', checkStatus);
-        resultsBtn.addEventListener('click', () => {
-            showLoadingModal();
-            getResults();
-        });
-        
         // Modal button listeners
         successOkBtn.addEventListener('click', () => {
             successOverlay.style.display = "none";
+            
+            // Redirect to patient home page after calibration is complete
+            if (window.parent && window.parent !== window) {
+                try {
+                    window.parent.postMessage({ 
+                        type: 'CALIBRATION_COMPLETE', 
+                        status: 'success',
+                        message: 'Calibration completed successfully'
+                    }, '*');
+                    
+                    console.log("Sent completion message to parent window");
+                } catch (error) {
+                    console.error("Error sending message to parent:", error);
+                }
+            }
         });
         
         errorOkBtn.addEventListener('click', () => {
             errorOverlay.style.display = "none";
         });
 
-        // Notify parent frame that we're loaded
         window.addEventListener('load', function() {
             if (window.parent && window.parent !== window) {
                 console.log("Iframe content fully loaded");
-                // If needed, send a message to parent
-                // window.parent.postMessage('calibration-loaded', '*');
             }
+            
+            // Automatically start calibration after a short delay to allow page to fully render
+            setTimeout(function() {
+                calibrationArea.innerHTML = ''; // First clear the initial message
+                startCalibration(); // Then start the calibration
+            }, 1500);
         });
     </script>
 </body>
-</html> 
+</html>

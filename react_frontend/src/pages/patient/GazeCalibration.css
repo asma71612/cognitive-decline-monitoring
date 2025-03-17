@@ -88,7 +88,6 @@ body {
   background-color: #8496aa;
 }
 
-/* Loading, success, and error modal styles for future implementation */
 .modal-overlay {
   display: none;
   position: fixed;

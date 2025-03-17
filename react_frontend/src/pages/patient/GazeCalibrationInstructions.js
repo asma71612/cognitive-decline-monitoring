@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from 'react-router-dom';
 import InstructionsPage from "../../components/InstructionsModal";
-import gazeCalibrationBackground from "../../assets/memoryVaultBackgroundDark.png"; // Using existing background, should be replaced with appropriate one
+import gazeCalibrationBackground from "../../assets/memoryVaultBackgroundDark.png";
 
 const GazeCalibrationInstructions = () => {
   const { userId } = useParams();
@@ -10,7 +10,7 @@ const GazeCalibrationInstructions = () => {
     <InstructionsPage
       title="Gaze Calibration"
       howToPlay="How It Works"
-      firstText="Calibration helps the system track your eye movements accurately. This is important for the eye-tracking tasks in this application."
+      firstText="Calibration helps the system track your eye movements accurately."
       instructionsList={[
         "You will see a series of red dots appear on the screen",
         "Look directly at each dot and click on it",
