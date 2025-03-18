@@ -1,0 +1,15 @@
+{
+    "trial_num": 2,
+    "task_type": "antisaccade",
+    "game_type": "gap",
+    "target_position": [
+        51,
+        433
+    ],
+    "metrics": {
+        "reaction_time": 0.029096364974975586,
+        "saccade_duration": 0.06907652340900115,
+        "saccade_error": 0,
+        "fixation_duration": 0.38498907736489557
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "trial_num": 1,
+    "task_type": "prosaccade",
+    "game_type": "gap",
+    "target_position": [
+        739,
+        893
+    ],
+    "metrics": {
+        "reaction_time": 0.032057762145996094,
+        "saccade_duration": 0.09613221333603891,
+        "saccade_error": 0,
+        "fixation_duration": 0.493385837968659
+    }
+}

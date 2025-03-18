@@ -1,0 +1,15 @@
+{
+    "trial_num": 3,
+    "task_type": "prosaccade",
+    "game_type": "overlap",
+    "target_position": [
+        739,
+        893
+    ],
+    "metrics": {
+        "reaction_time": 0.052741289138793945,
+        "saccade_duration": 0.09446462873631682,
+        "saccade_error": 0,
+        "fixation_duration": 0.4979953853980318
+    }
+}
