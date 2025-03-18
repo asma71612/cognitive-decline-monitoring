@@ -105,7 +105,7 @@ const ProcessQuest = () => {
             LexicalFrequencyOfNouns: analyzeTextResult['Median Noun Frequency']
           };
           const structuralFeatures = {
-            MeanLengthOfOccurrence: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
+            MeanLengthOfUtterance: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
             NumOfSentences: analyzeTextResult["Total Sentences"]
           };
           const temporalCharacteristics = {

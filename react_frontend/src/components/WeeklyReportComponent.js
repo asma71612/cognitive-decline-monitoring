@@ -789,7 +789,7 @@ for (const { dateKey } of reports) {
               const structuralDoc = await getDoc(structuralDocRef);
               if (structuralDoc.exists()) {
                 const data = structuralDoc.data();
-                const meanValue = Number(data.MeanLengthOfOccurrence);
+                const meanValue = Number(data.MeanLengthOfUtterance);
                 const sentenceCount = Number(data.NumOfSentences);
                 const [month, day, year] = dateKey.split('-').map(Number);
                 const formattedDate = new Date(year, month - 1, day);
