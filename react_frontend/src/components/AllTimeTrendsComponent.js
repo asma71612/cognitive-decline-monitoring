@@ -555,7 +555,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
           const structuralDoc = await getDoc(structuralDocRef);
           if (structuralDoc.exists()) {
             const data = structuralDoc.data();
-            const meanValue = Number(data.MeanLengthOfOccurrence);
+            const meanValue = Number(data.MeanLengthOfUtterance);
             const sentenceCount = Number(data.NumOfSentences);
             if (!meanDataPoints[monthYear]) meanDataPoints[monthYear] = [];
             if (!sentenceDataPoints[monthYear])
