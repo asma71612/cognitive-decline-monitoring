@@ -164,11 +164,18 @@ def analyze_text(text, subtlexus_df=None):
             frequencies.append(freq)
         median_noun_frequency = median(frequencies) if frequencies else 0
     
+    total_words = total_open_class_words + total_closed_class_words
+
     # Results
     return {
         # Lexical content
         "Total Sentences": num_sentences,
         "Total Tokens": total_tokens,
+        "Frequency of Nouns": round(total_nouns/total_words, 3),
+        "Frequency of Verbs and auxillary verbs": round(total_verbs_doc/total_words, 3),
+        "Frequency of Filler Words": round(total_filler_words/total_words, 3),
+        "Open-Class Words": round(total_open_class_words/total_words, 3),
+        "Closed-Class Words": round(total_closed_class_words/total_words, 3),
         "Frequency of Nouns": round(total_nouns/total_words, 3),
         "Frequency of Verbs and auxillary verbs": round(total_verbs_doc/total_words, 3),
         "Frequency of Filler Words": round(total_filler_words/total_words, 3),
@@ -184,7 +191,7 @@ def analyze_text(text, subtlexus_df=None):
         "Verb Index (verbs to utterances ratio)": round(verb_index, 2),
         
         # Average noun frequency
-        "Median Noun Frequency": round(median_noun_frequency, 2) if median_noun_frequency is not None else "N/A",
+        "Median Noun Frequency": round(median_noun_frequency, 2) if median_noun_frequency is not None else "N/A"
     }
 
 def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similarity_threshold=0.5):
@@ -216,7 +223,7 @@ def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similar
     )
 
     return {
-        "Semantic Units": ", ".join(semantic_units),
+        "Semantic Units": ",".join(semantic_units),
         "Semantic Idea Density": round(idea_density, 2),
         "Semantic Efficiency": round(semantic_efficiency, 2)
         if semantic_efficiency is not None else "Duration not provided",
