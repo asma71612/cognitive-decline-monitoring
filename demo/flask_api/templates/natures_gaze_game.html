@@ -1088,11 +1088,11 @@
                     
                     for (const trialType in data.summary) {
                         if (data.summary[trialType]["Total_number_of_trials"]) {
-                            const trials = parseFloat(data.summary[trialType]["Total_number_of_trials"]);
-                            totalTrials += trials;
+                            const trialCount = parseFloat(data.summary[trialType]["Total_number_of_trials"]);
+                            totalTrials += trialCount;
                             
                             if (data.summary[trialType]["average_reaction_time (ms)"]) {
-                                avgReactionTime += parseFloat(data.summary[trialType]["average_reaction_time (ms)"]) * trials;
+                                avgReactionTime += parseFloat(data.summary[trialType]["average_reaction_time (ms)"]) * trialCount;
                             }
                             trialTypes++;
                         }
@@ -1111,7 +1111,8 @@
                         for (const trialType in data.summary) {
                             if (data.summary[trialType]["saccade_error_percentage (%)"]) {
                                 hasError = true;
-                                avgErrorPercentage += parseFloat(data.summary[trialType]["saccade_error_percentage (%)"]) * trials;
+                                const trialCount = parseFloat(data.summary[trialType]["Total_number_of_trials"]);
+                                avgErrorPercentage += parseFloat(data.summary[trialType]["saccade_error_percentage (%)"]) * trialCount;
                                 trialTypesWithError++;
                             }
                         }

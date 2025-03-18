@@ -8,7 +8,8 @@
         ],
         "trial_start_time": 1742318830.3369322,
         "stimulus_onset_time": 1742318834.5422668,
-        "trial_end_time": 1742318842.5509279
+        "trial_end_time": 1742318842.5509279,
+        "gaze_data": []
     },
     "2": {
         "task_type": "antisaccade",
@@ -19,7 +20,8 @@
         ],
         "trial_start_time": 1742318843.053956,
         "stimulus_onset_time": 1742318847.262555,
-        "trial_end_time": 1742318855.272981
+        "trial_end_time": 1742318855.272981,
+        "gaze_data": []
     },
     "3": {
         "task_type": "prosaccade",
@@ -30,7 +32,8 @@
         ],
         "trial_start_time": 1742318855.789449,
         "stimulus_onset_time": 1742318859.797245,
-        "trial_end_time": 1742318868.200456
+        "trial_end_time": 1742318868.200456,
+        "gaze_data": []
     },
     "4": {
         "task_type": "antisaccade",
@@ -41,12 +44,7 @@
         ],
         "trial_start_time": 1742318868.703477,
         "stimulus_onset_time": 1742318872.708527,
-        "trial_end_time": 1742318881.124341
-    },
-    "summary": {
-        "prosaccade-gap": {},
-        "prosaccade-overlap": {},
-        "antisaccade-gap": {},
-        "antisaccade-overlap": {}
+        "trial_end_time": 1742318881.124341,
+        "gaze_data": []
     }
 }

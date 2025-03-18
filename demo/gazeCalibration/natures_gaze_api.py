@@ -224,12 +224,14 @@ def run_saccade_game():
                     with open(results_file, "r") as f:
                         results_data = json.load(f)
                     
+                    # Always overwrite the summary with new data 
+                    print("Overwriting summary data in results file")
                     results_data["summary"] = summary_data
                     
                     with open(results_file, "w") as f:
                         json.dump(results_data, f, indent=4)
                     
-                    print("Added summary data to results file")
+                    print("Summary data updated in results file")
                 except Exception as e:
                     print(f"Error updating results file with summary data: {e}")
                 
@@ -366,46 +368,8 @@ def get_saccade_game_results():
                             "trial_end_time": trial.get("trial_end_time", 0)
                         }
                     
-                    # Create basic summary data
-                    summary_data = {
-                        "prosaccade-gap": {
-                            "Total_number_of_trials": "1.000",
-                            "saccade_omission_percentage (%)": "0.000",
-                            "average_reaction_time (ms)": "150.000",
-                            "average_saccade_duration (ms)": "2000.000",
-                            "saccade_error_percentage (%)": "0.000",
-                            "average_fixation_duration (ms)": "3000.000"
-                        },
-                        "prosaccade-overlap": {
-                            "Total_number_of_trials": "1.000",
-                            "saccade_omission_percentage (%)": "0.000",
-                            "average_reaction_time (ms)": "120.000",
-                            "average_saccade_duration (ms)": "2400.000",
-                            "saccade_error_percentage (%)": "0.000",
-                            "average_fixation_duration (ms)": "3400.000"
-                        },
-                        "antisaccade-gap": {
-                            "Total_number_of_trials": "1.000",
-                            "saccade_omission_percentage (%)": "0.000",
-                            "average_reaction_time (ms)": "65.000",
-                            "average_saccade_duration (ms)": "2300.000",
-                            "saccade_error_percentage (%)": "10.000",
-                            "average_fixation_duration (ms)": "0.000"
-                        },
-                        "antisaccade-overlap": {
-                            "Total_number_of_trials": "1.000",
-                            "saccade_omission_percentage (%)": "0.000",
-                            "average_reaction_time (ms)": "1500.000",
-                            "average_saccade_duration (ms)": "330.000",
-                            "saccade_error_percentage (%)": "0.000",
-                            "average_fixation_duration (ms)": "2000.000"
-                        }
-                    }
-                    
-                    # Add summary data
-                    processed_data["summary"] = summary_data
-                    
-                    # Save to processed_trial_data.json
+                    # Save to processed_trial_data.json without summary data
+                    # Let the Saccade_Fixation.py script calculate the summary
                     with open(results_file, "w") as f:
                         json.dump(processed_data, f, indent=4)
                         
@@ -423,11 +387,37 @@ def get_saccade_game_results():
                     "message": f"Results file not found at {results_file}",
                     "status": game_status
                 }
-            
+        
+        # Read the processed data file with fresh metrics
+        print("Reading fresh processed data with calculated metrics...")
         with open(results_file, "r") as f:
             results = json.load(f)
             
-        # Process metrics to get summaries
+        # Debug the content of the summary
+        if "summary" in results:
+            print("Found summary data in results file:")
+            summary_data = results.get("summary", {})
+            
+            # Check if the summary data is actually populated with real values
+            has_real_metrics = True
+            for trial_type, metrics in summary_data.items():
+                print(f"  {trial_type}: {len(metrics) if isinstance(metrics, dict) else 'not a dictionary'} metrics")
+                # Print up to 3 sample metrics for debugging
+                if isinstance(metrics, dict):
+                    sample_items = list(metrics.items())[:3]
+                    for key, value in sample_items:
+                        print(f"    {key}: {value}")
+                
+                # An empty dict would mean no metrics
+                if not metrics:
+                    has_real_metrics = False
+            
+            if not has_real_metrics:
+                print("WARNING: Summary data exists but some sections are empty")
+        else:
+            print("No summary data found in results file!")
+            
+        # Process metrics to get trials data for frontend
         metrics = {
             "prosaccade-gap": [],
             "prosaccade-overlap": [],
@@ -435,6 +425,7 @@ def get_saccade_game_results():
             "antisaccade-overlap": []
         }
         
+        # Convert trials data for frontend use
         for trial_num, trial_data in results.items():
             if trial_num == "summary":
                 continue  # Skip the summary section
@@ -451,10 +442,13 @@ def get_saccade_game_results():
                     "end_time": trial_data.get("trial_end_time")
                 })
         
-        # Ensure we have summary data
-        if "summary" not in results:
-            print("No summary data found in results file, using fallback summary data")
-            results["summary"] = {
+        # Only use default summary if absolutely necessary
+        summary_data = results.get("summary", {})
+        if not summary_data:
+            print("WARNING: No summary data found, using fallback data")
+            
+            # Default summary data to use only if no summary exists
+            default_summary = {
                 "prosaccade-gap": {
                     "Total_number_of_trials": "1.000",
                     "saccade_omission_percentage (%)": "0.000",
@@ -488,17 +482,32 @@ def get_saccade_game_results():
                     "average_fixation_duration (ms)": "2000.000"
                 }
             }
-                
+            
+            # Add default summary data
+            summary_data = default_summary
+        
+        # Add trials data to the result for debugging the JavaScript error
+        trial_types = ["prosaccade-gap", "prosaccade-overlap", "antisaccade-gap", "antisaccade-overlap"]
+        trials_data = {}
+        
+        for trial_type in trial_types:
+            if trial_type in metrics:
+                trials_data[trial_type] = metrics[trial_type]
+        
+        # Return the results with both summary and raw trial data
         return {
             "success": True,
             "message": "Game results retrieved successfully",
             "status": game_status,
             "metrics": metrics,
-            "summary": results.get("summary", {}),
-            "raw_results": results
+            "summary": summary_data,
+            "raw_results": results,
+            "trials": trials_data  # Add trials data for frontend
         }
     except Exception as e:
         print(f"Error retrieving game results: {e}")
+        import traceback
+        traceback.print_exc()
         return {
             "success": False,
             "message": f"Error retrieving game results: {str(e)}",
