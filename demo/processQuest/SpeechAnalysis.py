@@ -204,6 +204,9 @@ def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similar
 
             if max_similarity >= similarity_threshold:
                 semantic_units.append(token.text.lower())
+    
+    # Ensure semantic units are unique
+    semantic_units = list(set(semantic_units))
 
     total_words = len([token for token in doc if token.is_alpha])
     num_semantic_units = len(semantic_units)
@@ -213,7 +216,7 @@ def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similar
     )
 
     return {
-        "Semantic Units": ",".join(semantic_units),
+        "Semantic Units": ", ".join(semantic_units),
         "Semantic Idea Density": round(idea_density, 2),
         "Semantic Efficiency": round(semantic_efficiency, 2)
         if semantic_efficiency is not None else "Duration not provided",
