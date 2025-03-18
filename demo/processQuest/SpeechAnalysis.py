@@ -223,7 +223,7 @@ def analyze_semantic_content_with_word_bank(text, bank, speech_duration, similar
     )
 
     return {
-        "Semantic Units": ",".join(semantic_units),
+        "Semantic Units": ", ".join(semantic_units),
         "Semantic Idea Density": round(idea_density, 2),
         "Semantic Efficiency": round(semantic_efficiency, 2)
         if semantic_efficiency is not None else "Duration not provided",
