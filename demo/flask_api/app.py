@@ -9,6 +9,7 @@ import time
 import json
 import csv
 import numpy as np
+from pathlib import Path
 
 # Add  parent directory of flask_api ("demo") to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -27,6 +28,13 @@ from gazeCalibration.gaze_calibration_api import (
     collect_calibration_point,
     check_calibration_status,
     get_calibration_results
+)
+
+# Import Saccade Fixation functions (Nature's Gaze Game)
+from gazeCalibration.natures_gaze_api import (
+    start_saccade_game,
+    get_saccade_game_status,
+    get_saccade_game_results
 )
 
 app = Flask(__name__)
@@ -175,6 +183,96 @@ def get_results():
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Nature's Gaze Game Routes
+@app.route('/natures-gaze-game')
+def natures_gaze_page():
+    """Serve the Nature's Gaze game page"""
+    return render_template('natures_gaze_game.html')
+
+@app.route('/api/natures-gaze/start', methods=['POST'])
+def start_natures_gaze():
+    """Start the Nature's Gaze game process"""
+    try:
+        result = start_saccade_game()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/natures-gaze/status', methods=['GET'])
+def check_natures_gaze_status():
+    """Check the status of the Nature's Gaze game"""
+    try:
+        result = get_saccade_game_status()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/natures-gaze/results', methods=['GET'])
+def get_natures_gaze_results():
+    """Get the Nature's Gaze game results"""
+    try:
+        result = get_saccade_game_results()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/natures-gaze/debug', methods=['GET'])
+def natures_gaze_debug():
+    """Debug endpoint to check if result files exist"""
+    # Get the base directory
+    base_dir = Path(__file__).parent.parent
+    
+    # Check for trial log
+    trial_log_path = base_dir / "gazeCalibration" / "saccade_output" / "saccade_trial_log.json"
+    trial_log_exists = os.path.exists(trial_log_path)
+    trial_log_size = os.path.getsize(trial_log_path) if trial_log_exists else 0
+    
+    # Check for processed data
+    processed_data_path = base_dir / "gazeCalibration" / "saccade_output" / "processed_trial_data.json"
+    processed_data_exists = os.path.exists(processed_data_path)
+    processed_data_size = os.path.getsize(processed_data_path) if processed_data_exists else 0
+    
+    # List all files in the output directory
+    output_dir = base_dir / "gazeCalibration" / "saccade_output"
+    files_in_dir = []
+    if os.path.exists(output_dir):
+        files_in_dir = [
+            {
+                "name": f,
+                "size": os.path.getsize(os.path.join(output_dir, f)) if os.path.isfile(os.path.join(output_dir, f)) else "directory",
+                "type": "file" if os.path.isfile(os.path.join(output_dir, f)) else "directory"
+            }
+            for f in os.listdir(output_dir)
+        ]
+    
+    # Read processed data if it exists
+    processed_data_content = None
+    if processed_data_exists:
+        try:
+            with open(processed_data_path, "r") as f:
+                processed_data_content = json.load(f)
+        except Exception as e:
+            processed_data_content = {"error": str(e)}
+    
+    return jsonify({
+        "trial_log": {
+            "exists": trial_log_exists,
+            "path": str(trial_log_path),
+            "size": trial_log_size
+        },
+        "processed_data": {
+            "exists": processed_data_exists,
+            "path": str(processed_data_path),
+            "size": processed_data_size,
+            "content": processed_data_content
+        },
+        "output_directory": {
+            "path": str(output_dir),
+            "exists": os.path.exists(output_dir),
+            "files": files_in_dir
+        }
+    })
 
 # Serve static files for the calibration page
 @app.route('/static/<path:path>')

@@ -10,6 +10,8 @@ import InstructionsPage from './pages/patient/InstructionsPage';
 import LightingCalibration from './pages/patient/LightingCalibration';
 import GazeCalibration from './pages/patient/GazeCalibration';
 import GazeCalibrationInstructions from './pages/patient/GazeCalibrationInstructions';
+import NaturesGazeInstructions from './pages/patient/NaturesGazeInstructions';
+import NaturesGaze from './pages/patient/NaturesGaze';
 import NaturesGaze1Instructions from './pages/games/naturesGaze/NaturesGaze1Instructions';
 import NaturesGaze1 from './pages/games/naturesGaze/NaturesGaze1';
 import NaturesGaze2Instructions from './pages/games/naturesGaze/NaturesGaze2Instructions';
@@ -46,6 +48,10 @@ const App = () => {
         <Route path="/gaze-calibration-instructions" element={<GazeCalibrationInstructions />} />
         <Route path="/gaze-calibration/:userId" element={<GazeCalibration />} />
         <Route path="/gaze-calibration" element={<GazeCalibration />} />
+        <Route path="/natures-gaze-instructions/:userId" element={<NaturesGazeInstructions />} />
+        <Route path="/natures-gaze-instructions" element={<NaturesGazeInstructions />} />
+        <Route path="/natures-gaze/:userId" element={<NaturesGaze />} />
+        <Route path="/natures-gaze" element={<NaturesGaze />} />
         <Route path="/natures-gaze-1-instructions" element={<NaturesGaze1Instructions />} />
         <Route path="/natures-gaze-1-game" element={<NaturesGaze1 />} />
         <Route path="/natures-gaze-2-instructions" element={<NaturesGaze2Instructions />} />

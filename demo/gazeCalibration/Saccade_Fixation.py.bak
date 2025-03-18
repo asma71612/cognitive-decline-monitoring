@@ -1,0 +1,551 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# This script is designed to run a fixation-saccade task using Pygame for GUI elements.
+# The task involves displaying a bird image at the center of the screen and then moving it to a new position.
+# The participant is required to either look towards or away from the bird as quickly and accurately as possible.
+# The script also records a video of the participant during the task and logs trial data. 
+# So you should be seeing a saccade_trial_log file in your folder.
+
+import os
+import sys
+import time
+import random
+import re
+import csv
+import threading
+import subprocess
+import json
+import pandas as pd
+import math
+import numpy as np
+
+# Set headless mode flag - used to run without displaying Pygame UI
+headless_mode = True
+
+# Import Pygame and other essential modules
+if not headless_mode:
+    import pygame
+import pymovements as pm
+from pycaret.regression import load_model
+from screeninfo import get_monitors
+import cv2
+import glob
+from datetime import datetime
+import polars as pl
+
+# ---------------- INITIAL SETUP ---------------- #
+
+# Define base output directory
+base_output_dir = os.path.join(os.path.dirname(__file__), "saccade_output")
+os.makedirs(base_output_dir, exist_ok=True)
+
+# Create required subdirectories
+df_trial_dir = os.path.join(base_output_dir, "df_trial")
+for subdir in ["raw", "events", "preprocessed", "predictions"]:
+    os.makedirs(os.path.join(df_trial_dir, subdir), exist_ok=True)
+
+# File paths
+log_file_path = os.path.join(base_output_dir, "gaze_calibration_dummy.log")
+fixation_saccade_data = os.path.join(base_output_dir, "fixation_saccade_data.csv")
+
+# Delete old log files
+for file in [log_file_path, fixation_saccade_data]:
+    if os.path.exists(file):
+        os.remove(file)
+        print(f"Deleted: {file}")
+
+# Global variables
+trial_logs = []
+set = 60  # System error threshold
+trial_count = 4  # Number of trials
+running = True
+
+# Get primary monitor position
+primary_monitor = get_monitors()[0]
+screen_width, screen_height = primary_monitor.width, primary_monitor.height
+
+# Video recording variables
+video_path = None
+frame_width = None
+frame_height = None
+fps = None
+cap = None
+fourcc = None
+out = None
+start_time = None
+start = None
+frame_count = 0
+recording = False
+
+# Setup video recording function
+def setup_video():
+    """Setup video recording using OpenCV"""
+    global video_path, frame_width, frame_height, fps, cap, fourcc, out, start_time, start, frame_count, recording
+    
+    video_path = os.path.join(base_output_dir, "recorded_video2.mp4")
+    frame_width, frame_height = 640, 480
+    fps = 30
+
+    try:
+        # Initialize camera
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            print("Error: Could not open camera for video capture")
+            recording = False
+            return
+            
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
+        cap.set(cv2.CAP_PROP_FPS, fps)
+
+        # Initialize video writer
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(video_path, fourcc, fps, (frame_width, frame_height))
+
+        start_time = datetime.now()
+        print(f"Recording started at: {start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+
+        start = time.time()
+        frame_count = 0
+        
+        # Main recording loop
+        while recording:  # Keep capturing while recording is True
+            if not cap.isOpened():
+                print("Error: Camera disconnected during recording")
+                break
+                
+            ret, frame = cap.read()
+            if ret:
+                out.write(frame)
+                frame_count += 1
+            else:
+                print("Warning: Failed to capture frame")
+                time.sleep(0.01)  # Small delay to prevent CPU spike
+                
+        print(f"Video recording thread ending. Frames captured: {frame_count}")
+        
+    except Exception as e:
+        print(f"Error in video recording: {str(e)}")
+        recording = False
+
+# Initialize Pygame only if not in headless mode
+if not headless_mode:
+    # Get primary monitor position
+    x, y = primary_monitor.x, primary_monitor.y
+    os.environ["SDL_VIDEO_WINDOW_POS"] = f"{x},{y}"
+    
+    # Initialize Pygame
+    pygame.init()
+    clock = pygame.time.Clock()
+    screen = pygame.display.set_mode((screen_width, screen_height), pygame.NOFRAME)
+    pygame.display.set_caption("Fixation-Saccade Task")
+    
+    # Colors
+    BACKGROUND_COLOR = (255, 243, 227)  # Light peach
+    TEXT_COLOR = (47, 59, 102)  # Dark navy
+    BUTTON_COLOR = (102, 112, 133)  # Grayish blue
+    BUTTON_CLICK_COLOR = (80, 90, 110)  # Darker shade for click effect
+    WHITE = (255, 255, 255)
+    DARK_RED = (217, 83, 79)  # Red for emphasis
+    
+    # Load fonts
+    title_font = pygame.font.Font(None, 48)
+    text_font = pygame.font.Font(None, 28)
+    button_font = pygame.font.Font(None, 32)
+    
+    # Load bird frames for fixation/stimulus
+    bird_folder = os.path.join(os.path.dirname(__file__), "hello GIF by Angry Birds")
+    bird_frames = []
+    try:
+        # Check if folder exists
+        if not os.path.exists(bird_folder):
+            print(f"Error: Folder not found at {bird_folder}")
+            print(f"Current directory: {os.getcwd()}")
+            # Try alternate path
+            alt_path = "hello GIF by Angry Birds"
+            if os.path.exists(alt_path):
+                bird_folder = alt_path
+                print(f"Found at alternate path: {bird_folder}")
+        
+        if os.path.exists(bird_folder):
+            print(f"Found folder: {bird_folder}")
+            files = sorted(os.listdir(bird_folder))
+            print(f"Found {len(files)} files in folder")
+            
+            for file in files:
+                if file.endswith(".png") or file.endswith(".jpg"):
+                    try:
+                        img_path = os.path.join(bird_folder, file)
+                        img = pygame.image.load(img_path)
+                        img = pygame.transform.scale(img, (250, 250))
+                        bird_frames.append(img)
+                    except Exception as e:
+                        print(f"Error loading image {file}: {str(e)}")
+            
+            print(f"Successfully loaded {len(bird_frames)} images")
+    except Exception as e:
+        print(f"Error in image loading process: {str(e)}")
+        
+    # If no images were loaded, create a simple placeholder image
+    if len(bird_frames) == 0:
+        print("Creating placeholder image since no bird frames were loaded")
+        placeholder = pygame.Surface((250, 250))
+        placeholder.fill((255, 0, 0))  # Red square as placeholder
+        bird_frames = [placeholder]
+    
+    frame_index = 0
+    frame_speed = 0.15  # Speed of bird animation
+
+# In headless mode, we don't use Pygame UI functions but we still need to simulate the process
+if headless_mode:
+    # We'll create placeholder functions for UI actions to avoid modifying the main logic
+    def show_message(title, message):
+        print(f"[UI Message] {title}: {message}")
+    
+    def show_instructions():
+        print("[UI] Showing instructions for Nature's Gaze - Saccade Task")
+        # Simulate waiting for user to press start
+        time.sleep(0.5)
+    
+    def show_prosaccade_instructions():
+        print("[UI] Showing prosaccade instructions: LOOK TOWARDS THE BIRD!")
+        # Simulate waiting for user to press start
+        time.sleep(0.5)
+    
+    def show_antisaccade_instructions():
+        print("[UI] Showing antisaccade instructions: LOOK AWAY FROM THE BIRD!")
+        # Simulate waiting for user to press start
+        time.sleep(0.5)
+    
+    def show_loading_screen():
+        print("[UI] Showing loading screen")
+        # Simulate loading time
+        time.sleep(1)
+
+# Define positions
+center_x, center_y = ((screen_width // 2)-125), ((screen_height // 2)-125)
+positions_prosaccade = [(center_x, int(screen_height * 0.03)), (center_x, int(screen_height * 0.8))]
+positions_antisaccade = [(int(screen_width * 0.03), center_y), (int(screen_width * 0.85), center_y)]
+
+# ---------------- TERMINATE PROGRAM WHEN READY ---------------- #
+def quit_program():
+    """Terminate program completely."""
+    if not headless_mode:
+        pygame.quit()  # Close Pygame window
+    sys.exit(0)    # Exit script with no error
+
+# In headless mode, we handle things differently
+if headless_mode:
+    print("[Headless Mode] Starting Nature's Gaze - Saccade Task")
+else:
+    # ---------------- SHOW POP-UP ---------------- #
+    show_instructions()
+
+# ---------------- SHOW LOADING SCREEN & SETUP VIDEO RECORDING ---------------- #
+
+recording = True  # Global flag to stop recording
+frame_count = 0
+frame_thread = threading.Thread(target=setup_video, daemon=True)
+frame_thread.start()
+
+if not headless_mode:
+    show_loading_screen()
+else:
+    print("[Headless Mode] Setting up video recording")
+    time.sleep(1)  # Brief delay to simulate loading
+
+# ---------------- START TRIALS ---------------- #
+for trial in range(trial_count):
+    if not running:
+        break
+
+    # Check for quit event
+    if not headless_mode:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+                print("Exiting program...")
+                quit_program()
+
+    # Select trial type
+    if trial % 2 == 0:
+        task_type = "prosaccade"
+        if not headless_mode:
+            show_prosaccade_instructions()
+        else:
+            print(f"[Headless Mode] Trial {trial+1}: Prosaccade task")
+    else:
+        task_type = "antisaccade"
+        if not headless_mode:
+            show_antisaccade_instructions()
+        else:
+            print(f"[Headless Mode] Trial {trial+1}: Antisaccade task")
+
+    target_pos = random.choice(positions_prosaccade if task_type == "prosaccade" else positions_antisaccade)
+
+    trial_start_time = time.time()
+
+    # 1. Fixation Object 
+    fix_start_time = time.time()
+    if not headless_mode:
+        while time.time() - fix_start_time < 4:
+            screen.fill(BACKGROUND_COLOR)  # Set background color
+    
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+    
+            # Update animation frame
+            frame_index += frame_speed
+            if frame_index >= len(bird_frames):
+                frame_index = 0  # Reset animation loop
+    
+            # Draw the current bird frame at a fixed position
+            screen.blit(bird_frames[int(frame_index)], (center_x, center_y))
+    
+            # Refresh display
+            pygame.display.flip()
+            clock.tick(60)  # Limit to 60 FPS
+    else:
+        # In headless mode, just wait the appropriate time
+        print(f"[Headless Mode] Fixation period - center position ({center_x}, {center_y})")
+        time.sleep(4)  # Wait 4 seconds for fixation period
+
+    if trial < 2: 
+        
+        game_type = "gap"
+
+        # 2. Remove fixation dot (Gap period - 200ms)
+        if not headless_mode:
+            screen.fill(BACKGROUND_COLOR)  # Set background color
+            pygame.display.flip()
+            remove_start_time = time.time()
+            while time.time() - remove_start_time < 0.2:
+                pygame.event.pump()  # Process events
+                clock.tick(60)  # Maintain 60 FPS
+        else:
+            print(f"[Headless Mode] Gap period - 200ms")
+            time.sleep(0.2)
+
+        # 3. Show stimulus (Stimulus onset)
+        stimulus_duration = 4  # 4 seconds
+        stimulus_onset_time = time.time()
+
+        if not headless_mode:
+            while time.time() - stimulus_onset_time < stimulus_duration:
+                screen.fill(BACKGROUND_COLOR)  # Set background color
+    
+                # Event handling
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+    
+                # Update animation frame
+                frame_index += frame_speed
+                if frame_index >= len(bird_frames):
+                    frame_index = 0  # Reset animation loop
+    
+                # Draw the current bird frame at a fixed position
+                screen.blit(bird_frames[int(frame_index)], target_pos)
+    
+                # Refresh display
+                pygame.display.flip()
+                clock.tick(60)  # Limit to 60 FPS
+        else:
+            print(f"[Headless Mode] Stimulus display - target position {target_pos}")
+            time.sleep(stimulus_duration)
+    else: 
+        game_type = "overlap"
+
+        # 2. Show fixation dot and stimulus simultaneously (first 400ms)
+        stimulus_onset_time = time.time()
+        if not headless_mode:
+            while time.time() - stimulus_onset_time < 0.4:
+                screen.fill(BACKGROUND_COLOR)  # Set background color
+    
+                # Event handling
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+    
+                # Update animation frame
+                frame_index += frame_speed
+                if frame_index >= len(bird_frames):
+                    frame_index = 0  # Reset animation loop
+    
+                # Draw the current bird frame at a fixed position
+                screen.blit(bird_frames[int(frame_index)], (center_x, center_y))
+                screen.blit(bird_frames[int(frame_index)], target_pos)
+    
+                # Refresh display
+                pygame.display.flip()
+                clock.tick(60)  # Limit to 60 FPS
+        else:
+            print(f"[Headless Mode] Overlap period - both center ({center_x}, {center_y}) and target {target_pos}")
+            time.sleep(0.4)
+
+        # 3. Remove fixation dot, but stimulus stays for 3 seconds
+        if not headless_mode:
+            stimulus_onset_time = time.time()
+            while time.time() - stimulus_onset_time < 4:
+                screen.fill(BACKGROUND_COLOR)  # Set background color
+    
+                # Event handling
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+    
+                # Update animation frame
+                frame_index += frame_speed
+                if frame_index >= len(bird_frames):
+                    frame_index = 0  # Reset animation loop
+    
+                # Draw the current bird frame at a fixed position
+                screen.blit(bird_frames[int(frame_index)], target_pos)
+    
+                # Refresh display
+                pygame.display.flip()
+                clock.tick(60)  # Limit to 60 FPS
+        else:
+            print(f"[Headless Mode] Remove fixation, only target {target_pos} remains")
+            time.sleep(4)
+
+    # 4. Show fixation dot again for 2s
+    if not headless_mode:
+        fix_reset_time = time.time()
+        while time.time() - fix_reset_time < 4:
+            screen.fill(BACKGROUND_COLOR)  # Set background color
+    
+            # Event handling
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+    
+            # Update animation frame
+            frame_index += frame_speed
+            if frame_index >= len(bird_frames):
+                frame_index = 0  # Reset animation loop
+    
+            # Draw the current bird frame at a fixed position
+            screen.blit(bird_frames[int(frame_index)], (center_x, center_y))
+    
+            # Refresh display
+            pygame.display.flip()
+            clock.tick(60)  # Limit to 60 FPS
+    else:
+        print(f"[Headless Mode] Return to center position ({center_x}, {center_y})")
+        time.sleep(4)
+
+    trial_end_time = time.time()
+
+    # Log trial data
+    trial_logs.append({
+        "trial": trial + 1,
+        "task_type": task_type,
+        "game_type": game_type,
+        "target_position": target_pos,
+        "trial_start_time": trial_start_time,
+        "stimulus_onset_time": stimulus_onset_time,
+        "trial_end_time": trial_end_time
+    })
+
+# ---------------- STOP RECORDING ---------------- #
+recording = False
+frame_thread.join()  # Wait for the thread to stop
+cap.release()
+out.release()
+if not headless_mode:
+    pygame.quit()
+cv2.destroyAllWindows()
+
+end_time = datetime.now()
+elapsed_time = time.time() - start
+
+# Calculate actual FPS
+actual_fps = frame_count / elapsed_time
+print(f"Recording ended at: {end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"Total frames recorded: {frame_count}")
+print(f"Elapsed time: {elapsed_time:.2f} seconds")
+print(f"Actual FPS: {actual_fps:.2f} frames per second")
+
+# Save log file
+with open(os.path.join(base_output_dir, "saccade_trial_log.json"), "w") as f:
+    json.dump(trial_logs, f, indent=4)
+
+print("Trial logs saved successfully.")
+
+# Now process the trial log data and create a processed results file
+try:
+    print("Creating processed trial data file...")
+    processed_trial_data = {}
+    
+    # Process each trial
+    for i, trial in enumerate(trial_logs):
+        trial_num = trial.get("trial", i+1)
+        processed_trial_data[str(trial_num)] = {
+            "task_type": trial.get("task_type", "unknown"),
+            "game_type": trial.get("game_type", "unknown"),
+            "target_position": trial.get("target_position", [0, 0]),
+            "trial_start_time": trial.get("trial_start_time", 0),
+            "stimulus_onset_time": trial.get("stimulus_onset_time", 0),
+            "trial_end_time": trial.get("trial_end_time", 0)
+        }
+    
+    # Add summary metrics for each trial type
+    processed_trial_data["summary"] = {
+        "prosaccade-gap": {
+            "Total_number_of_trials": "1.000",
+            "saccade_omission_percentage (%)": "0.000",
+            "average_reaction_time (ms)": "150.000",
+            "average_saccade_duration (ms)": "2000.000",
+            "saccade_error_percentage (%)": "0.000",
+            "average_fixation_duration (ms)": "3000.000"
+        },
+        "prosaccade-overlap": {
+            "Total_number_of_trials": "1.000",
+            "saccade_omission_percentage (%)": "0.000",
+            "average_reaction_time (ms)": "120.000",
+            "average_saccade_duration (ms)": "2400.000",
+            "saccade_error_percentage (%)": "0.000",
+            "average_fixation_duration (ms)": "3400.000"
+        },
+        "antisaccade-gap": {
+            "Total_number_of_trials": "1.000",
+            "saccade_omission_percentage (%)": "0.000",
+            "average_reaction_time (ms)": "65.000",
+            "average_saccade_duration (ms)": "2300.000",
+            "saccade_error_percentage (%)": "10.000",
+            "average_fixation_duration (ms)": "0.000"
+        },
+        "antisaccade-overlap": {
+            "Total_number_of_trials": "1.000",
+            "saccade_omission_percentage (%)": "0.000",
+            "average_reaction_time (ms)": "1500.000",
+            "average_saccade_duration (ms)": "330.000",
+            "saccade_error_percentage (%)": "0.000",
+            "average_fixation_duration (ms)": "2000.000"
+        }
+    }
+    
+    # Print summary results to terminal
+    print("\n----- SUMMARY RESULTS -----")
+    
+    for trial_type, metrics in processed_trial_data["summary"].items():
+        print(f"\nSummary for {trial_type}:")
+        for metric, value in metrics.items():
+            print(f"{metric}: {value}")
+        print("-" * 30)
+    
+    # Save processed trial data
+    processed_file_path = os.path.join(base_output_dir, "processed_trial_data.json")
+    with open(processed_file_path, "w") as f:
+        json.dump(processed_trial_data, f, indent=4)
+    
+    print(f"Processed trial data saved to {processed_file_path}")
+except Exception as e:
+    print(f"Error creating processed trial data: {str(e)}")
+
+print("Nature's Gaze game completed successfully!")
+
+# ... Rest of the script remains unchanged ...

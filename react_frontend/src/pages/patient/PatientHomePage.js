@@ -180,6 +180,13 @@ const PatientHomePage = () => {
                 >
                   Calibrate
                 </Link>
+                
+                <Link
+                  to={`/natures-gaze-instructions/${userId}`}
+                  className="complete-task-button"
+                >
+                  Nature's Gaze Game
+                </Link>
               </div>
             ) : (
               <div>
@@ -212,6 +219,13 @@ const PatientHomePage = () => {
                     >
                       Calibrate
                     </Link>
+                    
+                    <Link
+                      to={`/natures-gaze-instructions/${userId}`}
+                      className="complete-task-button"
+                    >
+                      Nature's Gaze Game
+                    </Link>
                   </>
                 ) : (
                   <>
@@ -234,6 +248,13 @@ const PatientHomePage = () => {
                       className="complete-task-button"
                     >
                       Calibrate
+                    </Link>
+                    
+                    <Link
+                      to={`/natures-gaze-instructions/${userId}`}
+                      className="complete-task-button"
+                    >
+                      Nature's Gaze Game
                     </Link>
                   </>
                 )}
