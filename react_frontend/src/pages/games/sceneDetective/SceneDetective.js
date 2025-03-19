@@ -106,7 +106,7 @@ const SceneDetective = () => {
           const temporalCharacteristicsSceneDetective = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/sceneDetective/temporalCharacteristics`);
 
           const dailyReportsMetrics = {
-            AverageNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
+            MedianNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
             OpenedClosedRatio: analyzeTextResult["Open/Closed Class Ratio"],
             RepetitionRatio: analyzeTextResult["Repetition Ratio"],
             SemanticEfficiency: analyzeSemanticContentResult['Semantic Efficiency']
@@ -123,13 +123,13 @@ const SceneDetective = () => {
             Verb: analyzeTextResult["Frequency of Verbs and auxillary verbs"]
           };
           const semanticFeatures = {
-            LexicalFrequencyOfNouns: analyzeTextResult['Average Noun Frequency'],
+            LexicalFrequencyOfNouns: analyzeTextResult['Median Noun Frequency'],
             SemanticEfficiency: analyzeSemanticContentResult['Semantic Efficiency'],
             SemanticIdeaDensity: analyzeSemanticContentResult['Semantic Idea Density'],
             SemanticUnits: analyzeSemanticContentResult['Semantic Units']
           };
           const structuralFeatures = {
-            MeanLengthOfOccurrence: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
+            MeanLengthOfUtterance: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
             NumOfSentences: analyzeTextResult["Total Sentences"]
           };
           const temporalCharacteristics = {

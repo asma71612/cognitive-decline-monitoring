@@ -36,7 +36,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
     useState({});
   const [naturesGazeSopData, setNaturesGazeSopData] = useState({});
   const [saccadeDurationData, setSaccadeDurationData] = useState({});
-  const [fixationAccuracyData, setFixationAccuracyData] = useState({});
+  const [fixationDurationData, setFixationDurationData] = useState({});
   const [saccadeDirectionErrorData, setSaccadeDirectionErrorData] = useState(
     {}
   );
@@ -53,9 +53,8 @@ const AllTimeTrendsComponent = ({ userId }) => {
   const [structuralMeanData, setStructuralMeanData] = useState({});
   const [structuralSentenceData, setStructuralSentenceData] = useState({});
   const [structuralIndex, setStructuralIndex] = useState(0);
-  const [fluencyRevisionRatioData, setFluencyRevisionRatioData] = useState({});
+  const [fluencyRepetitionRatioData, setFluencyRepetitionRatioData] = useState({});
   const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({});
-  const [fluencyStutterCountData, setFluencyStutterCountData] = useState({});
   const [fluencyIndex, setFluencyIndex] = useState(0);
   const [semanticLexFreqData, setSemanticLexFreqData] = useState({});
   const [semanticEfficiencyData, setSemanticEfficiencyData] = useState({});
@@ -69,7 +68,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
     setNaturesGazeSopData({});
     if (selectedGame !== "naturesGaze") {
       setSaccadeDurationData({});
-      setFixationAccuracyData({});
+      setFixationDurationData({});
       setSaccadeDirectionErrorData({});
     }
     if (selectedGame !== "processQuest" && selectedGame !== "sceneDetective") {
@@ -83,9 +82,8 @@ const AllTimeTrendsComponent = ({ userId }) => {
       setLexVerbData({});
       setStructuralMeanData({});
       setStructuralSentenceData({});
-      setFluencyRevisionRatioData({});
+      setFluencyRepetitionRatioData({});
       setFluencyWordsPerMinData({});
-      setFluencyStutterCountData({});
       setSemanticLexFreqData({});
       setSemanticEfficiencyData({});
       setSemanticIdeaDensityData({});
@@ -249,43 +247,41 @@ const AllTimeTrendsComponent = ({ userId }) => {
     })();
   }, [selectedGame, effectiveUserId]);
 
-  // Fixation Accuracy fetching (2-series: gap and overlap)
+  // Fixation Duration fetching (2-series: gap and overlap)
   useEffect(() => {
     if (!effectiveUserId || selectedGame !== "naturesGaze") return;
     (async () => {
       try {
-        const accuracyPoints = {
+        const fixationdurationPoints = {
           gap: {},
           overlap: {},
         };
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
-          const fixAccDocRef = doc(
+          const durationCollection = collection(
             db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationAccuracy`
-          );
-          const accuracyCollection = collection(
-            fixAccDocRef,
-            "landingAccuracy"
-          );
-          const accuracySnapshots = await getDocs(accuracyCollection);
-          accuracySnapshots.docs.forEach((docSnap) => {
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationDuration/durations`
+          );          
+          const durationSnapshots = await getDocs(durationCollection);
+          durationSnapshots.docs.forEach((docSnap) => {
             const data = docSnap.data();
             const seriesKey = docSnap.id; // expected: "gap" or "overlap"
             if (
-              data.LandingAccuracy != null &&
-              accuracyPoints[seriesKey] !== undefined
+              data.Duration != null &&
+              fixationdurationPoints[seriesKey] !== undefined
             ) {
-              if (!accuracyPoints[seriesKey][monthYear]) {
-                accuracyPoints[seriesKey][monthYear] = [];
+              if (!fixationdurationPoints[seriesKey][monthYear]) {
+                fixationdurationPoints[seriesKey][monthYear] = [];
               }
-              accuracyPoints[seriesKey][monthYear].push(data.LandingAccuracy);
+              console.log("Fixation Duration data:", data.Duration);
+              fixationdurationPoints[seriesKey][monthYear].push(data.Duration);
             }
           });
         }
-        setFixationAccuracyData(accuracyPoints);
+        console.log("Fixation Duration data:", fixationdurationPoints);
+        setFixationDurationData(fixationdurationPoints);
       } catch (error) {
-        console.error("Error fetching fixation accuracy data:", error);
+        console.error("Error fetching fixation duration data:", error);
       }
     })();
   }, [selectedGame, effectiveUserId]);
@@ -559,7 +555,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
           const structuralDoc = await getDoc(structuralDocRef);
           if (structuralDoc.exists()) {
             const data = structuralDoc.data();
-            const meanValue = Number(data.MeanLengthOfOccurrence);
+            const meanValue = Number(data.MeanLengthOfUtterance);
             const sentenceCount = Number(data.NumOfSentences);
             if (!meanDataPoints[monthYear]) meanDataPoints[monthYear] = [];
             if (!sentenceDataPoints[monthYear])
@@ -583,9 +579,8 @@ const AllTimeTrendsComponent = ({ userId }) => {
     if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
-        const revisionData = {};
+        const repetitionData = {};
         const wordsData = {};
-        const stutterData = {};
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const fluencyDocRef = doc(
@@ -595,28 +590,18 @@ const AllTimeTrendsComponent = ({ userId }) => {
           const fluencyDoc = await getDoc(fluencyDocRef);
           if (fluencyDoc.exists()) {
             const data = fluencyDoc.data();
-            const revision = Number(data.RevisionRatio);
+            const repetition = Number(data.RepetitionRatio);
             const wordsPerMin = Number(data.WordsPerMin);
-            if (!revisionData[monthYear]) revisionData[monthYear] = [];
+            if (!repetitionData[monthYear]) repetitionData[monthYear] = [];
             if (!wordsData[monthYear]) wordsData[monthYear] = [];
-            revisionData[monthYear].push(revision);
+            repetitionData[monthYear].push(repetition);
             wordsData[monthYear].push(wordsPerMin);
           }
-          const stuttersCollection = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics/Stutters`
-          );
-          const stuttersSnapshots = await getDocs(stuttersCollection);
-          if (!stutterData[monthYear]) stutterData[monthYear] = [];
-          // Push count of stutter documents
-          stutterData[monthYear].push(stuttersSnapshots.docs.length);
         }
-        console.log("Fluency Revision Ratio:", revisionData);
+        console.log("Fluency Repetition Ratio:", repetitionData);
         console.log("Fluency Words Per Min:", wordsData);
-        console.log("Fluency Stutter Count:", stutterData);
-        setFluencyRevisionRatioData(revisionData);
+        setFluencyRepetitionRatioData(repetitionData);
         setFluencyWordsPerMinData(wordsData);
-        setFluencyStutterCountData(stutterData);
       } catch (error) {
         console.error("Error fetching fluency metrics data:", error);
       }
@@ -641,22 +626,29 @@ const AllTimeTrendsComponent = ({ userId }) => {
           if (semanticDoc.exists()) {
             const data = semanticDoc.data();
             const lexFreq = Number(data.LexicalFrequencyOfNouns);
-            const efficiency = Number(data.SemanticEfficiency);
-            const ideaDensity = Number(data.SemanticIdeaDensity);
             if (!lexFreqData[monthYear]) lexFreqData[monthYear] = [];
-            if (!efficiencyData[monthYear]) efficiencyData[monthYear] = [];
-            if (!ideaDensityData[monthYear]) ideaDensityData[monthYear] = [];
             lexFreqData[monthYear].push(lexFreq);
-            efficiencyData[monthYear].push(efficiency);
-            ideaDensityData[monthYear].push(ideaDensity);
+
+            if (selectedGame === "sceneDetective") {
+              const efficiency = Number(data.SemanticEfficiency);
+              const ideaDensity = Number(data.SemanticIdeaDensity);
+            
+              if (!efficiencyData[monthYear]) efficiencyData[monthYear] = [];
+              if (!ideaDensityData[monthYear]) ideaDensityData[monthYear] = [];
+            
+              efficiencyData[monthYear].push(efficiency);
+              ideaDensityData[monthYear].push(ideaDensity);
+            }
           }
         }
         console.log("Semantic LexFreq dataPoints:", lexFreqData);
-        console.log("Semantic Efficiency dataPoints:", efficiencyData);
-        console.log("Semantic Idea Density dataPoints:", ideaDensityData);
         setSemanticLexFreqData(lexFreqData);
-        setSemanticEfficiencyData(efficiencyData);
-        setSemanticIdeaDensityData(ideaDensityData);
+        if(selectedGame === "sceneDetective") {
+          console.log("Semantic Efficiency dataPoints:", efficiencyData);
+          console.log("Semantic Idea Density dataPoints:", ideaDensityData);
+          setSemanticEfficiencyData(efficiencyData);
+          setSemanticIdeaDensityData(ideaDensityData);
+        }
       } catch (error) {
         console.error("Error fetching semantic features data:", error);
       }
@@ -722,7 +714,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
             plotTitle="Reaction Time"
             displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Time (seconds)"
+            yAxisLabel="Time (Milliseconds)"
             seriesLabels={{
               antiGap: "Anti-Saccade, Gap Task",
               proGap: "Pro-Saccade, Gap Task",
@@ -752,7 +744,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
             plotTitle="Saccade Durations"
             displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Duration (seconds)"
+            yAxisLabel="Duration (Milliseconds)"
             seriesLabels={{
               antiGap: "Anti-Saccade, Gap Task",
               proGap: "Pro-Saccade, Gap Task",
@@ -761,16 +753,6 @@ const AllTimeTrendsComponent = ({ userId }) => {
             }}
             multiSeries={true}
             infoDescription={PlotDescriptions["Saccade Durations"]}
-          />
-          <BoxPlot
-            rawData={fixationAccuracyData}
-            plotTitle="Fixation Accuracy"
-            displaySubtitle={false}
-            xAxisLabel="Date"
-            yAxisLabel="Landing Accuracy (degrees)"
-            seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
-            multiSeries={true}
-            infoDescription={PlotDescriptions["Fixation Accuracy"]}
           />
           <BoxPlot
             rawData={saccadeDirectionErrorData}
@@ -786,6 +768,16 @@ const AllTimeTrendsComponent = ({ userId }) => {
             }}
             multiSeries={true}
             infoDescription={PlotDescriptions["Saccade Direction Error"]}
+          />
+          <BoxPlot
+            rawData={fixationDurationData}
+            plotTitle="Fixation Duration"
+            displaySubtitle={false}
+            xAxisLabel="Date"
+            yAxisLabel="Fixation Duration (Milliseconds)"
+            seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
+            multiSeries={true}
+            infoDescription={PlotDescriptions["Fixation Duration"]}
           />
         </>
       )}
@@ -853,14 +845,14 @@ const AllTimeTrendsComponent = ({ userId }) => {
           {(() => {
             const structuralConfigs = [
               {
-                subtitle: "Mean Length of Occurrence",
-                rawData: structuralMeanData,
-                yAxisLabel: "Mean Length",
-              },
-              {
                 subtitle: "Number of Sentences",
                 rawData: structuralSentenceData,
                 yAxisLabel: "Sentence Count",
+              },
+              {
+                subtitle: "Mean Length of Utterance",
+                rawData: structuralMeanData,
+                yAxisLabel: "Mean Length",
               },
             ];
             return (
@@ -904,19 +896,14 @@ const AllTimeTrendsComponent = ({ userId }) => {
           {(() => {
             const fluencyConfigs = [
               {
-                subtitle: "Word Count",
+                subtitle: "Speech Rate",
                 rawData: fluencyWordsPerMinData,
                 yAxisLabel: "Words per Minute",
               },
               {
-                subtitle: "Stutter Count",
-                rawData: fluencyStutterCountData,
-                yAxisLabel: "Stutter Count",
-              },
-              {
-                subtitle: "Revision Ratio",
-                rawData: fluencyRevisionRatioData,
-                yAxisLabel: "Revision Ratio",
+                subtitle: "Repetition Ratio",
+                rawData: fluencyRepetitionRatioData,
+                yAxisLabel: "Repetition Ratio",
               },
             ];
             return (
@@ -962,27 +949,27 @@ const AllTimeTrendsComponent = ({ userId }) => {
               {
                 subtitle: "Noun",
                 rawData: lexNounData,
-                yAxisLabel: "Nouns Proportion (percent)",
+                yAxisLabel: "Nouns Proportion (%)",
               },
               {
                 subtitle: "Verb",
                 rawData: lexVerbData,
-                yAxisLabel: "Verbs Proportion (percent)",
+                yAxisLabel: "Verbs Proportion (%)",
               },
               {
                 subtitle: "Filler",
                 rawData: lexFillerData,
-                yAxisLabel: "Filler Proportion (percent)",
+                yAxisLabel: "Filler Proportion (%)",
               },
               {
                 subtitle: "Open Class",
                 rawData: lexOpenClassData,
-                yAxisLabel: "Open Class Proportion (percent)",
+                yAxisLabel: "Open Class Proportion (%)",
               },
               {
                 subtitle: "Closed Class",
                 rawData: lexClosedClassData,
-                yAxisLabel: "Closed Class Proportion (percent)",
+                yAxisLabel: "Closed Class Proportion (%)",
               },
             ];
             return (
@@ -1023,60 +1010,71 @@ const AllTimeTrendsComponent = ({ userId }) => {
               </div>
             );
           })()}
-          {(() => {
-            const semanticConfigs = [
-              {
-                subtitle: "Semantic Idea Density",
-                rawData: semanticIdeaDensityData,
-                yAxisLabel: "Density",
-              },
-              {
-                subtitle: "Semantic Efficiency",
-                rawData: semanticEfficiencyData,
-                yAxisLabel: "Efficiency",
-              },
-              {
-                subtitle: "Lexical Frequency of Nouns",
-                rawData: semanticLexFreqData,
-                yAxisLabel: "Frequency",
-              },
-            ];
-            return (
-              <div className="carousel-wrapper">
-                <div className="semantic-carousel">
-                  <BoxPlot
-                    rawData={semanticConfigs[semanticIndex].rawData}
-                    plotTitle="Semantic Features"
-                    displaySubtitle={true}
-                    subtitleText={semanticConfigs[semanticIndex].subtitle}
-                    xAxisLabel="Date"
-                    yAxisLabel={semanticConfigs[semanticIndex].yAxisLabel}
-                    infoDescription={PlotDescriptions["Semantic Features"]}
-                  />
-                  <button
-                    className="carousel-next-button"
-                    onClick={() =>
-                      setSemanticIndex(
-                        (prev) => (prev + 1) % semanticConfigs.length
-                      )
-                    }
-                  >
-                    <img src={carouselNextImg} alt="Next" />
-                  </button>
-                </div>
-                <div className="carousel-indicators">
-                  {semanticConfigs.map((_, idx) => (
-                    <span
-                      key={idx}
-                      className={
-                        idx === semanticIndex ? "indicator active" : "indicator"
-                      }
+          {selectedGame === "sceneDetective" ? (
+            (() => {
+              const semanticConfigs = [
+                {
+                  subtitle: "Semantic Idea Density",
+                  rawData: semanticIdeaDensityData,
+                  yAxisLabel: "Density",
+                },
+                {
+                  subtitle: "Semantic Efficiency",
+                  rawData: semanticEfficiencyData,
+                  yAxisLabel: "Efficiency",
+                },
+                {
+                  subtitle: "Lexical Frequency of Nouns",
+                  rawData: semanticLexFreqData,
+                  yAxisLabel: "Frequency",
+                },
+              ];
+              return (
+                <div className="carousel-wrapper">
+                  <div className="semantic-carousel">
+                    <BoxPlot
+                      rawData={semanticConfigs[semanticIndex].rawData}
+                      plotTitle="Semantic Features"
+                      displaySubtitle={true}
+                      subtitleText={semanticConfigs[semanticIndex].subtitle}
+                      xAxisLabel="Date"
+                      yAxisLabel={semanticConfigs[semanticIndex].yAxisLabel}
+                      infoDescription={PlotDescriptions["Semantic Features"]}
                     />
-                  ))}
+                    <button
+                      className="carousel-next-button"
+                      onClick={() =>
+                        setSemanticIndex(
+                          (prev) => (prev + 1) % semanticConfigs.length
+                        )
+                      }
+                    >
+                      <img src={carouselNextImg} alt="Next" />
+                    </button>
+                  </div>
+                  <div className="carousel-indicators">
+                    {semanticConfigs.map((_, idx) => (
+                      <span
+                        key={idx}
+                        className={
+                          idx === semanticIndex ? "indicator active" : "indicator"
+                        }
+                      />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })()}
+              );
+            })()
+          ) : (
+            <BoxPlot
+              rawData={semanticLexFreqData}
+              plotTitle="Lexical Frequency of Nouns"
+              displaySubtitle={false}
+              xAxisLabel="Date"
+              yAxisLabel="Frequency"
+              infoDescription={PlotDescriptions["Lexical Frequency of Nouns"]}
+            />
+          )}
         </>
       )}
       <div style={{ height: "100px" }}></div>

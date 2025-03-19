@@ -16,15 +16,15 @@ const metricTitles = {
   lexicalFeatures: "Lexical Features",
   structuralFeatures: "Structural Features",
   semanticFeatures: "Semantic Features",
-  temporalCharacteristics: "Temporal Characteristics",
+  temporalCharacteristics: "Temporal Characteristics"
 };
 
 const lexicalFeaturesOrder = [
-  "ClosedClass",
-  "Filler",
   "Noun",
-  "OpenClass",
   "Verb",
+  "Filler",
+  "OpenClass",
+  "ClosedClass"
 ];
 
 const semanticFeaturesOrder = [
@@ -34,9 +34,9 @@ const semanticFeaturesOrder = [
   "LexicalFrequencyOfNouns",
 ];
 
-const fluencyMetricsOrder = ["WordsPerMin", "RevisionRatio"];
+const fluencyMetricsOrder = ["WordsPerMin", "RepetitionRatio"];
 
-const structuralFeaturesOrder = ["NumOfSentences", "MeanLengthOfOccurrence"];
+const structuralFeaturesOrder = ["NumOfSentences", "MeanLengthOfUtterance"];
 
 const TitleWithInfo = ({ title, description }) => {
   const [showInfo, setShowInfo] = useState(false);
@@ -218,33 +218,6 @@ const DailyReportsSeeMoreComponent = ({
       let data = {};
 
       try {
-        const fixationAccuracyRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy`
-        );
-        const fixationAccuracySnap = await getDoc(fixationAccuracyRef);
-        if (fixationAccuracySnap.exists()) {
-          let fixationAccuracyData = fixationAccuracySnap.data();
-          const landingAccuracyRef = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy/landingAccuracy`
-          );
-          const landingAccuracySnapshot = await getDocs(landingAccuracyRef);
-          let landingAccuracy = {};
-          landingAccuracySnapshot.forEach((docSnap) => {
-            landingAccuracy[docSnap.id] = docSnap.data();
-          });
-          fixationAccuracyData.landingAccuracy = landingAccuracy;
-          data.fixationAccuracy = fixationAccuracyData;
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching naturesGaze fixationAccuracy data",
-          error
-        );
-      }
-
-      try {
         const fixationDurationRef = doc(
           db,
           `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration`
@@ -418,21 +391,28 @@ const DailyReportsSeeMoreComponent = ({
     }
   }, [selectedGame, selectedDate, effectiveUserId]);
 
-  const renderFixationAccuracyTable = (landingAccuracy) => {
+  const renderFixationDurationTable = (fixationDuration) => {
+    console.log(fixationDuration);
     return (
       <div className="table-container">
-        <div className="table-header">
-          <span>Task</span>
-          <span>Landing Accuracy</span>
-          <span>Confidence Interval</span>
+      <div className="table-header">
+        <span>Task</span>
+        <span>Duration (Milliseconds)</span>
+      </div>
+      {Object.entries(fixationDuration).map(([task, data]) => {
+        let displayTask = task;
+        if (task === "gap") {
+        displayTask = "Gap Task";
+        } else if (task === "overlap") {
+        displayTask = "Overlap Task";
+        }
+        return (
+        <div key={task} className="table-row">
+          <span>{displayTask}</span>
+          <span>{data.Duration !== undefined ? data.Duration : "N/A"}</span>
         </div>
-        {Object.entries(landingAccuracy).map(([task, data]) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data.LandingAccuracy !== undefined ? data.LandingAccuracy : "N/A"}</span>
-            <span>{data.ConfidenceInterval !== undefined ? data.ConfidenceInterval : "N/A"}</span>
-          </div>
-        ))}
+        );
+      })}
       </div>
     );
   };
@@ -440,18 +420,37 @@ const DailyReportsSeeMoreComponent = ({
   const renderSaccadeDirectionErrorTable = (errors) => {
     return (
       <div className="table-container">
-        <div className="table-header">
-          <span>Task</span>
-          <span>Error Count</span>
-          <span>Percent Error</span>
+      <div className="table-header">
+        <span>Task</span>
+        <span>Error Count</span>
+        <span>Percent Error</span>
+      </div>
+      {Object.entries(errors).map(([task, data]) => {
+        let displayTask;
+        switch (task) {
+        case "antiGap":
+          displayTask = "Anti-Saccade Gap Task";
+          break;
+        case "antiOverlap":
+          displayTask = "Anti-Saccade Overlap Task";
+          break;
+        case "proGap":
+          displayTask = "Pro-Saccade Gap Task";
+          break;
+        case "proOverlap":
+          displayTask = "Pro-Saccade Overlap Task";
+          break;
+        default:
+          displayTask = task;
+        }
+        return (
+        <div key={task} className="table-row">
+          <span>{displayTask}</span>
+          <span>{data.ErrorCount !== undefined ? data.ErrorCount : "N/A"}</span>
+          <span>{data.PercentError !== undefined ? data.PercentError : "N/A"}</span>
         </div>
-        {Object.entries(errors).map(([task, data]) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data.ErrorCount !== undefined ? data.ErrorCount : "N/A"}</span>
-            <span>{data.PercentError !== undefined ? data.PercentError : "N/A"}</span>
-          </div>
-        ))}
+        );
+      })}
       </div>
     );
   };
@@ -463,12 +462,31 @@ const DailyReportsSeeMoreComponent = ({
           <span>Task</span>
           <span>Duration</span>
         </div>
-        {Object.entries(durations).map(([task, data]) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data.Duration !== undefined ? data.Duration : "N/A"}</span>
-          </div>
-        ))}
+        {Object.entries(durations).map(([task, data]) => {
+        let displayTask;
+        switch (task) {
+        case "antiGap":
+          displayTask = "Anti-Saccade Gap Task";
+          break;
+        case "antiOverlap":
+          displayTask = "Anti-Saccade Overlap Task";
+          break;
+        case "proGap":
+          displayTask = "Pro-Saccade Gap Task";
+          break;
+        case "proOverlap":
+          displayTask = "Pro-Saccade Overlap Task";
+          break;
+        default:
+          displayTask = task;
+        }
+        return (
+        <div key={task} className="table-row">
+          <span>{displayTask}</span>
+          <span>{data.Duration !== undefined ? data.Duration : "N/A"}</span>
+        </div>
+        );
+      })}
       </div>
     );
   };
@@ -476,16 +494,35 @@ const DailyReportsSeeMoreComponent = ({
   const renderReactionTime = (data) => {
     return (
       <div className="table-container">
-        <div className="table-header">
-          <span>Task</span>
-          <span>Time (ms)</span>
+      <div className="table-header">
+        <span>Task</span>
+        <span>Time (Milliseconds)</span>
+      </div>
+      {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => {
+        let displayTask;
+        switch (task) {
+        case "antiGap":
+          displayTask = "Anti-Saccade Gap Task";
+          break;
+        case "antiOverlap":
+          displayTask = "Anti-Saccade Overlap Task";
+          break;
+        case "proGap":
+          displayTask = "Pro-Saccade Gap Task";
+          break;
+        case "proOverlap":
+          displayTask = "Pro-Saccade Overlap Task";
+          break;
+        default:
+          displayTask = task;
+        }
+        return (
+        <div key={task} className="table-row">
+          <span>{displayTask}</span>
+          <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
         </div>
-        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
-          </div>
-        ))}
+        );
+      })}
       </div>
     );
   };
@@ -497,12 +534,31 @@ const DailyReportsSeeMoreComponent = ({
           <span>Task</span>
           <span>Percent</span>
         </div>
-        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
-          </div>
-        ))}
+        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => {
+        let displayTask;
+        switch (task) {
+        case "antiGap":
+          displayTask = "Anti-Saccade Gap Task";
+          break;
+        case "antiOverlap":
+          displayTask = "Anti-Saccade Overlap Task";
+          break;
+        case "proGap":
+          displayTask = "Pro-Saccade Gap Task";
+          break;
+        case "proOverlap":
+          displayTask = "Pro-Saccade Overlap Task";
+          break;
+        default:
+          displayTask = task;
+        }
+        return (
+        <div key={task} className="table-row">
+          <span>{displayTask}</span>
+          <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
+        </div>
+        );
+      })}
       </div>
     );
   };
@@ -522,7 +578,7 @@ const DailyReportsSeeMoreComponent = ({
       <div className="table-container">
         <div className="table-header">
           <span>Word Types</span>
-          <span>Count</span>
+          <span>Proportion</span>
         </div>
         {Object.entries(sortedFields).map(([key, value]) => (
           <div key={key} className="table-row">
@@ -556,23 +612,6 @@ const DailyReportsSeeMoreComponent = ({
     );
   };
 
-  const renderStutters = (stutters) => {
-    return (
-      <div className="table-container">
-        <div className="table-header">
-          <span>Stutter #</span>
-          <span>Time</span>
-        </div>
-        {stutters.map((stutter, index) => (
-          <div key={stutter.id} className="table-row">
-            <span>{index + 1}</span>
-            <span>{stutter.Time}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   const renderFluencyMetrics = (fields) => {
     const sortedFields = fluencyMetricsOrder.reduce((obj, key) => {
       if (fields[key] !== undefined) {
@@ -588,7 +627,6 @@ const DailyReportsSeeMoreComponent = ({
             <strong>{formatMetricName(key)}:</strong> {value}
           </p>
         ))}
-        {fields.stutters && renderStutters(fields.stutters)}
       </div>
     );
   };
@@ -744,10 +782,10 @@ const DailyReportsSeeMoreComponent = ({
             <div className="game-grid">
               {[
                 "fluencyMetrics",
-                "lexicalFeatures",
-                "temporalCharacteristics",
-                "semanticFeatures",
                 "structuralFeatures",
+                "lexicalFeatures",
+                "semanticFeatures",
+                "temporalCharacteristics"
               ].map((metric) => {
                 let descriptionKey =
                   metricTitles[metric] || formatMetricName(metric);
@@ -823,10 +861,10 @@ const DailyReportsSeeMoreComponent = ({
             <div className="game-grid">
               {[
                 "fluencyMetrics",
-                "lexicalFeatures",
-                "temporalCharacteristics",
-                "semanticFeatures",
                 "structuralFeatures",
+                "lexicalFeatures",
+                "semanticFeatures",
+                "temporalCharacteristics"
               ].map((metric) => {
                 let descriptionKey =
                   metricTitles[metric] || formatMetricName(metric);
@@ -1005,16 +1043,16 @@ const DailyReportsSeeMoreComponent = ({
               </div>
               <div className="game-box">
                 <TitleWithInfo
-                  title="Fixation Landing Accuracy"
-                  description={PlotDescriptions["Fixation Accuracy"] || ""}
+                  title="Fixation Duration"
+                  description={PlotDescriptions["Fixation Duration"] || ""}
                 />
-                {naturesGazeData.fixationAccuracy &&
-                naturesGazeData.fixationAccuracy.landingAccuracy ? (
-                  renderFixationAccuracyTable(
-                    naturesGazeData.fixationAccuracy.landingAccuracy
+                {naturesGazeData.fixationDuration &&
+                naturesGazeData.fixationDuration ? (
+                  renderFixationDurationTable(
+                    naturesGazeData.fixationDuration.durations
                   )
                 ) : (
-                  <p>No landing accuracy data.</p>
+                  <p>No fixation duration data.</p>
                 )}
               </div>
             </div>
