@@ -6,20 +6,20 @@
             739,
             893
         ],
-        "trial_start_time": 1742412664.047371,
-        "stimulus_onset_time": 1742412668.257768,
-        "trial_end_time": 1742412676.262576
+        "trial_start_time": 1742416020.838541,
+        "stimulus_onset_time": 1742416025.047704,
+        "trial_end_time": 1742416033.0513768
     },
     "2": {
         "task_type": "antisaccade",
         "game_type": "gap",
         "target_position": [
-            51,
+            1468,
             433
         ],
-        "trial_start_time": 1742412676.767775,
-        "stimulus_onset_time": 1742412680.977909,
-        "trial_end_time": 1742412688.992254
+        "trial_start_time": 1742416033.551751,
+        "stimulus_onset_time": 1742416037.756004,
+        "trial_end_time": 1742416045.7594829
     },
     "3": {
         "task_type": "prosaccade",
@@ -28,9 +28,9 @@
             739,
             33
         ],
-        "trial_start_time": 1742412689.49725,
-        "stimulus_onset_time": 1742412693.504837,
-        "trial_end_time": 1742412701.913715
+        "trial_start_time": 1742416046.264637,
+        "stimulus_onset_time": 1742416050.269047,
+        "trial_end_time": 1742416058.676212
     },
     "4": {
         "task_type": "antisaccade",
@@ -39,42 +39,42 @@
             1468,
             433
         ],
-        "trial_start_time": 1742412702.4187992,
-        "stimulus_onset_time": 1742412706.423848,
-        "trial_end_time": 1742412714.832442
+        "trial_start_time": 1742416059.181291,
+        "stimulus_onset_time": 1742416063.1860108,
+        "trial_end_time": 1742416071.598678
     },
     "summary": {
         "prosaccade-gap": {
             "Total_number_of_trials": "1.000",
             "saccade_omission_percentage (%)": "0.000",
-            "average_reaction_time (ms)": "27.531",
-            "average_saccade_duration (ms)": "94.791",
+            "average_reaction_time (ms)": "27.943",
+            "average_saccade_duration (ms)": "68.228",
             "saccade_error_percentage (%)": "0.000",
-            "average_fixation_duration (ms)": "419.304"
+            "average_fixation_duration (ms)": "445.370"
         },
         "prosaccade-overlap": {
             "Total_number_of_trials": "1.000",
             "saccade_omission_percentage (%)": "0.000",
-            "average_reaction_time (ms)": "46.769",
-            "average_saccade_duration (ms)": "20.389",
+            "average_reaction_time (ms)": "48.349",
+            "average_saccade_duration (ms)": "49.035",
             "saccade_error_percentage (%)": "0.000",
-            "average_fixation_duration (ms)": "235.007"
+            "average_fixation_duration (ms)": "380.420"
         },
         "antisaccade-gap": {
             "Total_number_of_trials": "1.000",
             "saccade_omission_percentage (%)": "0.000",
-            "average_reaction_time (ms)": "31.012",
-            "average_saccade_duration (ms)": "40.577",
+            "average_reaction_time (ms)": "31.082",
+            "average_saccade_duration (ms)": "86.205",
             "saccade_error_percentage (%)": "0.000",
-            "average_fixation_duration (ms)": "392.550"
+            "average_fixation_duration (ms)": "369.084"
         },
         "antisaccade-overlap": {
             "Total_number_of_trials": "1.000",
             "saccade_omission_percentage (%)": "0.000",
-            "average_reaction_time (ms)": "48.386",
-            "average_saccade_duration (ms)": "41.209",
+            "average_reaction_time (ms)": "49.937",
+            "average_saccade_duration (ms)": "31.358",
             "saccade_error_percentage (%)": "0.000",
-            "average_fixation_duration (ms)": "298.761"
+            "average_fixation_duration (ms)": "451.298"
         }
     }
 }

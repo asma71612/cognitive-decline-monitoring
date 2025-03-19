@@ -7,9 +7,9 @@
         893
     ],
     "metrics": {
-        "reaction_time": 0.02753138542175293,
-        "saccade_duration": 0.09479149355044204,
+        "reaction_time": 0.02794337272644043,
+        "saccade_duration": 0.0682280119903897,
         "saccade_error": 0,
-        "fixation_duration": 0.419303511951574
+        "fixation_duration": 0.4453698596737231
     }
 }
