@@ -118,7 +118,7 @@ const PatientHomePage = () => {
             Complete My Task
           </button>
         ) : (
-          <Link to={`/memory-vault-start-instructions/${userId}`} className="complete-task-button">
+          <Link to={`/lighting-calibration/${userId}`} className="complete-task-button">
             Complete My Task
           </Link>
         )}

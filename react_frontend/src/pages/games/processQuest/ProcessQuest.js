@@ -222,7 +222,7 @@ const ProcessQuest = () => {
 
   const handleDone = useCallback(() => {
     stopRecording();
-    navigate(`/memory-vault-recall-instructions/${userId}`);
+    navigate(`/natures-gaze-instructions/${userId}`);
   }, [navigate, userId]);
 
   useEffect(() => {

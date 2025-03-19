@@ -24,9 +24,9 @@ const GazeCalibration = () => {
       if (event.data && event.data.type === 'CALIBRATION_COMPLETE') {
         console.log('Received calibration complete message:', event.data);
         
-        // Redirect back to patient home page after calibration is complete
+        // Navigate to Memory Vault Start Instructions after calibration is complete
         if (userId) {
-          navigate(`/patient-home-page/${userId}`);
+          navigate(`/memory-vault-start-instructions/${userId}`);
         } else {
           navigate('/patient-login');
         }

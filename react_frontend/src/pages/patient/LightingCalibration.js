@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import titleImage from "../../assets/title.svg";
 import "./LightingCalibration.css";
 
@@ -7,6 +7,7 @@ const LightingCalibration = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const navigate = useNavigate();
+  const { userId } = useParams(); // Get userId from URL
   const [cameraError, setCameraError] = useState(null); // State to handle errors
   const [isLightingGood, setIsLightingGood] = useState(true); // State to track lighting condition
   const [isButtonDisabled, setIsButtonDisabled] = useState(false); // State to disable the button
@@ -93,7 +94,8 @@ const LightingCalibration = () => {
   }, []);
 
   const handleStartCalibration = () => {
-    navigate("/gaze-calibration");
+    // Navigate to gaze calibration instructions with userId
+    navigate(`/gaze-calibration-instructions/${userId}`);
   };
 
   return (

@@ -43,6 +43,7 @@ const App = () => {
         <Route path="/support-page/:userId" element={<SupportPage />} />
         <Route path="/general-instructions/:userId" element={<GeneralInstructionsPage />} />
         <Route path="/instructions/:userId" element={<InstructionsPage />} />
+        <Route path="/lighting-calibration/:userId" element={<LightingCalibration />} />
         <Route path="/lighting-calibration" element={<LightingCalibration />} />
         <Route path="/gaze-calibration-instructions/:userId" element={<GazeCalibrationInstructions />} />
         <Route path="/gaze-calibration-instructions" element={<GazeCalibrationInstructions />} />

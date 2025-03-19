@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../../firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 import InstructionsPage from "../../components/InstructionsModal";
-import naturesGazeBackground from "../../assets/memoryVaultBackgroundDark.png";
+import naturesGazeBackground from "../../assets/gaze-calibration-instructions-background.png";
 
 const NaturesGazeInstructions = () => {
   const { userId } = useParams();
