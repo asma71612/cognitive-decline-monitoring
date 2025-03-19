@@ -44,15 +44,17 @@ const GazeCalibration = () => {
   return (
     <div className="gaze-calibration-container">
       <div className="calibration-frame-container">
-        <iframe 
-          ref={iframeRef}
-          src="http://localhost:5000/gaze-calibration-test" 
-          title="Gaze Calibration"
-          className="calibration-frame"
-          onLoad={handleIframeLoad}
-          scrolling="no"
-          allow="camera"
-        />
+        <div className="calibration-wrapper">
+          <iframe 
+            ref={iframeRef}
+            src="http://localhost:5000/gaze-calibration-test" 
+            title="Gaze Calibration"
+            className="calibration-frame"
+            onLoad={handleIframeLoad}
+            scrolling="no"
+            allow="camera"
+          />
+        </div>
       </div>
     </div>
   );

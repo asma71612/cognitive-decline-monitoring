@@ -9,6 +9,7 @@ import "./MemoryVault.css";
 const MemoryVaultRecall = () => {
   const { userId } = useParams();
   const [playCount, setPlayCount] = useState(0);
+  const [sessionIndex, setSessionIndex] = useState(0);
   const [hintsUsed, setHintsUsed] = useState(0);
 
   const [word, setWord] = useState("");
@@ -38,8 +39,17 @@ const MemoryVaultRecall = () => {
   
       if (userDoc.exists()) {
         setPlayCount(userDoc.data().playCount || 0);
+        // Use the memory_vault_session if it exists, otherwise fallback to playCount
+        const memoryVaultSession = userDoc.data().memory_vault_session;
+        if (memoryVaultSession !== undefined) {
+          setSessionIndex(memoryVaultSession);
+        } else {
+          // Fallback to using playCount if memory_vault_session doesn't exist
+          setSessionIndex(userDoc.data().playCount % RECALL_SESSIONS.length);
+        }
       } else {
         await setDoc(userRef, { playCount: 0, completedDays: [], currentStreak: 0 });
+        setSessionIndex(0);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -48,26 +58,27 @@ const MemoryVaultRecall = () => {
   
 
   useEffect(() => {
-    const sessionIndex = playCount % RECALL_SESSIONS.length;
-    const prevSession = RECALL_SESSIONS[sessionIndex];
-
-    setWord(prevSession.word);
-    setAudio(prevSession.audio);
-    setPicture(prevSession.picture);
-  }, [playCount]);
+    // Use sessionIndex instead of playCount to get the correct session
+    const session = RECALL_SESSIONS[sessionIndex];
+    if (session) {
+      setWord(session.word);
+      setAudio(session.audio);
+      setPicture(session.picture);
+    }
+  }, [sessionIndex]);
 
   const handleHint = (type) => {
     if (hintsUsed >= 3) return;
 
     switch (type) {
       case "word":
-        setWordHint(RECALL_SESSIONS[playCount % RECALL_SESSIONS.length].wordHint);
+        setWordHint(RECALL_SESSIONS[sessionIndex].wordHint);
         break;
       case "audio":
-        setAudioHint(RECALL_SESSIONS[playCount % RECALL_SESSIONS.length].audioHint);
+        setAudioHint(RECALL_SESSIONS[sessionIndex].audioHint);
         break;
       case "picture":
-        setPictureHint(RECALL_SESSIONS[playCount % RECALL_SESSIONS.length].pictureHint);
+        setPictureHint(RECALL_SESSIONS[sessionIndex].pictureHint);
         break;
       default:
         break;

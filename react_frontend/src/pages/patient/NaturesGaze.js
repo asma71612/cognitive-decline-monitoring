@@ -131,9 +131,9 @@ const NaturesGaze = () => {
           }
         }
         
-        // Redirect to Memory Vault Recall Instructions after game is complete
+        // Redirect to Process Quest Instructions after game is complete
         if (userId) {
-          navigate(`/memory-vault-recall-instructions/${userId}`);
+          navigate(`/process-quest-instructions/${userId}`);
         } else {
           navigate('/patient-login');
         }
