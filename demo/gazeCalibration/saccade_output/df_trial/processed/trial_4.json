@@ -3,13 +3,13 @@
     "task_type": "antisaccade",
     "game_type": "overlap",
     "target_position": [
-        51,
+        1468,
         433
     ],
     "metrics": {
-        "reaction_time": 0.05282473564147949,
-        "saccade_duration": 0.05787748014873351,
+        "reaction_time": 0.0483856201171875,
+        "saccade_duration": 0.041208597492955135,
         "saccade_error": 0,
-        "fixation_duration": 0.4381491719573628
+        "fixation_duration": 0.29876082174291674
     }
 }

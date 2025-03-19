@@ -10,7 +10,7 @@
             padding: 0;
             height: 100%;
             overflow: hidden;
-            background-color: #fff3e3; /* Light peach background */
+            background-color: #FFF3E3;
         }
         
         .container {
@@ -21,7 +21,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: #fff3e3;
+            background-color: #FFF3E3;
             overflow: hidden;
         }
         
@@ -30,7 +30,7 @@
             flex-grow: 1;
             width: 100%;
             height: 100%;
-            background-color: #fff3e3;
+            background-color: #FFF3E3;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -52,6 +52,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 100;
+            display: none;
         }
         
         .instructions-panel h1 {
@@ -79,18 +80,18 @@
         }
         
         .emphasized-text {
-            color: #f8727b;
+            color: #516A80;
             font-weight: bold;
         }
         
         .bird {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 100px;
+            height: 100px;
             z-index: 50;
             background-position: center;
-            background-size: cover;
-            /* Default background is now removed to be set dynamically */
+            background-size: contain;
+            background-repeat: no-repeat;
         }
         
         .start-button {
@@ -111,9 +112,8 @@
         }
         
         .task-panel {
-            background-color: #fff3e3;
-            border: 3px solid #f8727b;
-            border-radius: 20px;
+            background-color: transparent;
+            border: none;
             padding: 40px;
             text-align: center;
             position: absolute;
@@ -124,9 +124,11 @@
         }
         
         .task-panel h1 {
-            color: #f8727b;
+            color: #516A80;
             font-size: 60px;
             margin-bottom: 20px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
         
         .overlay {
@@ -390,10 +392,15 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
         }
         
         .close-button:hover {
             background-color: #455a6f;
+            text-decoration: none;
+            color: white;
         }
         
         .debug-button {
@@ -422,8 +429,8 @@
         </div>
     </div>
     
-    <!-- Instructions Panel -->
-    <div class="instructions-panel" id="instructionsPanel">
+    <!-- Instructions Panel (now hidden initially) -->
+    <div class="instructions-panel" id="instructionsPanel" style="display: none;">
         <h1>Nature's Gaze - Saccade Task</h1>
         <h2>How to Play</h2>
         <ol>
@@ -474,41 +481,8 @@
     <!-- Results Modal -->
     <div id="resultsModal" class="overlay" style="display: none;">
         <div class="modal results-modal">
-            <h2>Your Nature's Gaze Results</h2>
-            <div id="summaryContainer">
-                <p id="resultsSummary">Here's how you performed:</p>
-                <div id="summaryDetails"></div>
-            </div>
-            
-            <div id="detailedResults">
-                <h3>Detailed Analysis</h3>
-                
-                <!-- Tab buttons -->
-                <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="tab-prosaccade-gap">Prosaccade-Gap</button>
-                    <button class="tab-btn" data-tab="tab-prosaccade-overlap">Prosaccade-Overlap</button>
-                    <button class="tab-btn" data-tab="tab-antisaccade-gap">Antisaccade-Gap</button>
-                    <button class="tab-btn" data-tab="tab-antisaccade-overlap">Antisaccade-Overlap</button>
-                </div>
-                
-                <!-- Tab content -->
-                <div class="tab-content">
-                    <div id="tab-prosaccade-gap" class="tab-pane active">
-                        <div class="metrics-container"></div>
-                    </div>
-                    <div id="tab-prosaccade-overlap" class="tab-pane">
-                        <div class="metrics-container"></div>
-                    </div>
-                    <div id="tab-antisaccade-gap" class="tab-pane">
-                        <div class="metrics-container"></div>
-                    </div>
-                    <div id="tab-antisaccade-overlap" class="tab-pane">
-                        <div class="metrics-container"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <button id="closeResultsBtn" class="close-button">Close</button>
+            <h2>You have completed this game.</h2>
+            <button id="closeResultsBtn" class="close-button">Next</button>
         </div>
     </div>
     
@@ -540,61 +514,56 @@
         const resultsOkBtn = document.getElementById('resultsOkBtn');
         
         // Bird positions
-        const centerX = Math.floor(window.innerWidth / 2) - 25;  // Changed from -125 to -25 (half of 50px width)
-        const centerY = Math.floor(window.innerHeight / 2) - 25; // Changed from -125 to -25 (half of 50px height)
+        const centerX = Math.floor(window.innerWidth / 2) - 50;  // Changed from 25 to 50 (half of 100px width)
+        const centerY = Math.floor(window.innerHeight / 2) - 50; // Changed from 25 to 50 (half of 100px height)
         const positions = {
             prosaccade: [
                 { x: centerX, y: Math.floor(window.innerHeight * 0.1) }, // Moved from 0.03 to 0.1 to be more visible
                 { x: centerX, y: Math.floor(window.innerHeight * 0.8) }  // Bottom
             ],
             antisaccade: [
-                { x: Math.floor(window.innerWidth * 0.1), y: centerY }, // Moved from 0.03 to 0.1 to be more visible
+                { x: Math.floor(window.innerWidth * 0.1), y: centerY },  // Left
                 { x: Math.floor(window.innerWidth * 0.85), y: centerY }  // Right
             ]
         };
         
-        // Bird element
         let bird = null;
+        let cameraAccessRequested = false;
         
-        // Create bird element
+        // Create bird element - using bird.png from static folder
         function createBird() {
-            bird = document.createElement('div');
-            bird.className = 'bird';
+            const birdElement = document.createElement('div');
+            birdElement.className = 'bird';
             
-            // Test if the bird.gif image is available
-            const testImg = new Image();
-            testImg.onload = function() {
-                // Image exists, use the background-image in CSS
-                bird.style.backgroundImage = "url('/static/images/bird.gif')";
-            };
-            testImg.onerror = function() {
-                // Image doesn't exist, use a colored circle instead
-                console.log("Bird image not found, using fallback red circle");
-                bird.style.backgroundImage = "none";
-                bird.style.backgroundColor = "red";
-                bird.style.borderRadius = "50%";
-                bird.style.width = "50px";
-                bird.style.height = "50px";
-            };
-            testImg.src = '/static/images/bird.gif';
+            // Use the bird.png image from Flask static folder
+            birdElement.style.backgroundImage = 'url("/static/images/bird.png")';
             
-            gameArea.appendChild(bird);
-            return bird;
+            positionBird(centerX, centerY);
+            gameArea.appendChild(birdElement);
+            
+            return birdElement;
         }
         
-        // Position bird
+        // Position the bird
         function positionBird(x, y) {
-            bird.style.left = x + 'px';
-            bird.style.top = y + 'px';
+            if (bird) {
+                bird.style.left = x + 'px';
+                bird.style.top = y + 'px';
+            }
         }
         
-        // Show/hide bird
+        // Show the bird
         function showBird() {
-            bird.style.display = 'block';
+            if (bird) {
+                bird.style.display = 'block';
+            }
         }
         
+        // Hide the bird
         function hideBird() {
-            bird.style.display = 'none';
+            if (bird) {
+                bird.style.display = 'none';
+            }
         }
         
         // Video elements
@@ -613,6 +582,9 @@
         
         // Function to request camera access
         async function setupCamera() {
+            // Only request camera access once
+            if (cameraAccessRequested) return true;
+            
             try {
                 cameraMessage.textContent = "Requesting camera access...";
                 
@@ -629,6 +601,7 @@
                 // Use the webcam stream
                 videoElement.srcObject = mediaStream;
                 cameraMessage.style.display = 'none';
+                cameraAccessRequested = true;
                 
                 // Notify backend that camera is ready and start the process
                 fetch('/api/natures-gaze/start', {
@@ -688,15 +661,30 @@
             runTrial();
         });
         
-        // Results OK button event
-        resultsOkBtn.addEventListener('click', () => {
+        resultsOkBtn.addEventListener('click', function() {
             resultsOverlay.style.display = 'none';
             
-            // Send message to parent window (React component)
+            console.log("Results OK button clicked");
+            
+            let userId = '';
+            const pathMatch = window.top.location.pathname.match(/\/natures-gaze(?:-instructions)?\/([^\/]+)/);
+            if (pathMatch && pathMatch[1]) {
+                userId = pathMatch[1];
+            } else {
+                const altMatch = window.top.location.pathname.match(/\/([^\/]+)\/natures-gaze/);
+                if (altMatch && altMatch[1]) {
+                    userId = altMatch[1];
+                }
+            }
+
+            console.log("Found userId:", userId);
+            
             if (window.parent && window.parent !== window) {
                 try {
+                    console.log("Sending completion message to parent window");
                     window.parent.postMessage({ 
                         type: 'NATURES_GAZE_COMPLETE', 
+                        userId: userId,
                         status: 'success',
                         message: 'Nature\'s Gaze game completed successfully'
                     }, '*');
@@ -704,8 +692,76 @@
                     console.log("Sent completion message to parent window");
                 } catch (error) {
                     console.error("Error sending message to parent:", error);
+                    
+                    // Fallback to direct navigation if postMessage fails
+                    try {
+                        // Force navigation to patient home page
+                        if (userId) {
+                            window.top.location.href = `/patient-home-page/${userId}`;
+                        } else {
+                            // If no userId, try to go to base patient home
+                            window.top.location.href = '/patient-home-page';
+                        }
+                    } catch (navError) {
+                        console.error("Navigation fallback error:", navError);
+                    }
+                }
+            } else {
+                // Direct navigation if not in an iframe
+                try {
+                    // Force navigation to patient home page
+                    if (userId) {
+                        window.location.href = `/patient-home-page/${userId}`;
+                    } else {
+                        // If no userId, try to go to base patient home
+                        window.location.href = '/patient-home-page';
+                    }
+                } catch (error) {
+                    console.error("Navigation error:", error);
                 }
             }
+        });
+        
+        window.addEventListener('load', function() {
+            if (window.parent && window.parent !== window) {
+                console.log("Game iframe content fully loaded");
+            }
+            
+            const img = new Image();
+            img.onload = function() {
+                console.log("Bird image loaded");
+                
+                if (!bird) {
+                    bird = createBird();
+                    hideBird(); // Hide it initially
+                }
+                
+                // Skip instructions and immediately request camera access
+                setupCamera().then(cameraReady => {
+                    if (cameraReady) {
+                        startGame();
+                    }
+                });
+            };
+            img.onerror = function() {
+                console.error("Error loading bird image, using fallback red dot");
+                
+                const birdElement = document.createElement('div');
+                birdElement.className = 'bird';
+                birdElement.style.backgroundImage = 'url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiNGRjAwMDAiLz4KPC9zdmc+Cg==")';
+                
+                positionBird(centerX, centerY);
+                gameArea.appendChild(birdElement);
+                bird = birdElement;
+                hideBird();
+                
+                setupCamera().then(cameraReady => {
+                    if (cameraReady) {
+                        startGame();
+                    }
+                });
+            };
+            img.src = "/static/images/bird.png";
         });
         
         // Start the game
@@ -721,16 +777,17 @@
             startNewTrial();
         }
         
-        // Start a new trial
         function startNewTrial() {
             if (gameConfig.currentTrial >= gameConfig.trialCount) {
                 endGame();
                 return;
             }
             
+            // Hide the bird between trials
+            hideBird();
+            
             const trialType = gameConfig.trialTypes[gameConfig.currentTrial];
             
-            // Show appropriate instruction panel
             if (trialType === 'prosaccade') {
                 prosaccadePanel.style.display = 'block';
             } else {
@@ -738,12 +795,10 @@
             }
         }
         
-        // Run the current trial
         function runTrial() {
             const trialType = gameConfig.trialTypes[gameConfig.currentTrial];
             const gameType = gameConfig.gameTypes[gameConfig.currentTrial];
             
-            // Select a random target position for this trial
             const targetPositions = positions[trialType];
             const targetPos = targetPositions[Math.floor(Math.random() * targetPositions.length)];
             
@@ -781,6 +836,7 @@
                         // After stimulus duration
                         setTimeout(() => {
                             // Return to center
+                            hideBird(); // Hide bird before repositioning
                             positionBird(centerX, centerY);
                             showBird();
                             
@@ -791,7 +847,8 @@
                                 trialLog.trial_end_time = trialEndTime / 1000;
                                 gameConfig.trialLog.push(trialLog);
                                 
-                                // Next trial
+                                // Next trial - make sure to hide bird before moving to next trial
+                                hideBird();
                                 gameConfig.currentTrial++;
                                 startNewTrial();
                             }, gameConfig.resetDuration);
@@ -806,6 +863,7 @@
                     overlapBird.className = 'bird';
                     overlapBird.style.left = targetPos.x + 'px';
                     overlapBird.style.top = targetPos.y + 'px';
+                    overlapBird.style.backgroundImage = bird.style.backgroundImage; // Copy the same image
                     gameArea.appendChild(overlapBird);
                     
                     const stimulusOnset = Date.now();
@@ -813,7 +871,7 @@
                     
                     // After 400ms, remove the center bird
                     setTimeout(() => {
-                        bird.style.display = 'none';
+                        hideBird(); // Hide the center bird
                         
                         // After stimulus duration
                         setTimeout(() => {
@@ -831,7 +889,8 @@
                                 trialLog.trial_end_time = trialEndTime / 1000;
                                 gameConfig.trialLog.push(trialLog);
                                 
-                                // Next trial
+                                // Next trial - ensure bird is hidden before next trial
+                                hideBird();
                                 gameConfig.currentTrial++;
                                 startNewTrial();
                             }, gameConfig.resetDuration);
@@ -1159,20 +1218,20 @@
                     console.log(`Populating metrics for ${trialType}:`, metrics);
                     
                     for (const [key, value] of Object.entries(metrics)) {
-                        const metricDiv = document.createElement('div');
-                        metricDiv.className = 'metric';
+                        const metricItem = document.createElement('div');
+                        metricItem.className = 'metric-item';
                         
-                        const label = document.createElement('div');
-                        label.className = 'metric-label';
-                        label.textContent = key.replace(/_/g, ' ');
+                        const nameElement = document.createElement('div');
+                        nameElement.className = 'metric-name';
+                        nameElement.textContent = formatMetricName(key);
                         
-                        const valueDiv = document.createElement('div');
-                        valueDiv.className = 'metric-value';
-                        valueDiv.textContent = value;
+                        const valueElement = document.createElement('div');
+                        valueElement.className = 'metric-value';
+                        valueElement.textContent = value;
                         
-                        metricDiv.appendChild(label);
-                        metricDiv.appendChild(valueDiv);
-                        tabContent.appendChild(metricDiv);
+                        metricItem.appendChild(nameElement);
+                        metricItem.appendChild(valueElement);
+                        tabContent.appendChild(metricItem);
                     }
                 } else {
                     tabContent.innerHTML = '<p>No data available for this trial type</p>';
@@ -1186,8 +1245,70 @@
             const closeBtn = document.getElementById('closeResultsBtn');
             if (closeBtn) {
                 closeBtn.addEventListener('click', function() {
-                    resultsModal.style.display = 'none';
+                    console.log("Next button clicked");
+                    
+                    // Hide the modal first
+                    const resultsModal = document.getElementById('resultsModal');
+                    if (resultsModal) {
+                        resultsModal.style.display = 'none';
+                    }
+                    
+                    // Extract userId directly from URL path
+                    let userId = null;
+                    
+                    // Log the current location for debugging
+                    console.log("Current URL:", window.location.href);
+                    console.log("Current pathname:", window.location.pathname);
+                    
+                    // First check: exact match for /natures-gaze/USER_ID or /natures-gaze-instructions/USER_ID
+                    const pathRegex = /\/natures-gaze(?:-instructions)?\/([^\/\?]+)/;
+                    const match = window.location.pathname.match(pathRegex);
+                    
+                    if (match && match[1]) {
+                        userId = match[1];
+                        console.log("Found userId in path:", userId);
+                    }
+                    
+                    // Second check: URL query parameter userId=USER_ID
+                    if (!userId) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.has('userId')) {
+                            userId = urlParams.get('userId');
+                            console.log("Found userId in query params:", userId);
+                        }
+                    }
+                    
+                    // Navigate directly to the patient home page
+                    try {
+                        if (userId) {
+                            const targetUrl = `http://localhost:5001/patient-home-page/${userId}`;
+                            console.log("Navigating to:", targetUrl);
+                            
+                            // Use window.top for navigation to break out of iframes
+                            window.top.location.href = targetUrl;
+                        } else {
+                            console.warn("No userId found, redirecting to login page");
+                            window.top.location.href = "http://localhost:5001/patient-login";
+                        }
+                    } catch (error) {
+                        console.error("Navigation error:", error);
+                        
+                        // Fallback to postMessage approach similar to gaze_calibration
+                        try {
+                            console.log("Trying postMessage fallback");
+                            window.parent.postMessage({
+                                type: "NATURES_GAZE_COMPLETE",
+                                userId: userId,
+                                status: "success"
+                            }, "*");
+                            console.log("Sent completion message to parent");
+                        } catch (e) {
+                            console.error("PostMessage error:", e);
+                        }
+                    }
                 });
+            } else {
+                console.error("closeResultsBtn element not found");
             }
         }
         
@@ -1317,8 +1438,8 @@
         // Listen for window resize
         window.addEventListener('resize', () => {
             // Recalculate positions
-            const centerX = Math.floor(window.innerWidth / 2) - 25;
-            const centerY = Math.floor(window.innerHeight / 2) - 25;
+            const centerX = Math.floor(window.innerWidth / 2) - 50;
+            const centerY = Math.floor(window.innerHeight / 2) - 50;
             
             // Update positions
             positions.prosaccade = [
@@ -1336,33 +1457,6 @@
             }
         });
         
-        // Start game when page loads
-        window.addEventListener('load', function() {
-            if (window.parent && window.parent !== window) {
-                console.log("Game iframe content fully loaded");
-            }
-            
-            // Make sure the bird image is loaded
-            const img = new Image();
-            img.onload = function() {
-                console.log("Bird image loaded");
-            };
-            img.onerror = function() {
-                console.error("Failed to load bird image, using fallback");
-                // If bird image fails to load, use a color circle as fallback
-                const style = document.createElement('style');
-                style.textContent = `
-                    .bird {
-                        background-image: none !important;
-                        background-color: #F8727B !important;
-                        border-radius: 50% !important;
-                    }
-                `;
-                document.head.appendChild(style);
-            };
-            img.src = '/static/images/bird.gif';
-        });
-
         // Debug function to check file status
         function checkDebugStatus() {
             console.log("Checking debug status...");
@@ -1565,21 +1659,178 @@
                 resultsOkBtn.addEventListener('click', function() {
                     resultsOverlay.style.display = 'none';
                     
-                    // Send message to parent window (React component)
-                    if (window.parent && window.parent !== window) {
-                        try {
-                            window.parent.postMessage({ 
-                                type: 'NATURES_GAZE_COMPLETE', 
-                                status: 'success',
-                                message: 'Nature\'s Gaze game completed successfully'
-                            }, '*');
-                            
-                            console.log("Sent completion message to parent window");
-                        } catch (error) {
-                            console.error("Error sending message to parent:", error);
+                    // Try direct navigation to patient home page
+                    try {
+                        // Try to find userId in the URL path
+                        let userId = '';
+                        const pathMatch = window.top.location.pathname.match(/\/natures-gaze(?:-instructions)?\/([^\/]+)/);
+                        if (pathMatch && pathMatch[1]) {
+                            userId = pathMatch[1];
+                        } else {
+                            // Try alternates
+                            const altMatch = window.top.location.pathname.match(/\/([^\/]+)\/natures-gaze/);
+                            if (altMatch && altMatch[1]) {
+                                userId = altMatch[1];
+                            }
+                        }
+
+                        console.log("Found userId:", userId);
+                        
+                        // Prioritize postMessage communication with parent frame
+                        if (window.parent && window.parent !== window) {
+                            try {
+                                console.log("Sending completion message to parent window");
+                                window.parent.postMessage({ 
+                                    type: 'NATURES_GAZE_COMPLETE', 
+                                    userId: userId,
+                                    status: 'success',
+                                    message: 'Nature\'s Gaze game completed successfully'
+                                }, '*');
+                                
+                                console.log("Sent completion message to parent window");
+                            } catch (error) {
+                                console.error("Error sending message to parent:", error);
+                                
+                                // Fallback to direct navigation if postMessage fails
+                                try {
+                                    // Force navigation to patient home page
+                                    if (userId) {
+                                        window.top.location.href = `/patient-home-page/${userId}`;
+                                    } else {
+                                        // If no userId, try to go to base patient home
+                                        window.top.location.href = '/patient-home-page';
+                                    }
+                                } catch (navError) {
+                                    console.error("Navigation fallback error:", navError);
+                                }
+                            }
+                        } else {
+                            // Direct navigation if not in an iframe
+                            try {
+                                // Force navigation to patient home page
+                                if (userId) {
+                                    window.location.href = `/patient-home-page/${userId}`;
+                                } else {
+                                    // If no userId, try to go to base patient home
+                                    window.location.href = '/patient-home-page';
+                                }
+                            } catch (error) {
+                                console.error("Navigation error:", error);
+                            }
+                        }
+                    } catch (error) {
+                        console.error("Error with direct navigation:", error);
+                        
+                        // Fallback: Send message to parent window (React component)
+                        if (window.parent && window.parent !== window) {
+                            try {
+                                console.log("Sending completion message to parent window");
+                                window.parent.postMessage({ 
+                                    type: 'NATURES_GAZE_COMPLETE', 
+                                    status: 'success',
+                                    message: 'Nature\'s Gaze game completed successfully'
+                                }, '*');
+                                
+                                console.log("Sent completion message to parent window");
+                            } catch (error) {
+                                console.error("Error sending message to parent:", error);
+                            }
                         }
                     }
                 });
+            }
+        });
+
+        // Set up the home page link with userId if available
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOM fully loaded");
+            
+            // Update the Next button link to include userId if present
+            const closeBtn = document.getElementById('closeResultsBtn');
+            if (closeBtn) {
+                console.log("Found closeResultsBtn element");
+                
+                closeBtn.addEventListener('click', function() {
+                    console.log("Next button clicked");
+                    
+                    // Hide the modal first
+                    const resultsModal = document.getElementById('resultsModal');
+                    if (resultsModal) {
+                        resultsModal.style.display = 'none';
+                    }
+                    
+                    // Extract userId directly from URL path
+                    let userId = null;
+                    
+                    // Log the current location for debugging
+                    console.log("Current URL:", window.location.href);
+                    console.log("Current pathname:", window.location.pathname);
+                    
+                    // First check: exact match for /natures-gaze/USER_ID or /natures-gaze-instructions/USER_ID
+                    const pathRegex = /\/natures-gaze(?:-instructions)?\/([^\/\?]+)/;
+                    const match = window.location.pathname.match(pathRegex);
+                    
+                    if (match && match[1]) {
+                        userId = match[1];
+                        console.log("Found userId in path:", userId);
+                    }
+                    
+                    // Second check: URL query parameter userId=USER_ID
+                    if (!userId) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.has('userId')) {
+                            userId = urlParams.get('userId');
+                            console.log("Found userId in query params:", userId);
+                        }
+                    }
+                    
+                    // Prioritize postMessage communication with parent frame
+                    // This is more reliable when running in an iframe
+                    if (window.parent && window.parent !== window) {
+                        try {
+                            console.log("Sending completion message to parent window");
+                            window.parent.postMessage({
+                                type: "NATURES_GAZE_COMPLETE",
+                                userId: userId,
+                                status: "success",
+                                message: "Nature's Gaze game completed successfully"
+                            }, "*");
+                            console.log("Sent completion message to parent");
+                        } catch (e) {
+                            console.error("PostMessage error:", e);
+                            
+                            // Fall back to direct navigation only if postMessage fails
+                            try {
+                                if (userId) {
+                                    const targetUrl = `http://localhost:5001/patient-home-page/${userId}`;
+                                    console.log("Fallback: Navigating to:", targetUrl);
+                                    window.top.location.href = targetUrl;
+                                } else {
+                                    console.warn("No userId found, redirecting to login page");
+                                    window.top.location.href = "http://localhost:5001/patient-login";
+                                }
+                            } catch (navError) {
+                                console.error("Navigation fallback error:", navError);
+                            }
+                        }
+                    } else {
+                        // Direct navigation if not in an iframe
+                        try {
+                            if (userId) {
+                                const targetUrl = `http://localhost:5001/patient-home-page/${userId}`;
+                                console.log("Navigating to:", targetUrl);
+                                window.location.href = targetUrl;
+                            } else {
+                                console.warn("No userId found, redirecting to login page");
+                                window.location.href = "http://localhost:5001/patient-login";
+                            }
+                        } catch (error) {
+                            console.error("Navigation error:", error);
+                        }
+                    }
+                });
+            } else {
+                console.error("closeResultsBtn element not found");
             }
         });
     </script>

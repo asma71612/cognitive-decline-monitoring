@@ -4,12 +4,12 @@
     "game_type": "gap",
     "target_position": [
         739,
-        33
+        893
     ],
     "metrics": {
-        "reaction_time": 0.029881954193115234,
-        "saccade_duration": 0.04171896116669738,
+        "reaction_time": 0.02753138542175293,
+        "saccade_duration": 0.09479149355044204,
         "saccade_error": 0,
-        "fixation_duration": 0.2212802136140889
+        "fixation_duration": 0.419303511951574
     }
 }
