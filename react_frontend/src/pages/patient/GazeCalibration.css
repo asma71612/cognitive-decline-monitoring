@@ -52,22 +52,11 @@ body {
 
 .calibration-frame-container {
   width: 100%;
-  height: calc(100vh - 60px); /* Header height (60px) */
-  margin: 0 auto;
+  height: 100vh;
+  margin: 0;
   border: none;
   overflow: hidden;
   flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  max-width: 1600px; /* Prevent extreme stretching on wide screens */
-}
-
-.calibration-wrapper {
-  width: 100%;
-  max-width: 1280px; /* Standard 16:9 width that should work for most screens */
-  position: relative;
-  margin: 0 auto;
 }
 
 .calibration-frame {
@@ -77,14 +66,11 @@ body {
   overflow: hidden;
   display: block;
   background-color: #DFE5FB;
-  aspect-ratio: 16 / 9; /* Maintain aspect ratio */
-  max-height: calc(100vh - 60px);
   max-width: 100%;
-  object-fit: contain;
 }
 
 .button-container {
-  display: none; /* Hide since it's not being used */
+  display: none;
 }
 
 .done-button {
@@ -134,7 +120,7 @@ body {
   }
   
   .calibration-frame-container {
-    height: calc(100vh - 100px); /* For smaller screens with stacked header elements */
+    height: 100vh;
   }
   
   .header h1 {
