@@ -351,10 +351,10 @@ const ProcessQuest = () => {
     
     // Update user data before navigating
     updateUserCompletion().then(() => {
-      navigate(`/memory-vault-recall-instructions/${userId}`);
+      navigate(`/scene-detective-instructions/${userId}`);
     });
   }, [navigate, userId, playCount]);
-
+ 
   useEffect(() => {
     const fetchPlayCount = async () => {
       if (userId) {
