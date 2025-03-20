@@ -4,12 +4,12 @@
     "game_type": "overlap",
     "target_position": [
         739,
-        893
+        33
     ],
     "metrics": {
-        "reaction_time": 0.05124187469482422,
-        "saccade_duration": 0.09697903186065943,
+        "reaction_time": 0.0511164665222168,
+        "saccade_duration": 0.05276585688264236,
         "saccade_error": 0,
-        "fixation_duration": 0.39882742119352393
+        "fixation_duration": 0.4148431095144995
     }
 }

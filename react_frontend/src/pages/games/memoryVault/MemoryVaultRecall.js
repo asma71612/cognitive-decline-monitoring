@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
-import { doc, getDoc, setDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, collection } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
 import titleImage from "../../../assets/title.svg";
 import RECALL_SESSIONS from './imports/recallSessions';
@@ -156,9 +156,19 @@ const MemoryVaultRecall = () => {
         await setDoc(allTimeReportsRef, {});
       }
 
-      const dailyMemoryVaultRef = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/memoryVault`);
-      const seeMoreMemoryVaultRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault/recallSpeedAndAccuracy`);
-      const allTimeMemoryVaultRef = doc(db, `users/${userId}/allTimeReports/${formattedDate}/games/memoryVault`);
+      // Setup games collection in dailyReports
+      const gamesCollectionRef = collection(db, `users/${userId}/dailyReports/${formattedDate}/games`);
+
+      // Setup allTimeReports games collection
+      const allTimeGamesCollectionRef = collection(db, `users/${userId}/allTimeReports/${formattedDate}/games`);
+
+      // Setup memoryVault collection in dailyReportsSeeMore
+      const memoryVaultCollectionRef = collection(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/memoryVault`);
+
+      // Create document references
+      const dailyMemoryVaultRef = doc(gamesCollectionRef, 'memoryVault');
+      const seeMoreMemoryVaultRef = doc(memoryVaultCollectionRef, 'recallSpeedAndAccuracy');
+      const allTimeMemoryVaultRef = doc(allTimeGamesCollectionRef, 'memoryVault');
 
       await setDoc(dailyMemoryVaultRef, userAttempt);
       await setDoc(seeMoreMemoryVaultRef, userAttempt);

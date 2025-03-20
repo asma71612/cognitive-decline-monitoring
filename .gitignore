@@ -53,6 +53,7 @@ outputs/
 */gaze_calibration_collection_unseen.csv
 demo/gazeCalibration/gaze_calibration_collection_train.csv
 demo/gazeCalibration/gaze_calibration_collection_unseen.csv
+
 # Virtual Environments
 *_env/
 ptgaze_env/
@@ -60,7 +61,3 @@ new_ptgaze_env/
 
 # Log files
 *.log
-
-# Python Environments
-ptgaze_env/
-new_ptgaze_env/
