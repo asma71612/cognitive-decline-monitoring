@@ -130,7 +130,7 @@ const LightingCalibration = () => {
       </div>
 
       {!isLightingGood ? (
-        <p className="error-message">PLEASE SIT IN A WELL LIT ROOM.</p>
+        <p className="error-message-lighting-calibration">PLEASE SIT IN A WELL LIT ROOM.</p>
       ) : (
         <p className="success-message">GOOD LIGHTING CONDITIONS.</p>
       )}
