@@ -277,34 +277,45 @@ const WeeklyReportComponent = ({ userId }) => {
                 };
                 const reports = await getReports(effectiveUserId, filteredDates);
                 for (const { dateKey } of reports) {
-                    const reactionDocRef = doc(
+                    const metricsDocRef = doc(
                         db,
-                        `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/reactionTime`
+                        `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
                     );
-                    const reactionDoc = await getDoc(reactionDocRef);
-                    if (reactionDoc.exists()) {
-                        const data = reactionDoc.data();
-    
+                    const metricsDoc = await getDoc(metricsDocRef);
+                    if (metricsDoc.exists()) {
+                        const data = metricsDoc.data();
+
                         // Convert dateKey (MM-DD-YYYY) into a Date object
                         const [month, day, year] = dateKey.split('-').map(Number);
                         const formattedDate = new Date(year, month - 1, day);
-    
+
                         // Format the date into "Jan 1, 2025"
                         const fullDateKey = formattedDate.toLocaleDateString("en-US", {
-                            month: "short", // Abbreviated month name (e.g., Jan, Feb)
-                            day: "numeric", // Numeric day
-                            year: "numeric", // Full year (e.g., 2025)
+                            month: "short", 
+                            day: "numeric", 
+                            year: "numeric", 
                         });
-    
-                        // Store data by fullDateKey (formatted as "Jan 1, 2025")
-                        Object.entries(data).forEach(([series, value]) => {
-                            if (value != null && dataPoints.hasOwnProperty(series)) {
-                                if (!dataPoints[series][fullDateKey]) {
-                                    dataPoints[series][fullDateKey] = [];
-                                }
-                                dataPoints[series][fullDateKey].push(value);
-                            }
-                        });
+
+                        // Map the backend field names to the display names
+                        if (data.antisaccadeGap && data.antisaccadeGap.averageReactionTime !== undefined) {
+                            if (!dataPoints.antiGap[fullDateKey]) dataPoints.antiGap[fullDateKey] = [];
+                            dataPoints.antiGap[fullDateKey].push(data.antisaccadeGap.averageReactionTime);
+                        }
+                        
+                        if (data.prosaccadeGap && data.prosaccadeGap.averageReactionTime !== undefined) {
+                            if (!dataPoints.proGap[fullDateKey]) dataPoints.proGap[fullDateKey] = [];
+                            dataPoints.proGap[fullDateKey].push(data.prosaccadeGap.averageReactionTime);
+                        }
+                        
+                        if (data.prosaccadeOverlap && data.prosaccadeOverlap.averageReactionTime !== undefined) {
+                            if (!dataPoints.proOverlap[fullDateKey]) dataPoints.proOverlap[fullDateKey] = [];
+                            dataPoints.proOverlap[fullDateKey].push(data.prosaccadeOverlap.averageReactionTime);
+                        }
+                        
+                        if (data.antisaccadeOverlap && data.antisaccadeOverlap.averageReactionTime !== undefined) {
+                            if (!dataPoints.antiOverlap[fullDateKey]) dataPoints.antiOverlap[fullDateKey] = [];
+                            dataPoints.antiOverlap[fullDateKey].push(data.antisaccadeOverlap.averageReactionTime);
+                        }
                     }
                 }
                 setNaturesGazeReactionTimeData(dataPoints);
@@ -328,31 +339,44 @@ const WeeklyReportComponent = ({ userId }) => {
             };
             const reports = await getReports(effectiveUserId, filteredDates);
             for (const { dateKey } of reports) {
-              const saccadeDocRef = doc(
+              const metricsDocRef = doc(
                 db,
-                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeOmissionPercentages`
+                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
               );
-              const saccadeDoc = await getDoc(saccadeDocRef);
-              if (saccadeDoc.exists()) {
-                const data = saccadeDoc.data();
+              const metricsDoc = await getDoc(metricsDocRef);
+              if (metricsDoc.exists()) {
+                const data = metricsDoc.data();
                 // Convert dateKey (MM-DD-YYYY) into a Date object
                 const [month, day, year] = dateKey.split('-').map(Number);
                 const formattedDate = new Date(year, month - 1, day);
 
                 // Format the date into "Jan 1, 2025"
                 const fullDateKey = formattedDate.toLocaleDateString("en-US", {
-                    month: "short", // Abbreviated month name (e.g., Jan, Feb)
-                    day: "numeric", // Numeric day
-                    year: "numeric", // Full year (e.g., 2025)
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
                 });
 
-                Object.entries(data).forEach(([series, value]) => {
-                  if (value != null && dataPoints.hasOwnProperty(series)) {
-                    if (!dataPoints[series][fullDateKey])
-                      dataPoints[series][fullDateKey] = [];
-                    dataPoints[series][fullDateKey].push(value);
-                  }
-                });
+                // Map the backend field names to the display names
+                if (data.antisaccadeGap && data.antisaccadeGap.saccadeOmissionPercentage !== undefined) {
+                    if (!dataPoints.antiGap[fullDateKey]) dataPoints.antiGap[fullDateKey] = [];
+                    dataPoints.antiGap[fullDateKey].push(data.antisaccadeGap.saccadeOmissionPercentage);
+                }
+                
+                if (data.prosaccadeGap && data.prosaccadeGap.saccadeOmissionPercentage !== undefined) {
+                    if (!dataPoints.proGap[fullDateKey]) dataPoints.proGap[fullDateKey] = [];
+                    dataPoints.proGap[fullDateKey].push(data.prosaccadeGap.saccadeOmissionPercentage);
+                }
+                
+                if (data.prosaccadeOverlap && data.prosaccadeOverlap.saccadeOmissionPercentage !== undefined) {
+                    if (!dataPoints.proOverlap[fullDateKey]) dataPoints.proOverlap[fullDateKey] = [];
+                    dataPoints.proOverlap[fullDateKey].push(data.prosaccadeOverlap.saccadeOmissionPercentage);
+                }
+                
+                if (data.antisaccadeOverlap && data.antisaccadeOverlap.saccadeOmissionPercentage !== undefined) {
+                    if (!dataPoints.antiOverlap[fullDateKey]) dataPoints.antiOverlap[fullDateKey] = [];
+                    dataPoints.antiOverlap[fullDateKey].push(data.antisaccadeOverlap.saccadeOmissionPercentage);
+                }
               }
             }
             setNaturesGazeSopData(dataPoints);
@@ -375,36 +399,45 @@ const WeeklyReportComponent = ({ userId }) => {
             };
             const reports = await getReports(effectiveUserId, filteredDates);
             for (const { dateKey } of reports) {
-              const sdDocRef = doc(
+              const metricsDocRef = doc(
                 db,
-                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDuration`
+                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
               );
-              const durationsCollection = collection(sdDocRef, "durations");
-              const durationsSnapshots = await getDocs(durationsCollection);
-              durationsSnapshots.docs.forEach((docSnap) => {
-                const data = docSnap.data();
-                const seriesKey = docSnap.id;
+              const metricsDoc = await getDoc(metricsDocRef);
+              if (metricsDoc.exists()) {
+                const data = metricsDoc.data();
                 // Convert dateKey (MM-DD-YYYY) into a Date object
                 const [month, day, year] = dateKey.split('-').map(Number);
                 const formattedDate = new Date(year, month - 1, day);
 
                 // Format the date into "Jan 1, 2025"
                 const fullDateKey = formattedDate.toLocaleDateString("en-US", {
-                    month: "short", // Abbreviated month name (e.g., Jan, Feb)
-                    day: "numeric", // Numeric day
-                    year: "numeric", // Full year (e.g., 2025)
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
                 });
 
-                if (
-                  data.Duration != null &&
-                  durationPoints[seriesKey] !== undefined
-                ) {
-                  if (!durationPoints[seriesKey][fullDateKey]) {
-                    durationPoints[seriesKey][fullDateKey] = [];
-                  }
-                  durationPoints[seriesKey][fullDateKey].push(data.Duration);
+                // Map the backend field names to the display names
+                if (data.antisaccadeGap && data.antisaccadeGap.averageSaccadeDuration !== undefined) {
+                    if (!durationPoints.antiGap[fullDateKey]) durationPoints.antiGap[fullDateKey] = [];
+                    durationPoints.antiGap[fullDateKey].push(data.antisaccadeGap.averageSaccadeDuration);
                 }
-              });
+                
+                if (data.prosaccadeGap && data.prosaccadeGap.averageSaccadeDuration !== undefined) {
+                    if (!durationPoints.proGap[fullDateKey]) durationPoints.proGap[fullDateKey] = [];
+                    durationPoints.proGap[fullDateKey].push(data.prosaccadeGap.averageSaccadeDuration);
+                }
+                
+                if (data.prosaccadeOverlap && data.prosaccadeOverlap.averageSaccadeDuration !== undefined) {
+                    if (!durationPoints.proOverlap[fullDateKey]) durationPoints.proOverlap[fullDateKey] = [];
+                    durationPoints.proOverlap[fullDateKey].push(data.prosaccadeOverlap.averageSaccadeDuration);
+                }
+                
+                if (data.antisaccadeOverlap && data.antisaccadeOverlap.averageSaccadeDuration !== undefined) {
+                    if (!durationPoints.antiOverlap[fullDateKey]) durationPoints.antiOverlap[fullDateKey] = [];
+                    durationPoints.antiOverlap[fullDateKey].push(data.antisaccadeOverlap.averageSaccadeDuration);
+                }
+              }
             }
             setSaccadeDurationData(durationPoints);
           } catch (error) {
@@ -425,36 +458,45 @@ const WeeklyReportComponent = ({ userId }) => {
             };
             const reports = await getReports(effectiveUserId, filteredDates);
             for (const { dateKey } of reports) {
-              const errorDocRef = doc(
+              const metricsDocRef = doc(
                 db,
-                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDirectionError`
+                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
               );
-              const errorsCollection = collection(errorDocRef, "errors");
-              const errorsSnapshot = await getDocs(errorsCollection);
-              errorsSnapshot.docs.forEach((docSnap) => {
-                const data = docSnap.data();
-                const seriesKey = docSnap.id; // expected: antiGap, proGap, antiOverlap, proOverlap
+              const metricsDoc = await getDoc(metricsDocRef);
+              if (metricsDoc.exists()) {
+                const data = metricsDoc.data();
                 // Convert dateKey (MM-DD-YYYY) into a Date object
                 const [month, day, year] = dateKey.split('-').map(Number);
                 const formattedDate = new Date(year, month - 1, day);
 
                 // Format the date into "Jan 1, 2025"
                 const fullDateKey = formattedDate.toLocaleDateString("en-US", {
-                    month: "short", // Abbreviated month name (e.g., Jan, Feb)
-                    day: "numeric", // Numeric day
-                    year: "numeric", // Full year (e.g., 2025)
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
                 });
 
-                if (
-                  data.PercentError != null &&
-                  errorPoints[seriesKey] !== undefined
-                ) {
-                  if (!errorPoints[seriesKey][fullDateKey]) {
-                    errorPoints[seriesKey][fullDateKey] = [];
-                  }
-                  errorPoints[seriesKey][fullDateKey].push(data.PercentError);
+                // Map the backend field names to the display names
+                if (data.antisaccadeGap && data.antisaccadeGap.saccadeErrorPercentage !== undefined) {
+                    if (!errorPoints.antiGap[fullDateKey]) errorPoints.antiGap[fullDateKey] = [];
+                    errorPoints.antiGap[fullDateKey].push(data.antisaccadeGap.saccadeErrorPercentage);
                 }
-              });
+                
+                if (data.prosaccadeGap && data.prosaccadeGap.saccadeErrorPercentage !== undefined) {
+                    if (!errorPoints.proGap[fullDateKey]) errorPoints.proGap[fullDateKey] = [];
+                    errorPoints.proGap[fullDateKey].push(data.prosaccadeGap.saccadeErrorPercentage);
+                }
+                
+                if (data.prosaccadeOverlap && data.prosaccadeOverlap.saccadeErrorPercentage !== undefined) {
+                    if (!errorPoints.proOverlap[fullDateKey]) errorPoints.proOverlap[fullDateKey] = [];
+                    errorPoints.proOverlap[fullDateKey].push(data.prosaccadeOverlap.saccadeErrorPercentage);
+                }
+                
+                if (data.antisaccadeOverlap && data.antisaccadeOverlap.saccadeErrorPercentage !== undefined) {
+                    if (!errorPoints.antiOverlap[fullDateKey]) errorPoints.antiOverlap[fullDateKey] = [];
+                    errorPoints.antiOverlap[fullDateKey].push(data.antisaccadeOverlap.saccadeErrorPercentage);
+                }
+              }
             }
             setSaccadeDirectionErrorData(errorPoints);
           } catch (error) {
@@ -473,46 +515,69 @@ const WeeklyReportComponent = ({ userId }) => {
             };
             const reports = await getReports(effectiveUserId, filteredDates);
             for (const { dateKey } of reports) {
-              const fixAccDocRef = doc(
+              const metricsDocRef = doc(
                 db,
-                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationAccuracy`
+                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
               );
-              const accuracyCollection = collection(
-                fixAccDocRef,
-                "landingAccuracy"
-              );
-              const accuracySnapshots = await getDocs(accuracyCollection);
-              accuracySnapshots.docs.forEach((docSnap) => {
-                const data = docSnap.data();
-                const seriesKey = docSnap.id; // expected: "gap" or "overlap"
+              const metricsDoc = await getDoc(metricsDocRef);
+              if (metricsDoc.exists()) {
+                const data = metricsDoc.data();
                 // Convert dateKey (MM-DD-YYYY) into a Date object
                 const [month, day, year] = dateKey.split('-').map(Number);
                 const formattedDate = new Date(year, month - 1, day);
 
                 // Format the date into "Jan 1, 2025"
                 const fullDateKey = formattedDate.toLocaleDateString("en-US", {
-                    month: "short", // Abbreviated month name (e.g., Jan, Feb)
-                    day: "numeric", // Numeric day
-                    year: "numeric", // Full year (e.g., 2025)
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
                 });
 
-                if (
-                  data.LandingAccuracy != null &&
-                  accuracyPoints[seriesKey] !== undefined
-                ) {
-                  if (!accuracyPoints[seriesKey][fullDateKey]) {
-                    accuracyPoints[seriesKey][fullDateKey] = [];
-                  }
-                  accuracyPoints[seriesKey][fullDateKey].push(data.LandingAccuracy);
+                // For gap accuracy, we take the average of pro and anti saccade gap fixation durations
+                const proGapFixation = data.prosaccadeGap?.averageFixationDuration;
+                const antiGapFixation = data.antisaccadeGap?.averageFixationDuration;
+                
+                if (proGapFixation !== undefined || antiGapFixation !== undefined) {
+                    if (!accuracyPoints.gap[fullDateKey]) accuracyPoints.gap[fullDateKey] = [];
+                    
+                    if (proGapFixation !== undefined && antiGapFixation !== undefined) {
+                        // If both values exist, use their average
+                        accuracyPoints.gap[fullDateKey].push((proGapFixation + antiGapFixation) / 2);
+                    } else if (proGapFixation !== undefined) {
+                        // If only proGap exists
+                        accuracyPoints.gap[fullDateKey].push(proGapFixation);
+                    } else if (antiGapFixation !== undefined) {
+                        // If only antiGap exists
+                        accuracyPoints.gap[fullDateKey].push(antiGapFixation);
+                    }
                 }
-              });
+                
+                // For overlap accuracy, we take the average of pro and anti saccade overlap fixation durations
+                const proOverlapFixation = data.prosaccadeOverlap?.averageFixationDuration;
+                const antiOverlapFixation = data.antisaccadeOverlap?.averageFixationDuration;
+                
+                if (proOverlapFixation !== undefined || antiOverlapFixation !== undefined) {
+                    if (!accuracyPoints.overlap[fullDateKey]) accuracyPoints.overlap[fullDateKey] = [];
+                    
+                    if (proOverlapFixation !== undefined && antiOverlapFixation !== undefined) {
+                        // If both values exist, use their average
+                        accuracyPoints.overlap[fullDateKey].push((proOverlapFixation + antiOverlapFixation) / 2);
+                    } else if (proOverlapFixation !== undefined) {
+                        // If only proOverlap exists
+                        accuracyPoints.overlap[fullDateKey].push(proOverlapFixation);
+                    } else if (antiOverlapFixation !== undefined) {
+                        // If only antiOverlap exists
+                        accuracyPoints.overlap[fullDateKey].push(antiOverlapFixation);
+                    }
+                }
+              }
             }
             setFixationAccuracyData(accuracyPoints);
           } catch (error) {
             console.error("Error fetching fixation accuracy data:", error);
           }
         })();
-    }, [selectedGame, effectiveUserId , filteredDates]);
+    }, [selectedGame, effectiveUserId, filteredDates]);
     
     // Process Quest Speaking Time fetching
     const isTemporalGame =
@@ -686,27 +751,54 @@ for (const { dateKey } of reports) {
               pausesSnapshots.docs.forEach((pauseDoc) => {
                 const data = pauseDoc.data();
                 if (data.StartTime && data.EndTime) {
-                    // Convert StartTime & EndTime ("MM:SS") to seconds
-                    const [startMin, startSec] = data.StartTime.split(":").map((x) =>
-                        parseInt(x, 10)
-                    );
-                    const [endMin, endSec] = data.EndTime.split(":").map((x) =>
-                        parseInt(x, 10)
-                    );
-                    const startTotal = startMin * 60 + startSec;
-                    const endTotal = endMin * 60 + endSec;
-                    const duration = endTotal - startTotal;
-                    const [month, day, year] = dateKey.split('-').map(Number);
-                    const formattedDate = new Date(year, month - 1, day);
+                  const [month, day, year] = dateKey.split('-').map(Number);
+                  const formattedDate = new Date(year, month - 1, day);
 
-                    // Format the date into "Jan 1, 2025"
-                    const fullDateKey = formattedDate.toLocaleDateString("en-US", {
-                        month: "short", // Abbreviated month name (e.g., Jan, Feb)
-                        day: "numeric", // Numeric day
-                        year: "numeric", // Full year (e.g., 2025)
-                    });
-                    if (!dataPoints[fullDateKey]) dataPoints[fullDateKey] = [];
-                        dataPoints[fullDateKey].push(duration);
+                  // Format the date into "Jan 1, 2025"
+                  const fullDateKey = formattedDate.toLocaleDateString("en-US", {
+                      month: "short", // Abbreviated month name (e.g., Jan, Feb)
+                      day: "numeric", // Numeric day
+                      year: "numeric", // Full year (e.g., 2025)
+                  });
+                  try {
+                    // Check if times are already in numeric format
+                    if (typeof data.StartTime === 'number' && typeof data.EndTime === 'number') {
+                      const duration = data.EndTime - data.StartTime;
+                      if (!dataPoints[fullDateKey]) dataPoints[fullDateKey] = [];
+                      dataPoints[fullDateKey].push(duration);
+                    } 
+                    // Handle string formats like "MM:SS" or "SS.ms"
+                    else if (typeof data.StartTime === 'string' && typeof data.EndTime === 'string') {
+                      let startTotal, endTotal;
+                      
+                      // Handle "MM:SS" format
+                      if (data.StartTime.includes(":")) {
+                        const [startMin, startSec] = data.StartTime.split(":").map(x => parseFloat(x));
+                        const [endMin, endSec] = data.EndTime.split(":").map(x => parseFloat(x));
+                        startTotal = startMin * 60 + startSec;
+                        endTotal = endMin * 60 + endSec;
+                      } 
+                      // Handle seconds or seconds.milliseconds format
+                      else {
+                        startTotal = parseFloat(data.StartTime);
+                        endTotal = parseFloat(data.EndTime);
+                      }
+                      
+                      if (!isNaN(startTotal) && !isNaN(endTotal)) {
+                        const duration = endTotal - startTotal;
+                        if (duration > 0) { // Only include positive durations
+                          if (!dataPoints[fullDateKey]) dataPoints[fullDateKey] = [];
+                          dataPoints[fullDateKey].push(duration);
+                        } else {
+                          console.warn("Invalid pause duration (negative or zero):", duration, "Start:", data.StartTime, "End:", data.EndTime);
+                        }
+                      } else {
+                        console.warn("Invalid time format for pause:", data.StartTime, data.EndTime);
+                      }
+                    }
+                  } catch (err) {
+                    console.error("Error calculating pause duration:", err, data);
+                  }
                 }
               });
             }
@@ -795,7 +887,9 @@ for (const { dateKey } of reports) {
               const structuralDoc = await getDoc(structuralDocRef);
               if (structuralDoc.exists()) {
                 const data = structuralDoc.data();
-                const meanValue = Number(data.MeanLengthOfOccurrence);
+                // Check for either property name since it might be stored differently
+                const meanValue = Number(data.MeanLengthOfUtterance || data.MeanLengthOfOccurrence || 
+                                  data["Mean Length of Utterance (MLU) (Average number of words per sentence)"]);
                 const sentenceCount = Number(data.NumOfSentences);
                 const [month, day, year] = dateKey.split('-').map(Number);
                 const formattedDate = new Date(year, month - 1, day);
@@ -849,11 +943,12 @@ for (const { dateKey } of reports) {
                 });
               if (fluencyDoc.exists()) {
                 const data = fluencyDoc.data();
-                const revision = Number(data.RevisionRatio);
+                // Look for either RevisionRatio or RepetitionRatio since the data might be stored with either name
+                const repetition = Number(data.RepetitionRatio || data.RevisionRatio);
                 const wordsPerMin = Number(data.WordsPerMin);
                 if (!revisionData[fullDateKey]) revisionData[fullDateKey] = [];
                 if (!wordsData[fullDateKey]) wordsData[fullDateKey] = [];
-                revisionData[fullDateKey].push(revision);
+                revisionData[fullDateKey].push(repetition);
                 wordsData[fullDateKey].push(wordsPerMin);
               }
               const stuttersCollection = collection(
@@ -1135,7 +1230,7 @@ for (const { dateKey } of reports) {
                     {(() => {
                         const structuralConfigs = [
                             {
-                                subtitle: "Mean Length of Occurrence",
+                                subtitle: "Mean Length of Utterance",
                                 rawData: structuralMeanData,
                                 yAxisLabel: "Mean Length",
                             },
@@ -1191,14 +1286,9 @@ for (const { dateKey } of reports) {
                             yAxisLabel: "Words per Minute",
                         },
                         {
-                            subtitle: "Stutter Count",
-                            rawData: fluencyStutterCountData,
-                            yAxisLabel: "Stutter Count",
-                        },
-                        {
-                            subtitle: "Revision Ratio",
+                            subtitle: "Repetition Ratio",
                             rawData: fluencyRevisionRatioData,
-                            yAxisLabel: "Revision Ratio",
+                            yAxisLabel: "Repetition Ratio",
                         },
                         ];
                         return (
@@ -1307,16 +1397,6 @@ for (const { dateKey } of reports) {
                     })()}
                     {(() => {
                         const semanticConfigs = [
-                        {
-                            subtitle: "Semantic Idea Density",
-                            rawData: semanticIdeaDensityData,
-                            yAxisLabel: "Density",
-                        },
-                        {
-                            subtitle: "Semantic Efficiency",
-                            rawData: semanticEfficiencyData,
-                            yAxisLabel: "Efficiency",
-                        },
                         {
                             subtitle: "Lexical Frequency of Nouns",
                             rawData: semanticLexFreqData,

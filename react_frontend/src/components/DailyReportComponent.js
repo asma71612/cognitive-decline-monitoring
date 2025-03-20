@@ -12,7 +12,20 @@ const gameNames = {
   sceneDetective: "Scene Detective",
 };
 
-const formatMetricName = (name) => name.replace(/([a-z])([A-Z])/g, "$1 $2");
+const formatMetricName = (name) => {
+  const naturesGazeMetricNames = {
+    prosaccadeGapReactionTime: "Pro-Saccade Gap Reaction Time",
+    antisaccadeGapReactionTime: "Anti-Saccade Gap Reaction Time",
+    prosaccadeOverlapReactionTime: "Pro-Saccade Overlap Reaction Time",
+    antisaccadeOverlapReactionTime: "Anti-Saccade Overlap Reaction Time"
+  };
+
+  if (naturesGazeMetricNames[name]) {
+    return naturesGazeMetricNames[name];
+  }
+
+  return name.replace(/([a-z])([A-Z])/g, "$1 $2");
+};
 
 const formatSelectedDate = (dateStr) => {
   const [month, day, year] = dateStr.split("-");
@@ -43,7 +56,20 @@ const calculateAge = (dob) => {
 };
 
 const formatFieldValue = (metric, value) => {
+  const naturesGazeMetrics = [
+    'prosaccadeGapReactionTime',
+    'antisaccadeGapReactionTime',
+    'prosaccadeOverlapReactionTime',
+    'antisaccadeOverlapReactionTime'
+  ];
+
   if (typeof value === "number") {
+    // Round Nature's Gaze metrics to 2 decimal places
+    if (naturesGazeMetrics.includes(metric)) {
+      const roundedValue = parseFloat(value.toFixed(2));
+      return `${roundedValue} ms`;
+    }
+
     const lowerMetric = metric.toLowerCase();
     if (lowerMetric.includes("percent")) {
       return `${value}%`;

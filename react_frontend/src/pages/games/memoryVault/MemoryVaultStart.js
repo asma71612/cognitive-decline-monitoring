@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from 'react-router-dom';
 import { db } from "../../../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import titleImage from "../../../assets/title.svg";
 import {
   alarm, block, boat, brush, cloud, door, egg, frame, globe, grass, hammock,
@@ -47,7 +47,24 @@ const MemoryVaultStart = () => {
     setWord(sessionData.word);
     setPicture(sessionData.pictureRef);
     setAudio(sessionData.audio);
-  }, [playCount]);
+
+    // Store the current session index in the user document for recall
+    const storeSessionIndex = async () => {
+      if (userId) {
+        try {
+          const userRef = doc(db, "users", userId);
+          await updateDoc(userRef, {
+            memory_vault_session: sessionIndex
+          });
+          console.log(`Stored memory vault session index: ${sessionIndex}`);
+        } catch (error) {
+          console.error("Error storing memory vault session index:", error);
+        }
+      }
+    };
+
+    storeSessionIndex();
+  }, [playCount, userId]);
 
   const getAudioSrc = (audio) => {
     const audioMap = {
@@ -89,7 +106,7 @@ const MemoryVaultStart = () => {
         </div>
 
         <div className="start-button-container">
-          <Link to={`/process-quest-instructions/${userId}`}>
+          <Link to={`/natures-gaze-instructions/${userId}`}>
             <button className="start-button">Next</button>
           </Link>
         </div>
