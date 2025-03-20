@@ -3,13 +3,13 @@
     "task_type": "antisaccade",
     "game_type": "gap",
     "target_position": [
-        51,
+        1468,
         433
     ],
     "metrics": {
-        "reaction_time": 0.029949665069580078,
-        "saccade_duration": 0.03401652060511755,
+        "reaction_time": 0.028867483139038086,
+        "saccade_duration": 0.09179931822167617,
         "saccade_error": 0,
-        "fixation_duration": 0.21981799569113772
+        "fixation_duration": 0.48901228558755694
     }
 }
