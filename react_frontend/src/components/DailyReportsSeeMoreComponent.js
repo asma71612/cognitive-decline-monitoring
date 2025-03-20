@@ -478,7 +478,7 @@ const DailyReportsSeeMoreComponent = ({
     );
   };
 
-  const renderFluencyMetrics = (fields) => {
+  const renderFluencyMetrics = (fields, game) => {
     const sortedFields = fluencyMetricsOrder.reduce((obj, key) => {
       if (fields[key] !== undefined) {
         obj[key] = fields[key];
@@ -493,7 +493,8 @@ const DailyReportsSeeMoreComponent = ({
             <strong>{formatMetricName(key)}:</strong> {value}
           </p>
         ))}
-        {fields.stutters && renderStutters(fields.stutters)}
+        {/* Only show stutters table for Scene Detective, not for Process Quest */}
+        {game !== "processQuest" && fields.stutters && renderStutters(fields.stutters)}
       </div>
     );
   };
@@ -681,7 +682,7 @@ const DailyReportsSeeMoreComponent = ({
                       ) : metric === "semanticFeatures" ? (
                         renderSemanticFeatures(sceneData[metric])
                       ) : metric === "fluencyMetrics" ? (
-                        renderFluencyMetrics(sceneData[metric])
+                        renderFluencyMetrics(sceneData[metric], "sceneDetective")
                       ) : metric === "structuralFeatures" ? (
                         renderStructuralFeatures(sceneData[metric])
                       ) : metric === "temporalCharacteristics" ? (
@@ -727,9 +728,9 @@ const DailyReportsSeeMoreComponent = ({
           ) : (
             <div className="game-grid">
               {[
-                "fluencyMetrics",
                 "lexicalFeatures",
                 "temporalCharacteristics",
+                "fluencyMetrics",
                 "semanticFeatures",
                 "structuralFeatures",
               ].map((metric) => {
@@ -760,7 +761,7 @@ const DailyReportsSeeMoreComponent = ({
                       ) : metric === "semanticFeatures" ? (
                         renderSemanticFeatures(processQuestData[metric])
                       ) : metric === "fluencyMetrics" ? (
-                        renderFluencyMetrics(processQuestData[metric])
+                        renderFluencyMetrics(processQuestData[metric], "processQuest")
                       ) : metric === "structuralFeatures" ? (
                         renderStructuralFeatures(processQuestData[metric])
                       ) : metric === "temporalCharacteristics" ? (
