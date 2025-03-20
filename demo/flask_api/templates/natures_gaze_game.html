@@ -200,14 +200,14 @@
         
         .camera-feed {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 240px;
-            height: 180px;
-            border: 3px solid #516a80;
-            border-radius: 10px;
+            opacity: 0;
+            pointer-events: none;
+            top: 0;
+            right: 0;
+            width: 1px;
+            height: 1px;
             overflow: hidden;
-            z-index: 200;
+            z-index: -1;
         }
         
         .camera-feed video {
@@ -459,7 +459,7 @@
             <h2>Loading</h2>
             <p>Please wait while we process your game data...</p>
             <div class="spinner"></div>
-            <p id="gameStatus" class="status-progress">Starting game...</p>
+            <!-- <p id="gameStatus" class="status-progress">Starting game...</p> -->
             <p id="loadingResults" style="display: none;">Please wait...</p>
             <div id="debugTools" style="display: none; margin-top: 15px;">
                 <button id="debugButton" class="debug-button">Debug Issues</button>
