@@ -127,16 +127,6 @@ const PatientHomePage = () => {
         <Link to={`/instructions/${userId}`} className="complete-task-button">
           Instructions
         </Link>
-        
-        {/* Calibrate button */}
-        <Link to={`/gaze-calibration-instructions/${userId}`} className="complete-task-button">
-          Calibrate
-        </Link>
-        
-        {/* Nature's Gaze Game button */}
-        <Link to={`/natures-gaze-instructions/${userId}`} className="complete-task-button">
-          Nature's Gaze Game
-        </Link>
       </div>
     );
   };

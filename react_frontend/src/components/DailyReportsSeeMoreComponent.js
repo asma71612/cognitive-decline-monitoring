@@ -493,8 +493,8 @@ const DailyReportsSeeMoreComponent = ({
             <strong>{formatMetricName(key)}:</strong> {value}
           </p>
         ))}
-        {/* Only show stutters table for Scene Detective, not for Process Quest */}
-        {game !== "processQuest" && fields.stutters && renderStutters(fields.stutters)}
+        {/* Only show stutters table for games other than Process Quest and Scene Detective */}
+        {game !== "processQuest" && game !== "sceneDetective" && fields.stutters && renderStutters(fields.stutters)}
       </div>
     );
   };
@@ -593,7 +593,7 @@ const DailyReportsSeeMoreComponent = ({
     <div className="daily-reports-see-more-container">
       {onBack && (
         <div className="back-button-container">
-          <Link className="back-button" onClick={onBack}>
+          <Link className="back-button-see-more" onClick={onBack}>
             Back
           </Link>
         </div>
@@ -649,11 +649,11 @@ const DailyReportsSeeMoreComponent = ({
           ) : (
             <div className="game-grid">
               {[
-                "fluencyMetrics",
                 "lexicalFeatures",
                 "temporalCharacteristics",
-                "semanticFeatures",
+                "fluencyMetrics",
                 "structuralFeatures",
+                "semanticFeatures",
               ].map((metric) => {
                 let descriptionKey =
                   metricTitles[metric] || formatMetricName(metric);
