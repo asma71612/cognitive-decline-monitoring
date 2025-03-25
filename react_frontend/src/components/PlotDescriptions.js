@@ -84,14 +84,9 @@ const PlotDescriptions = {
       24.8 ms ± 4.4
     </div>
   ),
-  "Fixation Accuracy": (
+  "Fixation Duration": (
     <div style={{ textAlign: "center" }}>
-      The fixation landing accuracy provides information on how precisely the
-      eyes landed on the intended target after a saccade. It measures the
-      degrees of deviation between the actual gaze position and target location
-      when the eyes come to rest. The confidence interval quantifies hte
-      uncertainty in the measurement to help asses the reliability of the
-      fixation accuracy estimate.
+      The fixation duration is the time spent looking at a target.
     </div>
   ),
   "Saccade Direction Error": (
@@ -175,7 +170,7 @@ const PlotDescriptions = {
   "Fluency Metrics: sceneDetective": (
     <div style={{ textAlign: "center" }}>
       With MCI, speech fluency can decline faster as speech progresses, leading
-      to changes in words per minute, revision ratio and, stutter count. This
+      to changes in words per minute, repetition ratio and, stutter count. This
       can be linked difficulty retrieving lexical content, a decline in working
       memory, or executive function impairment. The expected values are:
       <br />
@@ -187,17 +182,17 @@ const PlotDescriptions = {
       MCI: 138.60 ± 25.8
       <br />
       <br />
-      <strong>Revision Ratio</strong>
+      <strong>Repetition Ratio</strong>
       <br />
-      Healthy: 0.95 ± 1.16
+      Healthy: 0.56 ± 0.96
       <br />
-      MCI: 0.64 ± 1.04
+      MCI: 0.72 ± 1.37
     </div>
   ),
   "Fluency Metrics: processQuest": (
     <div style={{ textAlign: "center" }}>
       With MCI, speech fluency can decline faster as speech progresses, leading
-      to changes in words per minute, revision ratio and, stutter count. This
+      to changes in words per minute, repetition ratio and, stutter count. This
       can be linked difficulty retrieving lexical content, a decline in working
       memory, or executive function impairment. The expected values are:
       <br />
@@ -209,11 +204,11 @@ const PlotDescriptions = {
       MCI: 138.60 ± 25.8
       <br />
       <br />
-      <strong>Revision Ratio</strong>
+      <strong>Repetition Ratio</strong>
       <br />
-      Healthy: 1.73 ± 12.33
+      Healthy: 0.64 ± 1.01
       <br />
-      MCI: 0.55 ± 0.89
+      MCI: 0.61 ± 1.32
     </div>
   ),
   "Lexical Content: sceneDetective": (
@@ -255,7 +250,7 @@ const PlotDescriptions = {
   "Semantic Features": (
     <div style={{ textAlign: "center" }}>
       These features provide information on semantic retrieval and processing.
-      The average lexical frequency of the nouns used is calculated using the
+      The median lexical frequency of the nouns used is calculated using the
       SUBTLEX-US database, indicating how common or rare the nouns are in
       everyday language, which can help assess lexical retrieval difficulties in
       MCI. The semantic idea density is the ratio of the number of semantic
@@ -275,6 +270,21 @@ const PlotDescriptions = {
       Healthy: 0.14 ± 0.06
       <br />
       MCI: 0.15 ± 0.06
+    </div>
+  ),
+  "Lexical Frequency of Nouns": (
+    <div style={{ textAlign: "center" }}>
+      The median lexical frequency of the nouns used is calculated using the
+      SUBTLEX-US database, indicating how common or rare the nouns are in
+      everyday language, which can help assess lexical retrieval difficulties in
+      MCI. The expected value is:
+      <br />
+      <br />
+      <strong>Lexical Frequency of Nouns</strong>
+      <br />
+      Healthy: 34.84 ± 25.51
+      <br />
+      MCI: 52.15 ± 62.53
     </div>
   ),
 };

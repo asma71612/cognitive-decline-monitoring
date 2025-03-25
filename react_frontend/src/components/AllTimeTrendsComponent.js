@@ -150,20 +150,34 @@ const AllTimeTrendsComponent = ({ userId }) => {
         };
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
-          const reactionDocRef = doc(
+          const metricsDocRef = doc(
             db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/reactionTime`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
           );
-          const reactionDoc = await getDoc(reactionDocRef);
-          if (reactionDoc.exists()) {
-            const data = reactionDoc.data();
-            Object.entries(data).forEach(([series, value]) => {
-              if (value != null && dataPoints.hasOwnProperty(series)) {
-                if (!dataPoints[series][monthYear])
-                  dataPoints[series][monthYear] = [];
-                dataPoints[series][monthYear].push(value);
-              }
-            });
+          const metricsDoc = await getDoc(metricsDocRef);
+          if (metricsDoc.exists()) {
+            const data = metricsDoc.data();
+            
+            // Map the backend field names to the display names
+            if (data.antisaccadeGap && data.antisaccadeGap.averageReactionTime !== undefined) {
+                if (!dataPoints.antiGap[monthYear]) dataPoints.antiGap[monthYear] = [];
+                dataPoints.antiGap[monthYear].push(data.antisaccadeGap.averageReactionTime);
+            }
+            
+            if (data.prosaccadeGap && data.prosaccadeGap.averageReactionTime !== undefined) {
+                if (!dataPoints.proGap[monthYear]) dataPoints.proGap[monthYear] = [];
+                dataPoints.proGap[monthYear].push(data.prosaccadeGap.averageReactionTime);
+            }
+            
+            if (data.prosaccadeOverlap && data.prosaccadeOverlap.averageReactionTime !== undefined) {
+                if (!dataPoints.proOverlap[monthYear]) dataPoints.proOverlap[monthYear] = [];
+                dataPoints.proOverlap[monthYear].push(data.prosaccadeOverlap.averageReactionTime);
+            }
+            
+            if (data.antisaccadeOverlap && data.antisaccadeOverlap.averageReactionTime !== undefined) {
+                if (!dataPoints.antiOverlap[monthYear]) dataPoints.antiOverlap[monthYear] = [];
+                dataPoints.antiOverlap[monthYear].push(data.antisaccadeOverlap.averageReactionTime);
+            }
           }
         }
         setNaturesGazeReactionTimeData(dataPoints);
@@ -186,20 +200,34 @@ const AllTimeTrendsComponent = ({ userId }) => {
         };
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
-          const saccadeDocRef = doc(
+          const metricsDocRef = doc(
             db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeOmissionPercentages`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
           );
-          const saccadeDoc = await getDoc(saccadeDocRef);
-          if (saccadeDoc.exists()) {
-            const data = saccadeDoc.data();
-            Object.entries(data).forEach(([series, value]) => {
-              if (value != null && dataPoints.hasOwnProperty(series)) {
-                if (!dataPoints[series][monthYear])
-                  dataPoints[series][monthYear] = [];
-                dataPoints[series][monthYear].push(value);
-              }
-            });
+          const metricsDoc = await getDoc(metricsDocRef);
+          if (metricsDoc.exists()) {
+            const data = metricsDoc.data();
+            
+            // Map the backend field names to the display names
+            if (data.antisaccadeGap && data.antisaccadeGap.saccadeOmissionPercentage !== undefined) {
+                if (!dataPoints.antiGap[monthYear]) dataPoints.antiGap[monthYear] = [];
+                dataPoints.antiGap[monthYear].push(data.antisaccadeGap.saccadeOmissionPercentage);
+            }
+            
+            if (data.prosaccadeGap && data.prosaccadeGap.saccadeOmissionPercentage !== undefined) {
+                if (!dataPoints.proGap[monthYear]) dataPoints.proGap[monthYear] = [];
+                dataPoints.proGap[monthYear].push(data.prosaccadeGap.saccadeOmissionPercentage);
+            }
+            
+            if (data.prosaccadeOverlap && data.prosaccadeOverlap.saccadeOmissionPercentage !== undefined) {
+                if (!dataPoints.proOverlap[monthYear]) dataPoints.proOverlap[monthYear] = [];
+                dataPoints.proOverlap[monthYear].push(data.prosaccadeOverlap.saccadeOmissionPercentage);
+            }
+            
+            if (data.antisaccadeOverlap && data.antisaccadeOverlap.saccadeOmissionPercentage !== undefined) {
+                if (!dataPoints.antiOverlap[monthYear]) dataPoints.antiOverlap[monthYear] = [];
+                dataPoints.antiOverlap[monthYear].push(data.antisaccadeOverlap.saccadeOmissionPercentage);
+            }
           }
         }
         setNaturesGazeSopData(dataPoints);
@@ -222,25 +250,35 @@ const AllTimeTrendsComponent = ({ userId }) => {
         };
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
-          const sdDocRef = doc(
+          const metricsDocRef = doc(
             db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDuration`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
           );
-          const durationsCollection = collection(sdDocRef, "durations");
-          const durationsSnapshots = await getDocs(durationsCollection);
-          durationsSnapshots.docs.forEach((docSnap) => {
-            const data = docSnap.data();
-            const seriesKey = docSnap.id;
-            if (
-              data.Duration != null &&
-              durationPoints[seriesKey] !== undefined
-            ) {
-              if (!durationPoints[seriesKey][monthYear]) {
-                durationPoints[seriesKey][monthYear] = [];
-              }
-              durationPoints[seriesKey][monthYear].push(data.Duration);
+          const metricsDoc = await getDoc(metricsDocRef);
+          if (metricsDoc.exists()) {
+            const data = metricsDoc.data();
+            
+            // Map the backend field names to the display names
+            if (data.antisaccadeGap && data.antisaccadeGap.averageSaccadeDuration !== undefined) {
+                if (!durationPoints.antiGap[monthYear]) durationPoints.antiGap[monthYear] = [];
+                durationPoints.antiGap[monthYear].push(data.antisaccadeGap.averageSaccadeDuration);
             }
-          });
+            
+            if (data.prosaccadeGap && data.prosaccadeGap.averageSaccadeDuration !== undefined) {
+                if (!durationPoints.proGap[monthYear]) durationPoints.proGap[monthYear] = [];
+                durationPoints.proGap[monthYear].push(data.prosaccadeGap.averageSaccadeDuration);
+            }
+            
+            if (data.prosaccadeOverlap && data.prosaccadeOverlap.averageSaccadeDuration !== undefined) {
+                if (!durationPoints.proOverlap[monthYear]) durationPoints.proOverlap[monthYear] = [];
+                durationPoints.proOverlap[monthYear].push(data.prosaccadeOverlap.averageSaccadeDuration);
+            }
+            
+            if (data.antisaccadeOverlap && data.antisaccadeOverlap.averageSaccadeDuration !== undefined) {
+                if (!durationPoints.antiOverlap[monthYear]) durationPoints.antiOverlap[monthYear] = [];
+                durationPoints.antiOverlap[monthYear].push(data.antisaccadeOverlap.averageSaccadeDuration);
+            }
+          }
         }
         setSaccadeDurationData(durationPoints);
       } catch (error) {
@@ -260,28 +298,52 @@ const AllTimeTrendsComponent = ({ userId }) => {
         };
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
-          const fixAccDocRef = doc(
+          const metricsDocRef = doc(
             db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/fixationAccuracy`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
           );
-          const accuracyCollection = collection(
-            fixAccDocRef,
-            "landingAccuracy"
-          );
-          const accuracySnapshots = await getDocs(accuracyCollection);
-          accuracySnapshots.docs.forEach((docSnap) => {
-            const data = docSnap.data();
-            const seriesKey = docSnap.id; // expected: "gap" or "overlap"
-            if (
-              data.LandingAccuracy != null &&
-              accuracyPoints[seriesKey] !== undefined
-            ) {
-              if (!accuracyPoints[seriesKey][monthYear]) {
-                accuracyPoints[seriesKey][monthYear] = [];
-              }
-              accuracyPoints[seriesKey][monthYear].push(data.LandingAccuracy);
+          const metricsDoc = await getDoc(metricsDocRef);
+          if (metricsDoc.exists()) {
+            const data = metricsDoc.data();
+            
+            // For gap accuracy, we take the average of pro and anti saccade gap fixation durations
+            const proGapFixation = data.prosaccadeGap?.averageFixationDuration;
+            const antiGapFixation = data.antisaccadeGap?.averageFixationDuration;
+            
+            if (proGapFixation !== undefined || antiGapFixation !== undefined) {
+                if (!accuracyPoints.gap[monthYear]) accuracyPoints.gap[monthYear] = [];
+                
+                if (proGapFixation !== undefined && antiGapFixation !== undefined) {
+                    // If both values exist, use their average
+                    accuracyPoints.gap[monthYear].push((proGapFixation + antiGapFixation) / 2);
+                } else if (proGapFixation !== undefined) {
+                    // If only proGap exists
+                    accuracyPoints.gap[monthYear].push(proGapFixation);
+                } else if (antiGapFixation !== undefined) {
+                    // If only antiGap exists
+                    accuracyPoints.gap[monthYear].push(antiGapFixation);
+                }
             }
-          });
+            
+            // For overlap accuracy, we take the average of pro and anti saccade overlap fixation durations
+            const proOverlapFixation = data.prosaccadeOverlap?.averageFixationDuration;
+            const antiOverlapFixation = data.antisaccadeOverlap?.averageFixationDuration;
+            
+            if (proOverlapFixation !== undefined || antiOverlapFixation !== undefined) {
+                if (!accuracyPoints.overlap[monthYear]) accuracyPoints.overlap[monthYear] = [];
+                
+                if (proOverlapFixation !== undefined && antiOverlapFixation !== undefined) {
+                    // If both values exist, use their average
+                    accuracyPoints.overlap[monthYear].push((proOverlapFixation + antiOverlapFixation) / 2);
+                } else if (proOverlapFixation !== undefined) {
+                    // If only proOverlap exists
+                    accuracyPoints.overlap[monthYear].push(proOverlapFixation);
+                } else if (antiOverlapFixation !== undefined) {
+                    // If only antiOverlap exists
+                    accuracyPoints.overlap[monthYear].push(antiOverlapFixation);
+                }
+            }
+          }
         }
         setFixationAccuracyData(accuracyPoints);
       } catch (error) {
@@ -303,25 +365,35 @@ const AllTimeTrendsComponent = ({ userId }) => {
         };
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
-          const errorDocRef = doc(
+          const metricsDocRef = doc(
             db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/saccadeDirectionError`
+            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/naturesGaze/metrics`
           );
-          const errorsCollection = collection(errorDocRef, "errors");
-          const errorsSnapshot = await getDocs(errorsCollection);
-          errorsSnapshot.docs.forEach((docSnap) => {
-            const data = docSnap.data();
-            const seriesKey = docSnap.id; // expected: antiGap, proGap, antiOverlap, proOverlap
-            if (
-              data.PercentError != null &&
-              errorPoints[seriesKey] !== undefined
-            ) {
-              if (!errorPoints[seriesKey][monthYear]) {
-                errorPoints[seriesKey][monthYear] = [];
-              }
-              errorPoints[seriesKey][monthYear].push(data.PercentError);
+          const metricsDoc = await getDoc(metricsDocRef);
+          if (metricsDoc.exists()) {
+            const data = metricsDoc.data();
+            
+            // Map the backend field names to the display names
+            if (data.antisaccadeGap && data.antisaccadeGap.saccadeErrorPercentage !== undefined) {
+                if (!errorPoints.antiGap[monthYear]) errorPoints.antiGap[monthYear] = [];
+                errorPoints.antiGap[monthYear].push(data.antisaccadeGap.saccadeErrorPercentage);
             }
-          });
+            
+            if (data.prosaccadeGap && data.prosaccadeGap.saccadeErrorPercentage !== undefined) {
+                if (!errorPoints.proGap[monthYear]) errorPoints.proGap[monthYear] = [];
+                errorPoints.proGap[monthYear].push(data.prosaccadeGap.saccadeErrorPercentage);
+            }
+            
+            if (data.prosaccadeOverlap && data.prosaccadeOverlap.saccadeErrorPercentage !== undefined) {
+                if (!errorPoints.proOverlap[monthYear]) errorPoints.proOverlap[monthYear] = [];
+                errorPoints.proOverlap[monthYear].push(data.prosaccadeOverlap.saccadeErrorPercentage);
+            }
+            
+            if (data.antisaccadeOverlap && data.antisaccadeOverlap.saccadeErrorPercentage !== undefined) {
+                if (!errorPoints.antiOverlap[monthYear]) errorPoints.antiOverlap[monthYear] = [];
+                errorPoints.antiOverlap[monthYear].push(data.antisaccadeOverlap.saccadeErrorPercentage);
+            }
+          }
         }
         setSaccadeDirectionErrorData(errorPoints);
       } catch (error) {
@@ -468,18 +540,45 @@ const AllTimeTrendsComponent = ({ userId }) => {
           pausesSnapshots.docs.forEach((pauseDoc) => {
             const data = pauseDoc.data();
             if (data.StartTime && data.EndTime) {
-              // Convert StartTime & EndTime ("MM:SS") to seconds
-              const [startMin, startSec] = data.StartTime.split(":").map((x) =>
-                parseInt(x, 10)
-              );
-              const [endMin, endSec] = data.EndTime.split(":").map((x) =>
-                parseInt(x, 10)
-              );
-              const startTotal = startMin * 60 + startSec;
-              const endTotal = endMin * 60 + endSec;
-              const duration = endTotal - startTotal;
-              if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
-              dataPoints[monthYear].push(duration);
+              try {
+                // Check if times are already in numeric format
+                if (typeof data.StartTime === 'number' && typeof data.EndTime === 'number') {
+                  const duration = data.EndTime - data.StartTime;
+                  if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
+                  dataPoints[monthYear].push(duration);
+                } 
+                // Handle string formats like "MM:SS" or "SS.ms"
+                else if (typeof data.StartTime === 'string' && typeof data.EndTime === 'string') {
+                  let startTotal, endTotal;
+                  
+                  // Handle "MM:SS" format
+                  if (data.StartTime.includes(":")) {
+                    const [startMin, startSec] = data.StartTime.split(":").map(x => parseFloat(x));
+                    const [endMin, endSec] = data.EndTime.split(":").map(x => parseFloat(x));
+                    startTotal = startMin * 60 + startSec;
+                    endTotal = endMin * 60 + endSec;
+                  } 
+                  // Handle seconds or seconds.milliseconds format
+                  else {
+                    startTotal = parseFloat(data.StartTime);
+                    endTotal = parseFloat(data.EndTime);
+                  }
+                  
+                  if (!isNaN(startTotal) && !isNaN(endTotal)) {
+                    const duration = endTotal - startTotal;
+                    if (duration > 0) { // Only include positive durations
+                      if (!dataPoints[monthYear]) dataPoints[monthYear] = [];
+                      dataPoints[monthYear].push(duration);
+                    } else {
+                      console.warn("Invalid pause duration (negative or zero):", duration, "Start:", data.StartTime, "End:", data.EndTime);
+                    }
+                  } else {
+                    console.warn("Invalid time format for pause:", data.StartTime, data.EndTime);
+                  }
+                }
+              } catch (err) {
+                console.error("Error calculating pause duration:", err, data);
+              }
             }
           });
         }
@@ -559,7 +658,9 @@ const AllTimeTrendsComponent = ({ userId }) => {
           const structuralDoc = await getDoc(structuralDocRef);
           if (structuralDoc.exists()) {
             const data = structuralDoc.data();
-            const meanValue = Number(data.MeanLengthOfOccurrence);
+            // Check for either property name since it might be stored differently
+            const meanValue = Number(data.MeanLengthOfUtterance || data.MeanLengthOfOccurrence || 
+                               data["Mean Length of Utterance (MLU) (Average number of words per sentence)"]);
             const sentenceCount = Number(data.NumOfSentences);
             if (!meanDataPoints[monthYear]) meanDataPoints[monthYear] = [];
             if (!sentenceDataPoints[monthYear])
@@ -583,7 +684,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
     if (!effectiveUserId || !isTemporalGame) return;
     (async () => {
       try {
-        const revisionData = {};
+        const repetitionData = {};
         const wordsData = {};
         const stutterData = {};
         const reports = await getReports(effectiveUserId);
@@ -595,11 +696,12 @@ const AllTimeTrendsComponent = ({ userId }) => {
           const fluencyDoc = await getDoc(fluencyDocRef);
           if (fluencyDoc.exists()) {
             const data = fluencyDoc.data();
-            const revision = Number(data.RevisionRatio);
+            // Look for either RevisionRatio or RepetitionRatio since the data might be stored with either name
+            const repetition = Number(data.RepetitionRatio || data.RevisionRatio);
             const wordsPerMin = Number(data.WordsPerMin);
-            if (!revisionData[monthYear]) revisionData[monthYear] = [];
+            if (!repetitionData[monthYear]) repetitionData[monthYear] = [];
             if (!wordsData[monthYear]) wordsData[monthYear] = [];
-            revisionData[monthYear].push(revision);
+            repetitionData[monthYear].push(repetition);
             wordsData[monthYear].push(wordsPerMin);
           }
           const stuttersCollection = collection(
@@ -611,10 +713,10 @@ const AllTimeTrendsComponent = ({ userId }) => {
           // Push count of stutter documents
           stutterData[monthYear].push(stuttersSnapshots.docs.length);
         }
-        console.log("Fluency Revision Ratio:", revisionData);
+        console.log("Fluency Repetition Ratio:", repetitionData);
         console.log("Fluency Words Per Min:", wordsData);
         console.log("Fluency Stutter Count:", stutterData);
-        setFluencyRevisionRatioData(revisionData);
+        setFluencyRevisionRatioData(repetitionData);
         setFluencyWordsPerMinData(wordsData);
         setFluencyStutterCountData(stutterData);
       } catch (error) {
@@ -853,7 +955,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
           {(() => {
             const structuralConfigs = [
               {
-                subtitle: "Mean Length of Occurrence",
+                subtitle: "Mean Length of Utterance",
                 rawData: structuralMeanData,
                 yAxisLabel: "Mean Length",
               },
@@ -909,14 +1011,9 @@ const AllTimeTrendsComponent = ({ userId }) => {
                 yAxisLabel: "Words per Minute",
               },
               {
-                subtitle: "Stutter Count",
-                rawData: fluencyStutterCountData,
-                yAxisLabel: "Stutter Count",
-              },
-              {
-                subtitle: "Revision Ratio",
+                subtitle: "Repetition Ratio",
                 rawData: fluencyRevisionRatioData,
-                yAxisLabel: "Revision Ratio",
+                yAxisLabel: "Repetition Ratio",
               },
             ];
             return (
@@ -1026,16 +1123,6 @@ const AllTimeTrendsComponent = ({ userId }) => {
           {(() => {
             const semanticConfigs = [
               {
-                subtitle: "Semantic Idea Density",
-                rawData: semanticIdeaDensityData,
-                yAxisLabel: "Density",
-              },
-              {
-                subtitle: "Semantic Efficiency",
-                rawData: semanticEfficiencyData,
-                yAxisLabel: "Efficiency",
-              },
-              {
                 subtitle: "Lexical Frequency of Nouns",
                 rawData: semanticLexFreqData,
                 yAxisLabel: "Frequency",
@@ -1053,27 +1140,31 @@ const AllTimeTrendsComponent = ({ userId }) => {
                     yAxisLabel={semanticConfigs[semanticIndex].yAxisLabel}
                     infoDescription={PlotDescriptions["Semantic Features"]}
                   />
-                  <button
-                    className="carousel-next-button"
-                    onClick={() =>
-                      setSemanticIndex(
-                        (prev) => (prev + 1) % semanticConfigs.length
-                      )
-                    }
-                  >
-                    <img src={carouselNextImg} alt="Next" />
-                  </button>
-                </div>
-                <div className="carousel-indicators">
-                  {semanticConfigs.map((_, idx) => (
-                    <span
-                      key={idx}
-                      className={
-                        idx === semanticIndex ? "indicator active" : "indicator"
+                  {semanticConfigs.length > 1 && (
+                    <button
+                      className="carousel-next-button"
+                      onClick={() =>
+                        setSemanticIndex(
+                          (prev) => (prev + 1) % semanticConfigs.length
+                        )
                       }
-                    />
-                  ))}
+                    >
+                      <img src={carouselNextImg} alt="Next" />
+                    </button>
+                  )}
                 </div>
+                {semanticConfigs.length > 1 && (
+                  <div className="carousel-indicators">
+                    {semanticConfigs.map((_, idx) => (
+                      <span
+                        key={idx}
+                        className={
+                          idx === semanticIndex ? "indicator active" : "indicator"
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })()}

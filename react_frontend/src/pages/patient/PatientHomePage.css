@@ -89,8 +89,12 @@
 .home-content {
   margin-top: 100px;
   margin-left: 80px;
-  max-width: 600px;
   text-align: left;
+  max-width: 1000px;
+}
+
+.home-content-text {
+  width: 100% !important;
 }
 
 .home-content h1 {
@@ -117,6 +121,23 @@
   font-weight: bold;
 }
 
+.all-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+.navigation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
 .complete-task-button {
   padding: 15px 30px;
   font-size: 18px;
@@ -126,12 +147,29 @@
   transition: background-color 0.3s;
   border-radius: 25px;
   text-decoration: none;
-  margin-bottom: 30px;
-  margin-right: 20px;
+  white-space: nowrap; /* Prevents text from wrapping inside the button */
+  display: inline-block; /* Ensures buttons stay on same line if possible */
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
 
 .complete-task-button:hover {
   background-color: #8496aa;
+}
+
+.disabled-task-button {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #d3d3d3;
+  color: white;
+  border-radius: 25px;
+  text-decoration: none;
+  cursor: not-allowed;
+  white-space: nowrap; /* Prevents text from wrapping inside the button */
+  border: none; /* Removes default button border */
+  display: inline-block; /* Ensures buttons stay on same line if possible */
+  margin-bottom: 0; /* Removed bottom margin to align with other buttons */
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
 
 .task-progress {
@@ -175,18 +213,20 @@
   border-radius: 5px 0 0 5px;
 }
 
-.disabled-task-button:disabled {
-  background-color: #d3d3d3;
-  cursor: not-allowed;
-  margin-right: 20px;
-}
-
 .countdown {
   font-size: 24px;
 }
 
 .date-announcement {
   font-size: 22px !important;
+}
+
+@media (max-width: 1200px) {
+  /* Adjust styles for medium-sized screens */
+  .all-buttons {
+    flex-wrap: wrap; /* Allow wrapping on medium screens */
+    gap: 20px; /* Slightly reduce gap on medium screens */
+  }
 }
 
 @media (max-width: 800px) {
@@ -234,5 +274,25 @@
 
   .home-content {
     margin-left: 20px;
+    max-width: 90%; /* Use percentage for better responsiveness */
+  }
+  
+  /* Adjust all buttons for small screens */
+  .all-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 15px; /* Reduce gap for vertical layout */
+  }
+  
+  /* Adjust navigation buttons for small screens */
+  .navigation-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .complete-task-button,
+  .disabled-task-button {
+    width: 100%;
+    margin-right: 0;
   }
 }

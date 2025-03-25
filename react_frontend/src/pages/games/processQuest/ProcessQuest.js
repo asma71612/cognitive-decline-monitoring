@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../../firebaseConfig";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, updateDoc, arrayUnion } from "firebase/firestore";
 import titleImage from "../../../assets/title.svg";
 import SESSION_PROMPTS from "./imports/sessionPrompts";
 import "./ProcessQuest.css";
+
+// Define constants for consistent port usage
+const FLASK_PORT = 5000;
+const EXPRESS_PORT = 5005;
 
 const ProcessQuest = () => {
   const { userId } = useParams();
@@ -51,7 +55,7 @@ const ProcessQuest = () => {
 
   const checkTranscriptionStatus = useCallback(async (jobName) => {
     try {
-      const response = await fetch(`http://localhost:5001/transcription/${jobName}`);
+      const response = await fetch(`http://localhost:${EXPRESS_PORT}/transcription/${jobName}`);
       const data = await response.json();
 
       const formattedDate = new Date().toLocaleDateString('en-US', {
@@ -78,18 +82,30 @@ const ProcessQuest = () => {
             await setDoc(dailyReportsSeeMoreRef, {});
           }
 
-          const dailyReportsProcessQuest = doc(db, `users/${userId}/dailyReports/${formattedDate}/games/processQuest`);
-          const fluencyMetricsProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/fluencyMetrics`);
-          const lexicalFeaturesProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/lexicalFeatures`);
-          const semanticFeaturesProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/semanticFeatures`);
-          const structuralFeaturesProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/structuralFeatures`);
-          const temporalCharacteristicsProcessQuest = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/temporalCharacteristics`);
+          // Create reference to games collection
+          const gamesCollectionRef = collection(db, `users/${userId}/dailyReports/${formattedDate}/games`);
 
+          // Path for dailyReports/processQuest
+          const dailyReportsProcessQuest = doc(gamesCollectionRef, 'processQuest');
+          
+          // Create processQuest collection in dailyReportsSeeMore
+          const processQuestCollectionRef = collection(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest`);
+          
+          // Paths for dailyReportsSeeMore/processQuest components
+          const fluencyMetricsProcessQuest = doc(processQuestCollectionRef, 'fluencyMetrics');
+          const lexicalFeaturesProcessQuest = doc(processQuestCollectionRef, 'lexicalFeatures');
+          const semanticFeaturesProcessQuest = doc(processQuestCollectionRef, 'semanticFeatures');
+          const structuralFeaturesProcessQuest = doc(processQuestCollectionRef, 'structuralFeatures');
+          const temporalCharacteristicsProcessQuest = doc(processQuestCollectionRef, 'temporalCharacteristics');
+
+          // Daily reports summary data
           const dailyReportsMetrics = {
-            AverageNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
+            MedianNounLexicalFrequency: analyzeTextResult["Frequency of Nouns"],
             OpenedClosedRatio: analyzeTextResult["Open/Closed Class Ratio"],
             RepetitionRatio: analyzeTextResult["Repetition Ratio"]
           };
+          
+          // Detailed metrics for the "see more" section
           const fluencyMetrics = {
             RepetitionRatio: analyzeTextResult["Repetition Ratio"],
             WordsPerMin: analyzeTextResult["Words per Minute"]
@@ -105,13 +121,14 @@ const ProcessQuest = () => {
             LexicalFrequencyOfNouns: analyzeTextResult['Average Noun Frequency']
           };
           const structuralFeatures = {
-            MeanLengthOfOccurrence: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
+            MeanLengthOfUtterance: analyzeTextResult["Mean Length of Utterance (MLU) (Average number of words per sentence)"],
             NumOfSentences: analyzeTextResult["Total Sentences"]
           };
           const temporalCharacteristics = {
             SpeakingTime: analyzeTextResult["Speech Duration"]
           };
 
+          // Save all metrics to Firebase
           await setDoc(dailyReportsProcessQuest, dailyReportsMetrics);
           await setDoc(fluencyMetricsProcessQuest, fluencyMetrics);
           await setDoc(lexicalFeaturesProcessQuest, lexicalFeatures);
@@ -119,15 +136,20 @@ const ProcessQuest = () => {
           await setDoc(structuralFeaturesProcessQuest, structuralFeatures);
           await setDoc(temporalCharacteristicsProcessQuest, temporalCharacteristics);
 
-          for (let i = 0; i < analyzePausesResult?.length; i++) {
-
-            const pause = analyzePausesResult[i];
-            const pauseRef = doc(db,`users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/temporalCharacteristics/Pauses/${i + 1}`);
+          // Create the pauses subcollection
+          if (analyzePausesResult && analyzePausesResult.length > 0) {
+            // Create temporalCharacteristics/Pauses collection
+            const pausesCollectionRef = collection(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}/processQuest/temporalCharacteristics/Pauses`);
             
-            await setDoc(pauseRef, {
-              StartTime: pause.StartTime,
-              EndTime: pause.EndTime
-            });
+            for (let i = 0; i < analyzePausesResult.length; i++) {
+              const pause = analyzePausesResult[i];
+              const pauseRef = doc(pausesCollectionRef, `${i + 1}`);
+              
+              await setDoc(pauseRef, {
+                StartTime: pause.StartTime,
+                EndTime: pause.EndTime
+              });
+            }
           }
 
           console.log("Reporting for Process Quest saved successfully to Firebase.");
@@ -189,17 +211,73 @@ const ProcessQuest = () => {
           formData.append("sessionNumber", playCount+1);
         
           try {
-            const response = await fetch("http://localhost:5001/transcribe", {
+            console.log("Attempting to upload audio to transcription server...");
+            const response = await fetch(`http://localhost:${EXPRESS_PORT}/transcribe`, {
               method: "POST",
               body: formData,
             });
+            
+            if (!response.ok) {
+              throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
+            
             const data = await response.json();
-        
+
             if (data.jobName) {
               checkTranscriptionStatus(data.jobName);
             }
           } catch (error) {
             console.error("Error uploading audio:", error);
+            
+            // Save minimal data to Firebase even if transcription fails
+            try {
+              console.log("Transcription failed, saving minimal game data to Firebase...");
+              const formattedDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+              }).replace(/\//g, '-');
+
+              // Create required document references
+              const dailyReportsRef = doc(db, `users/${userId}/dailyReports/${formattedDate}`);
+              const dailyReportsSeeMoreRef = doc(db, `users/${userId}/dailyReportsSeeMore/${formattedDate}`);
+              
+              // Ensure parent documents exist
+              const dailyReportsDoc = await getDoc(dailyReportsRef);
+              const dailyReportsSeeMoreDoc = await getDoc(dailyReportsSeeMoreRef);
+
+              if (!dailyReportsDoc.exists()) {
+                await setDoc(dailyReportsRef, {
+                  createdAt: new Date(),
+                  userId: userId
+                });
+              }
+              
+              if (!dailyReportsSeeMoreDoc.exists()) {
+                await setDoc(dailyReportsSeeMoreRef, {
+                  createdAt: new Date(),
+                  userId: userId
+                });
+              }
+              
+              // Games collection reference
+              const gamesCollectionRef = collection(db, `users/${userId}/dailyReports/${formattedDate}/games`);
+              
+              // Process Quest document in games collection
+              const processQuestRef = doc(gamesCollectionRef, 'processQuest');
+              
+              // Save minimal data (fallback)
+              await setDoc(processQuestRef, {
+                completedAt: new Date(),
+                sessionNumber: playCount + 1,
+                transcriptionFailed: true
+              });
+              
+              console.log("Minimal game data saved to Firebase");
+              
+            } catch (fbError) {
+              console.error("Error saving fallback data to Firebase:", fbError);
+            }
           }
         };
         
@@ -222,9 +300,61 @@ const ProcessQuest = () => {
 
   const handleDone = useCallback(() => {
     stopRecording();
-    navigate(`/scene-detective-instructions/${userId}`);
-  }, [navigate, userId]);
-
+    
+    // Update user data to mark completion
+    const updateUserCompletion = async () => {
+      if (userId) {
+        try {
+          const userRef = doc(db, "users", userId);
+          const userDoc = await getDoc(userRef);
+          
+          if (userDoc.exists()) {
+            const today = new Date();
+            today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+            const formattedToday = today.toISOString().split('T')[0];
+            
+            // Calculate streak
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            yesterday.setMinutes(yesterday.getMinutes() - yesterday.getTimezoneOffset());
+            const yesterdayStr = yesterday.toISOString().split("T")[0];
+            
+            const userData = userDoc.data();
+            const lastPlayed = userData.lastPlayed || null;
+            const firstPlayed = userData.firstPlayed || formattedToday;
+            const completedDays = userData.completedDays || [];
+            
+            let newStreak = 1;
+            if (lastPlayed === yesterdayStr) {
+              newStreak = userData.currentStreak + 1;
+            }
+            
+            // Update user document
+            await updateDoc(userRef, {
+              completedDays: arrayUnion(formattedToday),
+              numCompletedDays: completedDays.includes(formattedToday) 
+                ? completedDays.length 
+                : completedDays.length + 1,
+              playCount: (userData.playCount || 0) + 1,
+              lastPlayed: formattedToday,
+              firstPlayed: firstPlayed,
+              currentStreak: newStreak
+            });
+            
+            console.log("Updated user play status in Firebase");
+          }
+        } catch (error) {
+          console.error("Error updating user completion status:", error);
+        }
+      }
+    };
+    
+    // Update user data before navigating
+    updateUserCompletion().then(() => {
+      navigate(`/scene-detective-instructions/${userId}`);
+    });
+  }, [navigate, userId, playCount]);
+ 
   useEffect(() => {
     const fetchPlayCount = async () => {
       if (userId) {

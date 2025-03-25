@@ -43,3 +43,31 @@ react_frontend/src/firebaseConfig.js
 # Ignore python cache files
 __pycache__/
 *.pyc
+**/__pycache__/
+
+# Ignore eye tracking data and models
+*.pkl
+demo/flask_api/outputs/
+outputs/
+*/gaze_calibration_collection_train.csv
+*/gaze_calibration_collection_unseen.csv
+demo/gazeCalibration/gaze_calibration_collection_train.csv
+demo/gazeCalibration/gaze_calibration_collection_unseen.csv
+
+# Ignore all demo output directories and files
+demo/gazeCalibration/saccade_output/**/*
+demo/gazeCalibration/saccades_output/*
+demo/**/*.csv
+demo/**/*.json
+demo/**/*.mp4
+demo/**/recorded_video*.mp4
+demo/**/processed_trial_data*.json
+demo/**/saccade_trial_log.json
+
+# Virtual Environments
+*_env/
+ptgaze_env/
+new_ptgaze_env/
+
+# Log files
+*.log
