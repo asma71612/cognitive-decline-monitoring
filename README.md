@@ -6,7 +6,6 @@ This repository contains the code for the **Cognitive Decline Monitoring** appli
 
 ![image](https://github.com/user-attachments/assets/0be2c38b-4098-4f70-b8d7-8b6d960cbe33)
 
-
 *Please make sure you are working on a separate branch and not commiting to main - See 'Git Basics' below for instructions**
 
 ## Prerequisites
@@ -19,7 +18,7 @@ Before you start, ensure you have the following installed on your system:
 - **Python 3.9** (for running the backend)
 
 ## Current Versions
-Here are the versions of the tools and technologies currently being used for this project. You do not have to use these version, but just ensure to update your dependencies locally if you choose to deviate.
+Here are the versions of the tools and technologies currently being used for this project. You do not have to use these version, but just ensure to update your dependencies locally if you choose to deviate—Note that eye tracking will not work if you deviate.
 
 - **Java**: 21.0.1
 - **Maven**: 3.9.9
@@ -32,7 +31,15 @@ Here are the versions of the tools and technologies currently being used for thi
 - **react-chartjs-2** 5.3.0
 - **@sgratzl/chartjs-chart-boxplot** 4.4.4
 - **Express.js** 4.21.2
-- **pandas** 0.0.3
+- **Matplotlib**: 3.9.4 (This is not needed but if it is giving you errors, downgrade to this version)
+- **Mediapipe**: 0.10.21
+- **Numpy**: 1.24.4
+- **Pandas**: 2.1.4
+- **Ptgaze**: 0.2.8
+- **Pycaret**: 3.3.2
+- **Pygame**: 2.6.1
+- **Pymovement**: 0.19.0
+- **Scipy**: 1.8.1
 
 These will be included in the package files so if you use a different version, make sure to not commit and push that to the main branch.
 
@@ -312,6 +319,26 @@ npm install
 To run the Node.js server with Express, run:
 ```bash
 node server.cjs
+```
+
+## How to Run the Application
+
+In 3 seperate terminals, run the following:
+```bash
+# Run the language and memory games
+node server.cjs
+```
+
+```bash
+# Run any Python backend operations
+cd demo/flask_api
+python app.py
+```
+
+```bash
+# Run the React web application
+cd react_frontend
+npm start
 ```
 
 ## Stopping the Server
