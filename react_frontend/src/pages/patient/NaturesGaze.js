@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebaseConfig';
 import { doc, getDoc, updateDoc, arrayUnion, setDoc, collection } from 'firebase/firestore';
@@ -15,14 +15,13 @@ const NaturesGaze = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [hasPlayedToday, setHasPlayedToday] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [userInfo, setUserInfo] = useState(null);
+  const [setUserInfo] = useState(null);
 
   // Function to fetch eye tracking data and save to Firebase
-  const saveEyeTrackingMetrics = async () => {
+  const saveEyeTrackingMetrics = useCallback(async () => {
     try {
       // Try multiple methods to get the eye tracking data
       let data = null;
-      let error = null;
       
       // Method 1: Try to read the JSON file directly via the Express server
       try {
@@ -36,7 +35,6 @@ const NaturesGaze = () => {
         }
       } catch (err) {
         console.log("Error fetching from main server:", err);
-        error = err;
       }
       
       // Method 2: Try direct Flask server endpoint
@@ -52,7 +50,6 @@ const NaturesGaze = () => {
           }
         } catch (err) {
           console.log("Error fetching from Flask server:", err);
-          error = err;
         }
       }
       
@@ -228,7 +225,7 @@ const NaturesGaze = () => {
       // Log what we were attempting to do
       console.log("Error occurred while trying to save eye tracking metrics");
     }
-  };
+  }, [userId]);
 
   // Check if user has already played today
   useEffect(() => {
@@ -287,7 +284,7 @@ const NaturesGaze = () => {
     };
 
     checkUserPlayStatus();
-  }, [userId]);
+  }, [userId, setUserInfo]);
 
   // This function handles iframe loading
   const handleIframeLoad = () => {
@@ -366,7 +363,7 @@ const NaturesGaze = () => {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [navigate, userId]);
+  }, [navigate, userId, saveEyeTrackingMetrics]);
 
   // Handle errors
   const handleError = () => {

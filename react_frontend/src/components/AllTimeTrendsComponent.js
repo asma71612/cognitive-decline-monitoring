@@ -55,11 +55,11 @@ const AllTimeTrendsComponent = ({ userId }) => {
   const [structuralIndex, setStructuralIndex] = useState(0);
   const [fluencyRevisionRatioData, setFluencyRevisionRatioData] = useState({});
   const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({});
-  const [fluencyStutterCountData, setFluencyStutterCountData] = useState({});
+  const [setFluencyStutterCountData] = useState({});
   const [fluencyIndex, setFluencyIndex] = useState(0);
   const [semanticLexFreqData, setSemanticLexFreqData] = useState({});
-  const [semanticEfficiencyData, setSemanticEfficiencyData] = useState({});
-  const [semanticIdeaDensityData, setSemanticIdeaDensityData] = useState({});
+  const [setSemanticEfficiencyData] = useState({});
+  const [setSemanticIdeaDensityData] = useState({});
   const [semanticIndex, setSemanticIndex] = useState(0);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
       setSemanticEfficiencyData({});
       setSemanticIdeaDensityData({});
     }
-  }, [selectedGame]);
+  }, [selectedGame, setMemoryVaultRecallScoreData, setNaturesGazeReactionTimeData, setNaturesGazeSopData, setSaccadeDurationData, setFixationAccuracyData, setSaccadeDirectionErrorData, setSpeakingTimeData, setPauseCountData, setPauseDurationData, setLexNounData, setLexClosedClassData, setLexFillerData, setLexOpenClassData, setLexVerbData, setStructuralMeanData, setStructuralSentenceData, setFluencyRevisionRatioData, setFluencyWordsPerMinData, setFluencyStutterCountData, setSemanticLexFreqData, setSemanticEfficiencyData, setSemanticIdeaDensityData]);
 
   useEffect(() => {
     if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
@@ -723,7 +723,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
         console.error("Error fetching fluency metrics data:", error);
       }
     })();
-  }, [selectedGame, effectiveUserId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame, setFluencyRevisionRatioData, setFluencyWordsPerMinData, setFluencyStutterCountData]);
 
   // New effect: Fetch Process Quest Semantic Features data
   useEffect(() => {
@@ -763,7 +763,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
         console.error("Error fetching semantic features data:", error);
       }
     })();
-  }, [selectedGame, effectiveUserId, isTemporalGame]);
+  }, [selectedGame, effectiveUserId, isTemporalGame, setSemanticLexFreqData, setSemanticEfficiencyData, setSemanticIdeaDensityData]);
 
   return (
     <div className="all-time-trends-container">
