@@ -7,7 +7,6 @@ import "./sceneDetective.css";
 import SESSIONS from "./imports/sessionData";
 
 // Define constants for consistent port usage
-const FLASK_PORT = 5000;
 const EXPRESS_PORT = 5005;
 
 const SceneDetective = () => {
@@ -359,7 +358,7 @@ const SceneDetective = () => {
     updateUserCompletion().then(() => {
       navigate(`/memory-vault-recall-instructions/${userId}`);
     });
-  }, [navigate, userId, playCount]);
+  }, [navigate, userId]);
 
   useEffect(() => {
     const fetchPlayCount = async () => {
