@@ -89,7 +89,7 @@ const PlotDescriptions = {
       The fixation landing accuracy provides information on how precisely the
       eyes landed on the intended target after a saccade. It measures the
       degrees of deviation between the actual gaze position and target location
-      when the eyes come to rest. The confidence interval quantifies hte
+      when the eyes come to rest. The confidence interval quantifies the
       uncertainty in the measurement to help asses the reliability of the
       fixation accuracy estimate.
     </div>
