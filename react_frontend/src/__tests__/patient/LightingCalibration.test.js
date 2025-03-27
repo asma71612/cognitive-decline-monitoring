@@ -1,11 +1,22 @@
 import { React } from 'react';
 import { render, screen, fireEvent } from "@testing-library/react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, useParams } from "react-router-dom";
 import LightingCalibration from "../../pages/patient/LightingCalibration";
 
 jest.useFakeTimers();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: jest.fn(),
+}));
 
 describe("LightingCalibration", () => {
+  const mockUserId = "test-user-123";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useParams.mockReturnValue({ userId: mockUserId });
+  });
+
   test("renders the correct text content", () => {
     render(
       <Router>
@@ -28,7 +39,7 @@ describe("LightingCalibration", () => {
     ).toBeInTheDocument();
   });
 
-  test("redirects to gaze calibration page when Start Calibration button is clicked", () => {
+  test("redirects to Scene Detective Instructions with user ID when Start button is clicked", () => {
     render(
       <Router>
         <LightingCalibration />
@@ -36,11 +47,11 @@ describe("LightingCalibration", () => {
     );
 
     const startButton = screen.getByRole("button", {
-      name: /Start Gaze Calibration/i,
+      name: /Start/i,
     });
     fireEvent.click(startButton);
 
-    expect(window.location.pathname).toBe("/gaze-calibration");
+    expect(window.location.pathname).toBe(`/gaze-calibration-instructions/${mockUserId}`);
   });
 
 //   test("displays error message when lighting is poor", async () => {});

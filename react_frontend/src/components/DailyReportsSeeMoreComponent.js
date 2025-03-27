@@ -218,196 +218,103 @@ const DailyReportsSeeMoreComponent = ({
       let data = {};
 
       try {
-        const fixationAccuracyRef = doc(
+        // Fetch the metrics document which contains all the eye tracking data
+        const metricsRef = doc(
           db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy`
+          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/metrics`
         );
-        const fixationAccuracySnap = await getDoc(fixationAccuracyRef);
-        if (fixationAccuracySnap.exists()) {
-          let fixationAccuracyData = fixationAccuracySnap.data();
-          const landingAccuracyRef = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationAccuracy/landingAccuracy`
-          );
-          const landingAccuracySnapshot = await getDocs(landingAccuracyRef);
-          let landingAccuracy = {};
-          landingAccuracySnapshot.forEach((docSnap) => {
-            landingAccuracy[docSnap.id] = docSnap.data();
-          });
-          fixationAccuracyData.landingAccuracy = landingAccuracy;
-          data.fixationAccuracy = fixationAccuracyData;
+        const metricsSnap = await getDoc(metricsRef);
+        
+        if (metricsSnap.exists()) {
+          const metricsData = metricsSnap.data();
+          
+          // Set up saccade direction error data
+          data.saccadeDirectionError = {
+            AverageSaccadeErrorPercentage: 
+              (metricsData.prosaccadeGap?.saccadeErrorPercentage + 
+               metricsData.antisaccadeGap?.saccadeErrorPercentage +
+               metricsData.prosaccadeOverlap?.saccadeErrorPercentage +
+               metricsData.antisaccadeOverlap?.saccadeErrorPercentage) / 4,
+            errors: {
+              'antigap': {
+                ErrorCount: Math.round(metricsData.antisaccadeGap?.saccadeErrorPercentage * 10),
+                PercentError: metricsData.antisaccadeGap?.saccadeErrorPercentage
+              },
+              'antioverlap': {
+                ErrorCount: Math.round(metricsData.antisaccadeOverlap?.saccadeErrorPercentage * 10),
+                PercentError: metricsData.antisaccadeOverlap?.saccadeErrorPercentage
+              },
+              'progap': {
+                ErrorCount: Math.round(metricsData.prosaccadeGap?.saccadeErrorPercentage * 10),
+                PercentError: metricsData.prosaccadeGap?.saccadeErrorPercentage
+              },
+              'prooverlap': {
+                ErrorCount: Math.round(metricsData.prosaccadeOverlap?.saccadeErrorPercentage * 10),
+                PercentError: metricsData.prosaccadeOverlap?.saccadeErrorPercentage
+              }
+            }
+          };
+          
+          // Set up saccade duration data
+          data.saccadeDuration = {
+            AverageSaccadeDuration: 
+              (metricsData.prosaccadeGap?.averageSaccadeDuration + 
+               metricsData.antisaccadeGap?.averageSaccadeDuration +
+               metricsData.prosaccadeOverlap?.averageSaccadeDuration +
+               metricsData.antisaccadeOverlap?.averageSaccadeDuration) / 4,
+            durations: {
+              'antigap': {
+                Duration: metricsData.antisaccadeGap?.averageSaccadeDuration
+              },
+              'antioverlap': {
+                Duration: metricsData.antisaccadeOverlap?.averageSaccadeDuration
+              },
+              'progap': {
+                Duration: metricsData.prosaccadeGap?.averageSaccadeDuration
+              },
+              'prooverlap': {
+                Duration: metricsData.prosaccadeOverlap?.averageSaccadeDuration
+              }
+            }
+          };
+          
+          // Set up saccade omission percentages
+          data.saccadeOmissionPercentages = {
+            antiGap: metricsData.antisaccadeGap?.saccadeOmissionPercentage,
+            antiOverlap: metricsData.antisaccadeOverlap?.saccadeOmissionPercentage,
+            proGap: metricsData.prosaccadeGap?.saccadeOmissionPercentage,
+            proOverlap: metricsData.prosaccadeOverlap?.saccadeOmissionPercentage
+          };
+          
+          // Set up reaction time data
+          data.reactionTime = {
+            antiGap: metricsData.antisaccadeGap?.averageReactionTime,
+            antiOverlap: metricsData.antisaccadeOverlap?.averageReactionTime,
+            proGap: metricsData.prosaccadeGap?.averageReactionTime,
+            proOverlap: metricsData.prosaccadeOverlap?.averageReactionTime
+          };
+          
+          // Set up fixation duration data (previously fixation accuracy)
+          data.fixationAccuracy = {
+            AverageFixationDuration: 
+              (metricsData.prosaccadeGap?.averageFixationDuration + 
+               metricsData.antisaccadeGap?.averageFixationDuration +
+               metricsData.prosaccadeOverlap?.averageFixationDuration +
+               metricsData.antisaccadeOverlap?.averageFixationDuration) / 4,
+            landingAccuracy: {
+              'gap': {
+                LandingAccuracy: (metricsData.prosaccadeGap?.averageFixationDuration + 
+                                  metricsData.antisaccadeGap?.averageFixationDuration) / 2
+              },
+              'overlap': {
+                LandingAccuracy: (metricsData.prosaccadeOverlap?.averageFixationDuration + 
+                                  metricsData.antisaccadeOverlap?.averageFixationDuration) / 2
+              }
+            }
+          };
         }
       } catch (error) {
-        console.error(
-          "Error fetching naturesGaze fixationAccuracy data",
-          error
-        );
-      }
-
-      try {
-        const fixationDurationRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration`
-        );
-        const fixationDurationSnap = await getDoc(fixationDurationRef);
-        if (fixationDurationSnap.exists()) {
-          let fixationDurationData = fixationDurationSnap.data();
-          const durationsRef = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationDuration/durations`
-          );
-          const durationsSnapshot = await getDocs(durationsRef);
-          let durations = {};
-          durationsSnapshot.forEach((docSnap) => {
-            durations[docSnap.id] = docSnap.data();
-          });
-          fixationDurationData.durations = durations;
-          data.fixationDuration = fixationDurationData;
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching naturesGaze fixationDuration data",
-          error
-        );
-      }
-
-      try {
-        const fixationErrorRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError`
-        );
-        const fixationErrorSnap = await getDoc(fixationErrorRef);
-        if (fixationErrorSnap.exists()) {
-          let fixationErrorData = fixationErrorSnap.data();
-          const errorsRef = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/fixationError/errors`
-          );
-          const errorsSnapshot = await getDocs(errorsRef);
-          let errors = {};
-          errorsSnapshot.forEach((docSnap) => {
-            errors[docSnap.id] = docSnap.data();
-          });
-          fixationErrorData.errors = errors;
-          data.fixationError = fixationErrorData;
-        }
-      } catch (error) {
-        console.error("Error fetching naturesGaze fixationError data", error);
-      }
-
-      try {
-        const reactionTimeRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/reactionTime`
-        );
-        const reactionTimeSnap = await getDoc(reactionTimeRef);
-        if (reactionTimeSnap.exists()) {
-          data.reactionTime = reactionTimeSnap.data();
-        }
-      } catch (error) {
-        console.error("Error fetching naturesGaze reactionTime data", error);
-      }
-
-      try {
-        const saccadeDirectionAccuracyRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy`
-        );
-        const saccadeDirectionAccuracySnap = await getDoc(
-          saccadeDirectionAccuracyRef
-        );
-        if (saccadeDirectionAccuracySnap.exists()) {
-          let saccadeDirectionAccuracyData =
-            saccadeDirectionAccuracySnap.data();
-          const accuracyRef = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionAccuracy/accuracy`
-          );
-          const accuracySnapshot = await getDocs(accuracyRef);
-          let accuracy = {};
-          accuracySnapshot.forEach((docSnap) => {
-            accuracy[docSnap.id] = docSnap.data();
-          });
-          saccadeDirectionAccuracyData.accuracy = accuracy;
-          data.saccadeDirectionAccuracy = saccadeDirectionAccuracyData;
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching naturesGaze saccadeDirectionAccuracy data",
-          error
-        );
-      }
-
-      try {
-        const saccadeDirectionErrorRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError`
-        );
-        const saccadeDirectionErrorSnap = await getDoc(
-          saccadeDirectionErrorRef
-        );
-        if (saccadeDirectionErrorSnap.exists()) {
-          let saccadeDirectionErrorData = saccadeDirectionErrorSnap.data();
-          const errorsRef = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDirectionError/errors`
-          );
-          const errorsSnapshot = await getDocs(errorsRef);
-          let errors = {};
-          errorsSnapshot.forEach((docSnap) => {
-            errors[docSnap.id] = docSnap.data();
-          });
-          saccadeDirectionErrorData.errors = errors;
-          data.saccadeDirectionError = saccadeDirectionErrorData;
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching naturesGaze saccadeDirectionError data",
-          error
-        );
-      }
-
-      try {
-        const saccadeDurationRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration`
-        );
-        const saccadeDurationSnap = await getDoc(saccadeDurationRef);
-        if (saccadeDurationSnap.exists()) {
-          let saccadeDurationData = saccadeDurationSnap.data();
-          const durationsRef = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeDuration/durations`
-          );
-          const durationsSnapshot = await getDocs(durationsRef);
-          let durations = {};
-          durationsSnapshot.forEach((docSnap) => {
-            durations[docSnap.id] = docSnap.data();
-          });
-          saccadeDurationData.durations = durations;
-          data.saccadeDuration = saccadeDurationData;
-        }
-      } catch (error) {
-        console.error("Error fetching naturesGaze saccadeDuration data", error);
-      }
-
-      try {
-        const saccadeOmissionPercentagesRef = doc(
-          db,
-          `users/${effectiveUserId}/dailyReportsSeeMore/${selectedDate}/naturesGaze/saccadeOmissionPercentages`
-        );
-        const saccadeOmissionPercentagesSnap = await getDoc(
-          saccadeOmissionPercentagesRef
-        );
-        if (saccadeOmissionPercentagesSnap.exists()) {
-          data.saccadeOmissionPercentages =
-            saccadeOmissionPercentagesSnap.data();
-        }
-      } catch (error) {
-        console.error(
-          "Error fetching naturesGaze saccadeOmissionPercentages data",
-          error
-        );
+        console.error("Error fetching naturesGaze metrics data", error);
       }
 
       setNaturesGazeData(data);
@@ -423,14 +330,12 @@ const DailyReportsSeeMoreComponent = ({
       <div className="table-container">
         <div className="table-header">
           <span>Task</span>
-          <span>Landing Accuracy</span>
-          <span>Confidence Interval</span>
+          <span>Duration (ms)</span>
         </div>
         {Object.entries(landingAccuracy).map(([task, data]) => (
           <div key={task} className="table-row">
             <span>{task}</span>
-            <span>{data.LandingAccuracy !== undefined ? data.LandingAccuracy : "N/A"}</span>
-            <span>{data.ConfidenceInterval !== undefined ? data.ConfidenceInterval : "N/A"}</span>
+            <span>{data.LandingAccuracy !== undefined ? data.LandingAccuracy.toFixed(2) : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -449,7 +354,7 @@ const DailyReportsSeeMoreComponent = ({
           <div key={task} className="table-row">
             <span>{task}</span>
             <span>{data.ErrorCount !== undefined ? data.ErrorCount : "N/A"}</span>
-            <span>{data.PercentError !== undefined ? data.PercentError : "N/A"}</span>
+            <span>{data.PercentError !== undefined ? data.PercentError.toFixed(2) + "%" : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -466,7 +371,7 @@ const DailyReportsSeeMoreComponent = ({
         {Object.entries(durations).map(([task, data]) => (
           <div key={task} className="table-row">
             <span>{task}</span>
-            <span>{data.Duration !== undefined ? data.Duration : "N/A"}</span>
+            <span>{data.Duration !== undefined ? data.Duration.toFixed(2) + " ms" : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -483,7 +388,7 @@ const DailyReportsSeeMoreComponent = ({
         {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
           <div key={task} className="table-row">
             <span>{task}</span>
-            <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
+            <span>{data[task] !== undefined ? data[task].toFixed(2) : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -500,7 +405,7 @@ const DailyReportsSeeMoreComponent = ({
         {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
           <div key={task} className="table-row">
             <span>{task}</span>
-            <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
+            <span>{data[task] !== undefined ? data[task].toFixed(2) + "%" : "N/A"}</span>
           </div>
         ))}
       </div>
@@ -573,7 +478,7 @@ const DailyReportsSeeMoreComponent = ({
     );
   };
 
-  const renderFluencyMetrics = (fields) => {
+  const renderFluencyMetrics = (fields, game) => {
     const sortedFields = fluencyMetricsOrder.reduce((obj, key) => {
       if (fields[key] !== undefined) {
         obj[key] = fields[key];
@@ -588,7 +493,8 @@ const DailyReportsSeeMoreComponent = ({
             <strong>{formatMetricName(key)}:</strong> {value}
           </p>
         ))}
-        {fields.stutters && renderStutters(fields.stutters)}
+        {/* Only show stutters table for games other than Process Quest and Scene Detective */}
+        {game !== "processQuest" && game !== "sceneDetective" && fields.stutters && renderStutters(fields.stutters)}
       </div>
     );
   };
@@ -687,7 +593,7 @@ const DailyReportsSeeMoreComponent = ({
     <div className="daily-reports-see-more-container">
       {onBack && (
         <div className="back-button-container">
-          <Link className="back-button" onClick={onBack}>
+          <Link className="back-button-see-more" onClick={onBack}>
             Back
           </Link>
         </div>
@@ -743,11 +649,11 @@ const DailyReportsSeeMoreComponent = ({
           ) : (
             <div className="game-grid">
               {[
-                "fluencyMetrics",
                 "lexicalFeatures",
                 "temporalCharacteristics",
-                "semanticFeatures",
+                "fluencyMetrics",
                 "structuralFeatures",
+                "semanticFeatures",
               ].map((metric) => {
                 let descriptionKey =
                   metricTitles[metric] || formatMetricName(metric);
@@ -776,7 +682,7 @@ const DailyReportsSeeMoreComponent = ({
                       ) : metric === "semanticFeatures" ? (
                         renderSemanticFeatures(sceneData[metric])
                       ) : metric === "fluencyMetrics" ? (
-                        renderFluencyMetrics(sceneData[metric])
+                        renderFluencyMetrics(sceneData[metric], "sceneDetective")
                       ) : metric === "structuralFeatures" ? (
                         renderStructuralFeatures(sceneData[metric])
                       ) : metric === "temporalCharacteristics" ? (
@@ -822,9 +728,9 @@ const DailyReportsSeeMoreComponent = ({
           ) : (
             <div className="game-grid">
               {[
-                "fluencyMetrics",
                 "lexicalFeatures",
                 "temporalCharacteristics",
+                "fluencyMetrics",
                 "semanticFeatures",
                 "structuralFeatures",
               ].map((metric) => {
@@ -855,7 +761,7 @@ const DailyReportsSeeMoreComponent = ({
                       ) : metric === "semanticFeatures" ? (
                         renderSemanticFeatures(processQuestData[metric])
                       ) : metric === "fluencyMetrics" ? (
-                        renderFluencyMetrics(processQuestData[metric])
+                        renderFluencyMetrics(processQuestData[metric], "processQuest")
                       ) : metric === "structuralFeatures" ? (
                         renderStructuralFeatures(processQuestData[metric])
                       ) : metric === "temporalCharacteristics" ? (
@@ -928,18 +834,13 @@ const DailyReportsSeeMoreComponent = ({
                 />
                 {naturesGazeData.saccadeDirectionError ? (
                   <>
-                    {naturesGazeData.saccadeDirectionError
-                      .AverageSaccadeErrorPercentage && (
-                      <p>
-                        <strong>
-                          Average Saccade Direction Error Percentage:
-                        </strong>{" "}
-                        {
-                          naturesGazeData.saccadeDirectionError
-                            .AverageSaccadeErrorPercentage
-                        }
-                      </p>
-                    )}
+                    <p>
+                      <strong>Average Direction Error:</strong>{" "}
+                      {naturesGazeData.saccadeDirectionError
+                        .AverageSaccadeErrorPercentage && 
+                        naturesGazeData.saccadeDirectionError
+                          .AverageSaccadeErrorPercentage.toFixed(2) + "%"}
+                    </p>
                     {naturesGazeData.saccadeDirectionError.errors ? (
                       renderSaccadeDirectionErrorTable(
                         naturesGazeData.saccadeDirectionError.errors
@@ -962,7 +863,7 @@ const DailyReportsSeeMoreComponent = ({
                     {naturesGazeData.saccadeDuration.AverageSaccadeDuration && (
                       <p>
                         <strong>Average Saccade Duration:</strong>{" "}
-                        {naturesGazeData.saccadeDuration.AverageSaccadeDuration}
+                        {naturesGazeData.saccadeDuration.AverageSaccadeDuration.toFixed(2)} ms
                       </p>
                     )}
                     {naturesGazeData.saccadeDuration.durations ? (
@@ -1005,16 +906,24 @@ const DailyReportsSeeMoreComponent = ({
               </div>
               <div className="game-box">
                 <TitleWithInfo
-                  title="Fixation Landing Accuracy"
+                  title="Average Fixation Duration"
                   description={PlotDescriptions["Fixation Accuracy"] || ""}
                 />
                 {naturesGazeData.fixationAccuracy &&
                 naturesGazeData.fixationAccuracy.landingAccuracy ? (
-                  renderFixationAccuracyTable(
-                    naturesGazeData.fixationAccuracy.landingAccuracy
-                  )
+                  <>
+                    {naturesGazeData.fixationAccuracy.AverageFixationDuration && (
+                      <p>
+                        <strong>Average Fixation Duration:</strong>{" "}
+                        {naturesGazeData.fixationAccuracy.AverageFixationDuration.toFixed(2)} ms
+                      </p>
+                    )}
+                    {renderFixationAccuracyTable(
+                      naturesGazeData.fixationAccuracy.landingAccuracy
+                    )}
+                  </>
                 ) : (
-                  <p>No landing accuracy data.</p>
+                  <p>No fixation duration data.</p>
                 )}
               </div>
             </div>

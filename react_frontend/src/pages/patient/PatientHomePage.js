@@ -108,6 +108,29 @@ const PatientHomePage = () => {
     return `${days}d ${hours}h ${minutes}m`;
   };
 
+  // Helper function to render all buttons in a single row
+  const renderAllButtons = () => {
+    return (
+      <div className="all-buttons">
+        {/* Complete Task button */}
+        {taskCompletedToday || isCooldown ? (
+          <button className="disabled-task-button" disabled={true}>
+            Complete My Task
+          </button>
+        ) : (
+          <Link to={`/lighting-calibration/${userId}`} className="complete-task-button">
+            Complete My Task
+          </Link>
+        )}
+        
+        {/* Instructions button */}
+        <Link to={`/instructions/${userId}`} className="complete-task-button">
+          Instructions
+        </Link>
+      </div>
+    );
+  };
+
   return (
     <div className="patient-home-container">
       <div className="left-side">
@@ -159,84 +182,26 @@ const PatientHomePage = () => {
                   You have completed all tasks for this period! 🎉
                 </p>
                 <p className="countdown">
-                  Your next task period is available in {getCooldownCountdown()}
-                  .
+                  Your next task period is available in {getCooldownCountdown()}.
                 </p>
-
-                <button className="disabled-task-button" disabled={true}>
-                  Complete My Task
-                </button>
-
-                <Link
-                  to={`/instructions/${userId}`}
-                  className="complete-task-button"
-                >
-                  Instructions
-                </Link>
                 
-                <Link
-                  to={`/gaze-calibration-instructions/${userId}`}
-                  className="complete-task-button"
-                >
-                  Calibrate
-                </Link>
+                {renderAllButtons()}
               </div>
             ) : (
-              <div>
+              <div className="home-content-text">
                 <p className="tasks-left">
                   {remainingTasks > 0
                     ? `You have ${remainingTasks} task(s) left to complete this week.`
                     : "You have completed all tasks for this week! 🎉"}
                 </p>
 
-                {taskCompletedToday ? (
-                  <>
-                    <p className="countdown">
-                      Your next task is available in{" "}
-                      {formatCountdownDaily(countdown)}.
-                    </p>
-                    <button className="disabled-task-button" disabled={true}>
-                      Complete My Task
-                    </button>
-
-                    <Link
-                      to={`/instructions/${userId}`}
-                      className="complete-task-button"
-                    >
-                      Instructions
-                    </Link>
-                    
-                    <Link
-                      to={`/gaze-calibration-instructions/${userId}`}
-                      className="complete-task-button"
-                    >
-                      Calibrate
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      to={`/memory-vault-start-instructions/${userId}`}
-                      className="complete-task-button"
-                    >
-                      Complete My Task
-                    </Link>
-
-                    <Link
-                      to={`/instructions/${userId}`}
-                      className="complete-task-button"
-                    >
-                      Instructions
-                    </Link>
-                    
-                    <Link
-                      to={`/gaze-calibration-instructions/${userId}`}
-                      className="complete-task-button"
-                    >
-                      Calibrate
-                    </Link>
-                  </>
+                {taskCompletedToday && (
+                  <p className="countdown">
+                    Your next task is available in {formatCountdownDaily(countdown)}.
+                  </p>
                 )}
+                
+                {renderAllButtons()}
               </div>
             )}
 

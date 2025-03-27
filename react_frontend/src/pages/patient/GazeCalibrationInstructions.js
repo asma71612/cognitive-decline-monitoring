@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from 'react-router-dom';
 import InstructionsPage from "../../components/InstructionsModal";
-import gazeCalibrationBackground from "../../assets/memoryVaultBackgroundDark.png";
+import gazeCalibrationBackground from "../../assets/gaze-calibration-instructions-background.png";
 
 const GazeCalibrationInstructions = () => {
   const { userId } = useParams();

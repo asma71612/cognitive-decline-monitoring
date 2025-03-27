@@ -52,7 +52,7 @@ body {
 
 .calibration-frame-container {
   width: 100%;
-  height: calc(100vh - 60px); /* Header height (60px) */
+  height: 100vh;
   margin: 0;
   border: none;
   overflow: hidden;
@@ -66,10 +66,11 @@ body {
   overflow: hidden;
   display: block;
   background-color: #DFE5FB;
+  max-width: 100%;
 }
 
 .button-container {
-  display: none; /* Hide since it's not being used */
+  display: none;
 }
 
 .done-button {
@@ -119,7 +120,7 @@ body {
   }
   
   .calibration-frame-container {
-    height: calc(100vh - 100px); /* For smaller screens with stacked header elements */
+    height: 100vh;
   }
   
   .header h1 {

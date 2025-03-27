@@ -1,0 +1,87 @@
+.natures-gaze-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff3e3;
+}
+
+.game-frame-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.error-message,
+.loading-message,
+.already-played-message {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  max-width: 500px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.error-message h3,
+.loading-message h3,
+.already-played-message h3 {
+  color: #516A80;
+  margin-top: 0;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.error-message p,
+.loading-message p,
+.already-played-message p {
+  color: #6F7F8F;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+.back-button {
+  background-color: #516A80;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+}
+
+.back-button:hover {
+  background-color: #3A4D5E;
+}
+
+/* For loading animation */
+.loading-message:before {
+  content: "";
+  display: block;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 20px;
+  border: 4px solid #DFE5FB;
+  border-top: 4px solid #516A80;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 
