@@ -33,7 +33,7 @@ Here are the versions of the tools and technologies currently being used for thi
 - **Express.js** 4.21.2
 - **Matplotlib**: 3.9.4 (This is not needed but if it is giving you errors, downgrade to this version)
 - **Mediapipe**: 0.10.21
-- **Numpy**: 1.24.4
+- **Numpy**: 1.22.0
 - **Pandas**: 2.1.4
 - **Ptgaze**: 0.2.8
 - **Pycaret**: 3.3.2
