@@ -20,11 +20,11 @@ const metricTitles = {
 };
 
 const lexicalFeaturesOrder = [
-  "ClosedClass",
-  "Filler",
   "Noun",
-  "OpenClass",
   "Verb",
+  "Filler",
+  "OpenClass",
+  "ClosedClass"
 ];
 
 const semanticFeaturesOrder = [
@@ -34,9 +34,9 @@ const semanticFeaturesOrder = [
   "LexicalFrequencyOfNouns",
 ];
 
-const fluencyMetricsOrder = ["WordsPerMin", "RevisionRatio"];
+const fluencyMetricsOrder = ["WordsPerMin", "RepetitionRatio"];
 
-const structuralFeaturesOrder = ["NumOfSentences", "MeanLengthOfOccurrence"];
+const structuralFeaturesOrder = ["NumOfSentences", "MeanLengthOfUtterance"];
 
 const TitleWithInfo = ({ title, description }) => {
   const [showInfo, setShowInfo] = useState(false);
@@ -330,7 +330,7 @@ const DailyReportsSeeMoreComponent = ({
       <div className="table-container">
         <div className="table-header">
           <span>Task</span>
-          <span>Duration (ms)</span>
+          <span>Duration (Milliseconds)</span>
         </div>
         {Object.entries(landingAccuracy).map(([task, data]) => (
           <div key={task} className="table-row">
@@ -350,13 +350,32 @@ const DailyReportsSeeMoreComponent = ({
           <span>Error Count</span>
           <span>Percent Error</span>
         </div>
-        {Object.entries(errors).map(([task, data]) => (
+        {Object.entries(errors).map(([task, data]) => {
+          let displayTask;
+          switch (task) {
+          case "antigap":
+            displayTask = "Anti-Saccade Gap Task";
+            break;
+          case "antioverlap":
+            displayTask = "Anti-Saccade Overlap Task";
+            break;
+          case "progap":
+            displayTask = "Pro-Saccade Gap Task";
+            break;
+          case "prooverlap":
+            displayTask = "Pro-Saccade Overlap Task";
+            break;
+          default:
+            displayTask = task;
+          }
+          return (
           <div key={task} className="table-row">
-            <span>{task}</span>
+            <span>{displayTask}</span>
             <span>{data.ErrorCount !== undefined ? data.ErrorCount : "N/A"}</span>
-            <span>{data.PercentError !== undefined ? data.PercentError.toFixed(2) + "%" : "N/A"}</span>
+            <span>{data.PercentError !== undefined ? data.PercentError : "N/A"}</span>
           </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
@@ -366,14 +385,33 @@ const DailyReportsSeeMoreComponent = ({
       <div className="table-container">
         <div className="table-header">
           <span>Task</span>
-          <span>Duration</span>
+          <span>Duration (Milliseconds)</span>
         </div>
-        {Object.entries(durations).map(([task, data]) => (
+        {Object.entries(durations).map(([task, data]) => {
+          let displayTask;
+          switch (task) {
+          case "antigap":
+            displayTask = "Anti-Saccade Gap Task";
+            break;
+          case "antioverlap":
+            displayTask = "Anti-Saccade Overlap Task";
+            break;
+          case "progap":
+            displayTask = "Pro-Saccade Gap Task";
+            break;
+          case "prooverlap":
+            displayTask = "Pro-Saccade Overlap Task";
+            break;
+          default:
+            displayTask = task;
+          }
+          return (
           <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data.Duration !== undefined ? data.Duration.toFixed(2) + " ms" : "N/A"}</span>
+            <span>{displayTask}</span>
+            <span>{data.Duration !== undefined ? data.Duration.toFixed(2) : "N/A"}</span>
           </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
@@ -382,15 +420,34 @@ const DailyReportsSeeMoreComponent = ({
     return (
       <div className="table-container">
         <div className="table-header">
-          <span>Task</span>
-          <span>Time (ms)</span>
-        </div>
-        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data[task] !== undefined ? data[task].toFixed(2) : "N/A"}</span>
-          </div>
-        ))}
+        <span>Task</span>
+        <span>Time (Milliseconds)</span>
+      </div>
+      {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => {
+        let displayTask;
+        switch (task) {
+        case "antiGap":
+          displayTask = "Anti-Saccade Gap Task";
+          break;
+        case "antiOverlap":
+          displayTask = "Anti-Saccade Overlap Task";
+          break;
+        case "proGap":
+          displayTask = "Pro-Saccade Gap Task";
+          break;
+        case "proOverlap":
+          displayTask = "Pro-Saccade Overlap Task";
+          break;
+        default:
+          displayTask = task;
+        }
+        return (
+        <div key={task} className="table-row">
+          <span>{displayTask}</span>
+          <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
+      </div>
+        );
+      })}
       </div>
     );
   };
@@ -402,12 +459,31 @@ const DailyReportsSeeMoreComponent = ({
           <span>Task</span>
           <span>Percent</span>
         </div>
-        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => (
-          <div key={task} className="table-row">
-            <span>{task}</span>
-            <span>{data[task] !== undefined ? data[task].toFixed(2) + "%" : "N/A"}</span>
-          </div>
-        ))}
+        {["antiGap", "antiOverlap", "proGap", "proOverlap"].map((task) => {
+        let displayTask;
+        switch (task) {
+        case "antiGap":
+          displayTask = "Anti-Saccade Gap Task";
+          break;
+        case "antiOverlap":
+          displayTask = "Anti-Saccade Overlap Task";
+          break;
+        case "proGap":
+          displayTask = "Pro-Saccade Gap Task";
+          break;
+        case "proOverlap":
+          displayTask = "Pro-Saccade Overlap Task";
+          break;
+        default:
+          displayTask = task;
+        }
+        return (
+        <div key={task} className="table-row">
+          <span>{displayTask}</span>
+          <span>{data[task] !== undefined ? data[task] : "N/A"}</span>
+        </div>
+        );
+      })}
       </div>
     );
   };
@@ -427,7 +503,7 @@ const DailyReportsSeeMoreComponent = ({
       <div className="table-container">
         <div className="table-header">
           <span>Word Types</span>
-          <span>Count</span>
+          <span>Proportion</span>
         </div>
         {Object.entries(sortedFields).map(([key, value]) => (
           <div key={key} className="table-row">
@@ -461,23 +537,6 @@ const DailyReportsSeeMoreComponent = ({
     );
   };
 
-  const renderStutters = (stutters) => {
-    return (
-      <div className="table-container">
-        <div className="table-header">
-          <span>Stutter #</span>
-          <span>Time</span>
-        </div>
-        {stutters.map((stutter, index) => (
-          <div key={stutter.id} className="table-row">
-            <span>{index + 1}</span>
-            <span>{stutter.Time}</span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   const renderFluencyMetrics = (fields, game) => {
     const sortedFields = fluencyMetricsOrder.reduce((obj, key) => {
       if (fields[key] !== undefined) {
@@ -493,8 +552,6 @@ const DailyReportsSeeMoreComponent = ({
             <strong>{formatMetricName(key)}:</strong> {value}
           </p>
         ))}
-        {/* Only show stutters table for games other than Process Quest and Scene Detective */}
-        {game !== "processQuest" && game !== "sceneDetective" && fields.stutters && renderStutters(fields.stutters)}
       </div>
     );
   };
@@ -525,13 +582,13 @@ const DailyReportsSeeMoreComponent = ({
           <span>Pause #</span>
           <span>Start Time</span>
           <span>End Time</span>
-          <span>Duration</span>
+          <span>Duration (Seconds)</span>
         </div>
         {pauses.map((pause, index) => {
           const start = parseFloat(pause.StartTime);
           const end = parseFloat(pause.EndTime);
           const duration =
-            !isNaN(start) && !isNaN(end) ? (end - start).toFixed(2) : "N/A";
+            !isNaN(start) && !isNaN(end) ? (end - start).toFixed(2): "N/A";
           return (
             <div key={pause.id} className="table-row">
               <span>{index + 1}</span>
@@ -649,11 +706,11 @@ const DailyReportsSeeMoreComponent = ({
           ) : (
             <div className="game-grid">
               {[
-                "lexicalFeatures",
-                "temporalCharacteristics",
                 "fluencyMetrics",
                 "structuralFeatures",
+                "lexicalFeatures",
                 "semanticFeatures",
+                "temporalCharacteristics"
               ].map((metric) => {
                 let descriptionKey =
                   metricTitles[metric] || formatMetricName(metric);
@@ -693,7 +750,7 @@ const DailyReportsSeeMoreComponent = ({
                               return (
                                 <p key={field}>
                                   <strong>{formatMetricName(field)}:</strong>{" "}
-                                  {value}
+                                  {value}{" minutes"}
                                 </p>
                               );
                             }
@@ -728,11 +785,11 @@ const DailyReportsSeeMoreComponent = ({
           ) : (
             <div className="game-grid">
               {[
-                "lexicalFeatures",
-                "temporalCharacteristics",
                 "fluencyMetrics",
-                "semanticFeatures",
                 "structuralFeatures",
+                "lexicalFeatures",
+                "semanticFeatures",
+                "temporalCharacteristics"
               ].map((metric) => {
                 let descriptionKey =
                   metricTitles[metric] || formatMetricName(metric);
@@ -772,7 +829,7 @@ const DailyReportsSeeMoreComponent = ({
                               return (
                                 <p key={field}>
                                   <strong>{formatMetricName(field)}:</strong>{" "}
-                                  {value}
+                                  {value} {" minutes"}
                                 </p>
                               );
                             }
@@ -919,7 +976,16 @@ const DailyReportsSeeMoreComponent = ({
                       </p>
                     )}
                     {renderFixationAccuracyTable(
-                      naturesGazeData.fixationAccuracy.landingAccuracy
+                      Object.entries(naturesGazeData.fixationAccuracy.landingAccuracy).reduce((acc, [task, data]) => {
+                      let displayTask = task;
+                      if (task === "gap") {
+                        displayTask = "Gap Task";
+                      } else if (task === "overlap") {
+                        displayTask = "Overlap Task";
+                      }
+                      acc[displayTask] = data;
+                      return acc;
+                      }, {})
                     )}
                   </>
                 ) : (
