@@ -114,8 +114,8 @@ const WeeklyReportComponent = ({ userId }) => {
     const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({});
     const [fluencyIndex, setFluencyIndex] = useState(0);
     const [semanticLexFreqData, setSemanticLexFreqData] = useState({});
-    const [semanticEfficiencyData, setSemanticEfficiencyData] = useState({});
-    const [semanticIdeaDensityData, setSemanticIdeaDensityData] = useState({});
+    const [setSemanticEfficiencyData] = useState({});
+    const [setSemanticIdeaDensityData] = useState({});
     const [semanticIndex, setSemanticIndex] = useState(0);
 
     useEffect(() => {
@@ -145,7 +145,7 @@ const WeeklyReportComponent = ({ userId }) => {
           setSemanticEfficiencyData({});
           setSemanticIdeaDensityData({});
         }
-    }, [selectedGame]);
+    }, [selectedGame, setMemoryVaultRecallScoreData, setNaturesGazeReactionTimeData, setNaturesGazeSopData, setSaccadeDurationData, setFixationAccuracyData, setSaccadeDirectionErrorData, setSpeakingTimeData, setPauseCountData, setPauseDurationData, setLexNounData, setLexClosedClassData, setLexFillerData, setLexOpenClassData, setLexVerbData, setStructuralMeanData, setStructuralSentenceData, setFluencyRevisionRatioData, setFluencyWordsPerMinData, setFluencyStutterCountData, setSemanticLexFreqData, setSemanticEfficiencyData, setSemanticIdeaDensityData]);
     
     useEffect(() => {
         if (selectedGame === "processQuest" || selectedGame === "sceneDetective") {
@@ -957,7 +957,7 @@ for (const { dateKey } of reports) {
             console.error("Error fetching fluency metrics data:", error);
           }
         })();
-    }, [selectedGame, effectiveUserId, isTemporalGame, filteredDates]);
+    }, [selectedGame, effectiveUserId, isTemporalGame, filteredDates, setFluencyRevisionRatioData, setFluencyWordsPerMinData, setFluencyStutterCountData]);
     
     // New effect: Fetch Process Quest Semantic Features data
     useEffect(() => {
@@ -1006,7 +1006,7 @@ for (const { dateKey } of reports) {
             console.error("Error fetching semantic features data:", error);
           }
         })();
-    }, [selectedGame, effectiveUserId, isTemporalGame, filteredDates]);
+    }, [selectedGame, effectiveUserId, isTemporalGame, filteredDates, setSemanticLexFreqData, setSemanticEfficiencyData, setSemanticIdeaDensityData]);
 
     return (
         <div className="weekly-report-content">

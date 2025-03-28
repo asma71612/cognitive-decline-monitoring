@@ -7,7 +7,6 @@ import SESSION_PROMPTS from "./imports/sessionPrompts";
 import "./ProcessQuest.css";
 
 // Define constants for consistent port usage
-const FLASK_PORT = 5000;
 const EXPRESS_PORT = 5005;
 
 const ProcessQuest = () => {
@@ -353,7 +352,7 @@ const ProcessQuest = () => {
     updateUserCompletion().then(() => {
       navigate(`/scene-detective-instructions/${userId}`);
     });
-  }, [navigate, userId, playCount]);
+  }, [navigate, userId]);
  
   useEffect(() => {
     const fetchPlayCount = async () => {

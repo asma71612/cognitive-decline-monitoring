@@ -93,9 +93,14 @@ const PlotDescriptions = {
       Reference: S. Hannonen et al., “Shortening of Saccades as a Possible Easy-to-Use Biomarker to Detect Risk of Alzheimer’s Disease,” JAD, vol. 88, no. 2, pp. 609–618, Jul. 2022, doi: 10.3233/JAD-215551.
     </div>
   ),
-  "Fixation Duration": (
+  "Fixation Accuracy": (
     <div style={{ textAlign: "center" }}>
-      The fixation duration is the time spent looking at a target.
+      The fixation landing accuracy provides information on how precisely the
+      eyes landed on the intended target after a saccade. It measures the
+      degrees of deviation between the actual gaze position and target location
+      when the eyes come to rest. The confidence interval quantifies the
+      uncertainty in the measurement to help asses the reliability of the
+      fixation accuracy estimate.
     </div>
   ),
   "Saccade Direction Error": (
@@ -188,7 +193,7 @@ const PlotDescriptions = {
   "Fluency Metrics: sceneDetective": (
     <div style={{ textAlign: "center" }}>
       With MCI, speech fluency can decline faster as speech progresses, leading
-      to changes in words per minute, repetition ratio and, stutter count. This
+      to changes in words per minute, revision ratio and, stutter count. This
       can be linked difficulty retrieving lexical content, a decline in working
       memory, or executive function impairment. The expected values are:
       <br />
@@ -200,9 +205,9 @@ const PlotDescriptions = {
       MCI: 138.60 ± 25.8
       <br />
       <br />
-      <strong>Repetition Ratio</strong>
+      <strong>Revision Ratio</strong>
       <br />
-      Healthy: 0.56 ± 0.96
+      Healthy: 0.95 ± 1.16
       <br />
       MCI: 0.72 ± 1.37
       <br />
@@ -213,7 +218,7 @@ const PlotDescriptions = {
   "Fluency Metrics: processQuest": (
     <div style={{ textAlign: "center" }}>
       With MCI, speech fluency can decline faster as speech progresses, leading
-      to changes in words per minute, repetition ratio and, stutter count. This
+      to changes in words per minute, revision ratio and, stutter count. This
       can be linked difficulty retrieving lexical content, a decline in working
       memory, or executive function impairment. The expected values are:
       <br />
@@ -225,9 +230,9 @@ const PlotDescriptions = {
       MCI: 138.60 ± 25.8
       <br />
       <br />
-      <strong>Repetition Ratio</strong>
+      <strong>Revision Ratio</strong>
       <br />
-      Healthy: 0.64 ± 1.01
+      Healthy: 1.73 ± 12.33
       <br />
       MCI: 0.61 ± 1.32
       <br />
@@ -280,7 +285,7 @@ const PlotDescriptions = {
   "Semantic Features": (
     <div style={{ textAlign: "center" }}>
       These features provide information on semantic retrieval and processing.
-      The median lexical frequency of the nouns used is calculated using the
+      The average lexical frequency of the nouns used is calculated using the
       SUBTLEX-US database, indicating how common or rare the nouns are in
       everyday language, which can help assess lexical retrieval difficulties in
       MCI. The semantic idea density is the ratio of the number of semantic
