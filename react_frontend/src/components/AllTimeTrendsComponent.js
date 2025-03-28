@@ -53,9 +53,8 @@ const AllTimeTrendsComponent = ({ userId }) => {
   const [structuralMeanData, setStructuralMeanData] = useState({});
   const [structuralSentenceData, setStructuralSentenceData] = useState({});
   const [structuralIndex, setStructuralIndex] = useState(0);
-  const [fluencyRevisionRatioData, setFluencyRevisionRatioData] = useState({});
+  const [fluencyRepetitionRatioData, setFluencyRepetitionRatioData] = useState({});
   const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({});
-  const [setFluencyStutterCountData] = useState({});
   const [fluencyIndex, setFluencyIndex] = useState(0);
   const [semanticLexFreqData, setSemanticLexFreqData] = useState({});
   const [setSemanticEfficiencyData] = useState({});
@@ -83,9 +82,8 @@ const AllTimeTrendsComponent = ({ userId }) => {
       setLexVerbData({});
       setStructuralMeanData({});
       setStructuralSentenceData({});
-      setFluencyRevisionRatioData({});
+      setFluencyRepetitionRatioData({});
       setFluencyWordsPerMinData({});
-      setFluencyStutterCountData({});
       setSemanticLexFreqData({});
       setSemanticEfficiencyData({});
       setSemanticIdeaDensityData({});
@@ -686,7 +684,6 @@ const AllTimeTrendsComponent = ({ userId }) => {
       try {
         const repetitionData = {};
         const wordsData = {};
-        const stutterData = {};
         const reports = await getReports(effectiveUserId);
         for (const { dateKey, monthYear } of reports) {
           const fluencyDocRef = doc(
@@ -704,21 +701,11 @@ const AllTimeTrendsComponent = ({ userId }) => {
             repetitionData[monthYear].push(repetition);
             wordsData[monthYear].push(wordsPerMin);
           }
-          const stuttersCollection = collection(
-            db,
-            `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics/Stutters`
-          );
-          const stuttersSnapshots = await getDocs(stuttersCollection);
-          if (!stutterData[monthYear]) stutterData[monthYear] = [];
-          // Push count of stutter documents
-          stutterData[monthYear].push(stuttersSnapshots.docs.length);
         }
         console.log("Fluency Repetition Ratio:", repetitionData);
         console.log("Fluency Words Per Min:", wordsData);
-        console.log("Fluency Stutter Count:", stutterData);
-        setFluencyRevisionRatioData(repetitionData);
+        setFluencyRepetitionRatioData(repetitionData);
         setFluencyWordsPerMinData(wordsData);
-        setFluencyStutterCountData(stutterData);
       } catch (error) {
         console.error("Error fetching fluency metrics data:", error);
       }
@@ -824,7 +811,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
             plotTitle="Reaction Time"
             displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Time (seconds)"
+            yAxisLabel="Time (Milliseconds)"
             seriesLabels={{
               antiGap: "Anti-Saccade, Gap Task",
               proGap: "Pro-Saccade, Gap Task",
@@ -854,7 +841,7 @@ const AllTimeTrendsComponent = ({ userId }) => {
             plotTitle="Saccade Durations"
             displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Duration (seconds)"
+            yAxisLabel="Duration (Milliseconds)"
             seriesLabels={{
               antiGap: "Anti-Saccade, Gap Task",
               proGap: "Pro-Saccade, Gap Task",
@@ -866,13 +853,13 @@ const AllTimeTrendsComponent = ({ userId }) => {
           />
           <BoxPlot
             rawData={fixationAccuracyData}
-            plotTitle="Fixation Accuracy"
+            plotTitle="Fixation Duration"
             displaySubtitle={false}
             xAxisLabel="Date"
-            yAxisLabel="Landing Accuracy (degrees)"
+            yAxisLabel="Duration (Milliseconds)"
             seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
             multiSeries={true}
-            infoDescription={PlotDescriptions["Fixation Accuracy"]}
+            infoDescription={PlotDescriptions["Fixation Duration"]}
           />
           <BoxPlot
             rawData={saccadeDirectionErrorData}
@@ -955,15 +942,15 @@ const AllTimeTrendsComponent = ({ userId }) => {
           {(() => {
             const structuralConfigs = [
               {
-                subtitle: "Mean Length of Utterance",
-                rawData: structuralMeanData,
-                yAxisLabel: "Mean Length",
-              },
-              {
                 subtitle: "Number of Sentences",
                 rawData: structuralSentenceData,
                 yAxisLabel: "Sentence Count",
               },
+              {
+                subtitle: "Mean Length of Utterance",
+                rawData: structuralMeanData,
+                yAxisLabel: "Mean Length",
+              }
             ];
             return (
               <div className="carousel-wrapper">
@@ -1006,13 +993,13 @@ const AllTimeTrendsComponent = ({ userId }) => {
           {(() => {
             const fluencyConfigs = [
               {
-                subtitle: "Word Count",
+                subtitle: "Speech Rate",
                 rawData: fluencyWordsPerMinData,
                 yAxisLabel: "Words per Minute",
               },
               {
                 subtitle: "Repetition Ratio",
-                rawData: fluencyRevisionRatioData,
+                rawData: fluencyRepetitionRatioData,
                 yAxisLabel: "Repetition Ratio",
               },
             ];
@@ -1059,27 +1046,27 @@ const AllTimeTrendsComponent = ({ userId }) => {
               {
                 subtitle: "Noun",
                 rawData: lexNounData,
-                yAxisLabel: "Nouns Proportion (percent)",
+                yAxisLabel: "Nouns Proportion (%)",
               },
               {
                 subtitle: "Verb",
                 rawData: lexVerbData,
-                yAxisLabel: "Verbs Proportion (percent)",
+                yAxisLabel: "Verbs Proportion (%)",
               },
               {
                 subtitle: "Filler",
                 rawData: lexFillerData,
-                yAxisLabel: "Filler Proportion (percent)",
+                yAxisLabel: "Filler Proportion (%)",
               },
               {
                 subtitle: "Open Class",
                 rawData: lexOpenClassData,
-                yAxisLabel: "Open Class Proportion (percent)",
+                yAxisLabel: "Open Class Proportion (%)",
               },
               {
                 subtitle: "Closed Class",
                 rawData: lexClosedClassData,
-                yAxisLabel: "Closed Class Proportion (percent)",
+                yAxisLabel: "Closed Class Proportion (%)",
               },
             ];
             return (
@@ -1120,13 +1107,24 @@ const AllTimeTrendsComponent = ({ userId }) => {
               </div>
             );
           })()}
-          {(() => {
+          {selectedGame === "sceneDetective" ? (
+          (() => {
             const semanticConfigs = [
               {
-                subtitle: "Lexical Frequency of Nouns",
-                rawData: semanticLexFreqData,
-                yAxisLabel: "Frequency",
-              },
+                  subtitle: "Semantic Idea Density",
+                  rawData: semanticIdeaDensityData,
+                  yAxisLabel: "Density",
+                },
+                {
+                  subtitle: "Semantic Efficiency",
+                  rawData: semanticEfficiencyData,
+                  yAxisLabel: "Efficiency",
+                },
+                {
+                  subtitle: "Lexical Frequency of Nouns",
+                  rawData: semanticLexFreqData,
+                  yAxisLabel: "Frequency",
+                },
             ];
             return (
               <div className="carousel-wrapper">
@@ -1167,7 +1165,17 @@ const AllTimeTrendsComponent = ({ userId }) => {
                 )}
               </div>
             );
-          })()}
+          })()
+        ) : (
+          <BoxPlot
+              rawData={semanticLexFreqData}
+              plotTitle="Lexical Frequency of Nouns"
+              displaySubtitle={false}
+              xAxisLabel="Date"
+              yAxisLabel="Frequency"
+              infoDescription={PlotDescriptions["Lexical Frequency of Nouns"]}
+            />
+          )}
         </>
       )}
       <div style={{ height: "100px" }}></div>

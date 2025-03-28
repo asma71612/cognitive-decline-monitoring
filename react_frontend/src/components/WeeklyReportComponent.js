@@ -112,7 +112,6 @@ const WeeklyReportComponent = ({ userId }) => {
     const [structuralIndex, setStructuralIndex] = useState(0);
     const [fluencyRevisionRatioData, setFluencyRevisionRatioData] = useState({});
     const [fluencyWordsPerMinData, setFluencyWordsPerMinData] = useState({});
-    const [setFluencyStutterCountData] = useState({});
     const [fluencyIndex, setFluencyIndex] = useState(0);
     const [semanticLexFreqData, setSemanticLexFreqData] = useState({});
     const [setSemanticEfficiencyData] = useState({});
@@ -142,7 +141,6 @@ const WeeklyReportComponent = ({ userId }) => {
           setStructuralSentenceData({});
           setFluencyRevisionRatioData({});
           setFluencyWordsPerMinData({});
-          setFluencyStutterCountData({});
           setSemanticLexFreqData({});
           setSemanticEfficiencyData({});
           setSemanticIdeaDensityData({});
@@ -924,7 +922,6 @@ for (const { dateKey } of reports) {
           try {
             const revisionData = {};
             const wordsData = {};
-            const stutterData = {};
             const reports = await getReports(effectiveUserId, filteredDates);
             for (const { dateKey } of reports) {
               const fluencyDocRef = doc(
@@ -951,21 +948,11 @@ for (const { dateKey } of reports) {
                 revisionData[fullDateKey].push(repetition);
                 wordsData[fullDateKey].push(wordsPerMin);
               }
-              const stuttersCollection = collection(
-                db,
-                `users/${effectiveUserId}/dailyReportsSeeMore/${dateKey}/${selectedGame}/fluencyMetrics/Stutters`
-              );
-              const stuttersSnapshots = await getDocs(stuttersCollection);
-              if (!stutterData[fullDateKey]) stutterData[fullDateKey] = [];
-              // Push count of stutter documents
-              stutterData[fullDateKey].push(stuttersSnapshots.docs.length);
             }
             console.log("Fluency Revision Ratio:", revisionData);
             console.log("Fluency Words Per Min:", wordsData);
-            console.log("Fluency Stutter Count:", stutterData);
             setFluencyRevisionRatioData(revisionData);
             setFluencyWordsPerMinData(wordsData);
-            setFluencyStutterCountData(stutterData);
           } catch (error) {
             console.error("Error fetching fluency metrics data:", error);
           }
@@ -1099,7 +1086,7 @@ for (const { dateKey } of reports) {
                         plotTitle="Reaction Time"
                         displaySubtitle={false}
                         xAxisLabel="Date"
-                        yAxisLabel="Time (seconds)"
+                        yAxisLabel="Time (Milliseconds)"
                         seriesLabels={{
                             antiGap: "Anti-Saccade, Gap Task",
                             proGap: "Pro-Saccade, Gap Task",
@@ -1129,7 +1116,7 @@ for (const { dateKey } of reports) {
                         plotTitle="Saccade Durations"
                         displaySubtitle={false}
                         xAxisLabel="Date"
-                        yAxisLabel="Duration (seconds)"
+                        yAxisLabel="Duration (Milliseconds)"
                         seriesLabels={{
                           antiGap: "Anti-Saccade, Gap Task",
                           proGap: "Pro-Saccade, Gap Task",
@@ -1156,25 +1143,24 @@ for (const { dateKey } of reports) {
                     />
                     <BarChart
                         rawData={fixationAccuracyData}
-                        plotTitle="Fixation Accuracy"
+                        plotTitle="Fixation Duration"
                         displaySubtitle={false}
                         xAxisLabel="Date"
-                        yAxisLabel="Landing Accuracy (degrees)"
+                        yAxisLabel="Duration (Milliseconds)"
                         seriesLabels={{ gap: "Gap Task", overlap: "Overlap Task" }}
                         multiSeries={true}
-                        infoDescription={PlotDescriptions["Fixation Accuracy"]}
+                        infoDescription={PlotDescriptions["Fixation Duration"]}
                     />
                 </>
             )}
-            {(selectedGame === "processQuest" ||
-                selectedGame === "sceneDetective") && (
+            {(selectedGame === "sceneDetective") && (
                 <>
                     {(() => {
                         const metricsConfigs = [
                             { 
                                 subtitle: "Speaking Time",
                                 rawData: speakingTimeData,
-                                yAxisLabel: "Time (seconds)",
+                                yAxisLabel: "Time (Minutes)",
                             },
                             {
                                 subtitle: "Pause Count",
@@ -1184,7 +1170,7 @@ for (const { dateKey } of reports) {
                             {
                                 subtitle: "Average Pause Duration",
                                 rawData: pauseDurationData,
-                                yAxisLabel: "Pause Duration (seconds)",
+                                yAxisLabel: "Pause Duration (Seconds)",
                             },
                         ];
                         return (
@@ -1281,7 +1267,7 @@ for (const { dateKey } of reports) {
                     {(() => {
                         const fluencyConfigs = [
                         {
-                            subtitle: "Word Count",
+                            subtitle: "Speech Rate",
                             rawData: fluencyWordsPerMinData,
                             yAxisLabel: "Words per Minute",
                         },
@@ -1334,27 +1320,27 @@ for (const { dateKey } of reports) {
                         {
                             subtitle: "Noun",
                             rawData: lexNounData,
-                            yAxisLabel: "Nouns Proportion (percent)",
+                            yAxisLabel: "Nouns Proportion (%)",
                         },
                         {
                             subtitle: "Verb",
                             rawData: lexVerbData,
-                            yAxisLabel: "Verbs Proportion (percent)",
+                            yAxisLabel: "Verbs Proportion (%)",
                         },
                         {
                             subtitle: "Filler",
                             rawData: lexFillerData,
-                            yAxisLabel: "Filler Proportion (percent)",
+                            yAxisLabel: "Filler Proportion (%)",
                         },
                         {
                             subtitle: "Open Class",
                             rawData: lexOpenClassData,
-                            yAxisLabel: "Open Class Proportion (percent)",
+                            yAxisLabel: "Open Class Proportion (%)",
                         },
                         {
                             subtitle: "Closed Class",
                             rawData: lexClosedClassData,
-                            yAxisLabel: "Closed Class Proportion (percent)",
+                            yAxisLabel: "Closed Class Proportion (%)",
                         },
                         ];
                         return (
@@ -1398,6 +1384,16 @@ for (const { dateKey } of reports) {
                     {(() => {
                         const semanticConfigs = [
                         {
+                            subtitle: "Semantic Idea Density",
+                            rawData: semanticIdeaDensityData,
+                            yAxisLabel: "Density",
+                        },
+                        {
+                            subtitle: "Semantic Efficiency",
+                            rawData: semanticEfficiencyData,
+                            yAxisLabel: "Efficiency",
+                        },
+                        {
                             subtitle: "Lexical Frequency of Nouns",
                             rawData: semanticLexFreqData,
                             yAxisLabel: "Frequency",
@@ -1439,6 +1435,244 @@ for (const { dateKey } of reports) {
                         </div>
                         );
                     })()}
+                </>
+            )}
+            {selectedGame === "processQuest" && (
+                <>
+                    {(() => {
+                        const metricsConfigs = [
+                            { 
+                                subtitle: "Speaking Time",
+                                rawData: speakingTimeData,
+                                yAxisLabel: "Time (seconds)",
+                            },
+                            {
+                                subtitle: "Pause Count",
+                                rawData: pauseCountData,
+                                yAxisLabel: "Pause Count",
+                            },
+                            {
+                                subtitle: "Average Pause Duration",
+                                rawData: pauseDurationData,
+                                yAxisLabel: "Pause Duration (seconds)",
+                            },
+                        ];
+                        return (
+                            <div className="carousel-wrapper">
+                                <div className="metrics-carousel-container">
+                                    <BarChart
+                                        rawData={metricsConfigs[metricsIndex].rawData}
+                                        plotTitle="Temporal Characteristics"
+                                        displaySubtitle={true}
+                                        subtitleText={metricsConfigs[metricsIndex].subtitle}
+                                        xAxisLabel="Date"
+                                        yAxisLabel={metricsConfigs[metricsIndex].yAxisLabel}
+                                        infoDescription={
+                                            PlotDescriptions[
+                                                "Temporal Characteristics: " + selectedGame
+                                            ]
+                                        }
+                                    />
+                                    <button
+                                        className="carousel-next-button"
+                                        onClick={() =>
+                                            setMetricsIndex(
+                                                (prev) => (prev + 1) % metricsConfigs.length
+                                            )
+                                        }
+                                    >
+                                        <img src={carouselNextImg} alt="Next" />
+                                    </button>
+                                </div>
+                                <div className="carousel-indicators">
+                                    {metricsConfigs.map((_, idx) => (
+                                        <span
+                                            key={idx}
+                                            className={
+                                                idx === metricsIndex ? "indicator active" : "indicator"
+                                            }
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })()}
+                    {(() => {
+                        const structuralConfigs = [
+                            {
+                                subtitle: "Number of Sentences",
+                                rawData: structuralSentenceData,
+                                yAxisLabel: "Sentence Count",
+                            },
+                            {
+                              subtitle: "Mean Length of Utterance",
+                              rawData: structuralMeanData,
+                              yAxisLabel: "Mean Length",
+                            },
+                        ];
+                        return (
+                            <div className="carousel-wrapper">
+                                <div className="structural-carousel">
+                                    <BarChart
+                                        rawData={structuralConfigs[structuralIndex].rawData}
+                                        plotTitle="Structural Features"
+                                        displaySubtitle={true}
+                                        subtitleText={structuralConfigs[structuralIndex].subtitle}
+                                        xAxisLabel="Date"
+                                        yAxisLabel={structuralConfigs[structuralIndex].yAxisLabel}
+                                        infoDescription={PlotDescriptions["Structural Features"]}
+                                    />
+                                    <button
+                                        className="carousel-next-button"
+                                        onClick={() =>
+                                            setStructuralIndex(
+                                                (prev) => (prev + 1) % structuralConfigs.length
+                                            )
+                                        }
+                                    >
+                                        <img src={carouselNextImg} alt="Next" />
+                                    </button>
+                                </div>
+                                <div className="carousel-indicators">
+                                {structuralConfigs.map((_, idx) => (
+                                    <span
+                                    key={idx}
+                                    className={
+                                        idx === structuralIndex
+                                        ? "indicator active"
+                                        : "indicator"
+                                    }
+                                    />
+                                ))}
+                                </div>
+                            </div>
+                        );
+                    })()}
+                    {(() => {
+                        const fluencyConfigs = [
+                        {
+                            subtitle: "Speech Rate",
+                            rawData: fluencyWordsPerMinData,
+                            yAxisLabel: "Words per Minute",
+                        },
+                        {
+                            subtitle: "Repetition Ratio",
+                            rawData: fluencyRevisionRatioData,
+                            yAxisLabel: "Repetition Ratio",
+                        },
+                        ];
+                        return (
+                        <div className="carousel-wrapper">
+                            <div className="fluency-carousel">
+                            <BarChart
+                                rawData={fluencyConfigs[fluencyIndex].rawData}
+                                plotTitle="Fluency Metrics"
+                                displaySubtitle={true}
+                                subtitleText={fluencyConfigs[fluencyIndex].subtitle}
+                                xAxisLabel="Date"
+                                yAxisLabel={fluencyConfigs[fluencyIndex].yAxisLabel}
+                                infoDescription={
+                                PlotDescriptions["Fluency Metrics: " + selectedGame]
+                                }
+                            />
+                            <button
+                                className="carousel-next-button"
+                                onClick={() =>
+                                setFluencyIndex(
+                                    (prev) => (prev + 1) % fluencyConfigs.length
+                                )
+                                }
+                            >
+                                <img src={carouselNextImg} alt="Next" />
+                            </button>
+                            </div>
+                            <div className="carousel-indicators">
+                            {fluencyConfigs.map((_, idx) => (
+                                <span
+                                key={idx}
+                                className={
+                                    idx === fluencyIndex ? "indicator active" : "indicator"
+                                }
+                                />
+                            ))}
+                            </div>
+                        </div>
+                        );
+                    })()}
+                    {(() => {
+                        const lexicalConfigs = [
+                        {
+                            subtitle: "Noun",
+                            rawData: lexNounData,
+                            yAxisLabel: "Nouns Proportion (%)",
+                        },
+                        {
+                            subtitle: "Verb",
+                            rawData: lexVerbData,
+                            yAxisLabel: "Verbs Proportion (%)",
+                        },
+                        {
+                            subtitle: "Filler",
+                            rawData: lexFillerData,
+                            yAxisLabel: "Filler Proportion (%)",
+                        },
+                        {
+                            subtitle: "Open Class",
+                            rawData: lexOpenClassData,
+                            yAxisLabel: "Open Class Proportion (%)",
+                        },
+                        {
+                            subtitle: "Closed Class",
+                            rawData: lexClosedClassData,
+                            yAxisLabel: "Closed Class Proportion (%)",
+                        },
+                        ];
+                        return (
+                        <div className="carousel-wrapper">
+                            <div className="lexical-carousel">
+                            <BarChart
+                                rawData={lexicalConfigs[lexicalIndex].rawData}
+                                plotTitle="Lexical Content"
+                                displaySubtitle={true}
+                                subtitleText={lexicalConfigs[lexicalIndex].subtitle}
+                                xAxisLabel="Date"
+                                yAxisLabel={lexicalConfigs[lexicalIndex].yAxisLabel}
+                                infoDescription={
+                                PlotDescriptions["Lexical Content: " + selectedGame]
+                                }
+                            />
+                            <button
+                                className="carousel-next-button"
+                                onClick={() =>
+                                setLexicalIndex(
+                                    (prev) => (prev + 1) % lexicalConfigs.length
+                                )
+                                }
+                            >
+                                <img src={carouselNextImg} alt="Next" />
+                            </button>
+                            </div>
+                            <div className="carousel-indicators">
+                            {lexicalConfigs.map((_, idx) => (
+                                <span
+                                key={idx}
+                                className={
+                                    idx === lexicalIndex ? "indicator active" : "indicator"
+                                }
+                                />
+                            ))}
+                            </div>
+                        </div>
+                        );
+                    })()}
+                    <BarChart 
+                        rawData={semanticLexFreqData}
+                        plotTitle="Lexical Frequency of Nouns"
+                        displaySubtitle={false}
+                        xAxisLabel="Date"
+                        yAxisLabel="Frequency"
+                        infoDescription={PlotDescriptions["Lexical Frequency of Nouns"]}
+                    />
                 </>
             )}
             <div style={{ height: "100px" }}></div>

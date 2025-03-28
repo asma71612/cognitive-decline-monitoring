@@ -34,6 +34,9 @@ const PlotDescriptions = {
       350-400 ms for pro-saccades
       <br />
       450-500 ms for anti-saccades
+      <br />
+      <br />
+      Reference: N. Chehrehnegar, M. Shati, M. Esmaeili, and M. Foroughan, “Executive function deficits in mild cognitive impairment: evidence from saccade tasks,” Aging & Mental Health, vol. 26, no. 5, pp. 1001–1009, May 2022, doi: 10.1080/13607863.2021.1913471.
     </div>
   ),
   "Saccade Omission Percentages": (
@@ -62,6 +65,9 @@ const PlotDescriptions = {
       0.5-2% for pro-saccades
       <br />
       5-7% for anti-saccades
+      <br />
+      <br />
+      Reference: N. Chehrehnegar, M. Shati, M. Esmaeili, and M. Foroughan, “Executive function deficits in mild cognitive impairment: evidence from saccade tasks,” Aging & Mental Health, vol. 26, no. 5, pp. 1001–1009, May 2022, doi: 10.1080/13607863.2021.1913471.
     </div>
   ),
   "Saccade Durations": (
@@ -82,6 +88,9 @@ const PlotDescriptions = {
       <strong>Alzheimer’s Disease</strong>
       <br />
       24.8 ms ± 4.4
+      <br />
+      <br />
+      Reference: S. Hannonen et al., “Shortening of Saccades as a Possible Easy-to-Use Biomarker to Detect Risk of Alzheimer’s Disease,” JAD, vol. 88, no. 2, pp. 609–618, Jul. 2022, doi: 10.3233/JAD-215551.
     </div>
   ),
   "Fixation Accuracy": (
@@ -120,6 +129,9 @@ const PlotDescriptions = {
       25-40% for pro-saccades
       <br />
       60-80% for anti-saccades
+      <br />
+      <br />
+      Reference: S. Hannonen et al., “Shortening of Saccades as a Possible Easy-to-Use Biomarker to Detect Risk of Alzheimer’s Disease,” JAD, vol. 88, no. 2, pp. 609–618, Jul. 2022, doi: 10.3233/JAD-215551.
     </div>
   ),
   "Temporal Characteristics: processQuest": (
@@ -141,6 +153,9 @@ const PlotDescriptions = {
       Pause Length (milliseconds): 855.65 ± 253
       <br />
       Pause Frequency (per 100 words): 9.01 ± 3.76
+      <br />
+      <br />
+      Reference: A. Pistono, J. Pariente, C. Bézy, B. Lemesle, J. Le Men, and M. Jucla, “What happens when nothing happens? An investigation of pauses as a compensatory mechanism in early Alzheimer’s disease,” Neuropsychologia, vol. 124, pp. 133–143, Feb. 2019, doi: 10.1016/j.neuropsychologia.2018.12.018.
     </div>
   ),
   "Temporal Characteristics: sceneDetective": (
@@ -162,6 +177,9 @@ const PlotDescriptions = {
       Pause Length (milliseconds): 1296.35 ± 720
       <br />
       Pause Frequency (per 100 words): 17.25 ± 5.1
+      <br />
+      <br />
+      Reference: A. Pistono, J. Pariente, C. Bézy, B. Lemesle, J. Le Men, and M. Jucla, “What happens when nothing happens? An investigation of pauses as a compensatory mechanism in early Alzheimer’s disease,” Neuropsychologia, vol. 124, pp. 133–143, Feb. 2019, doi: 10.1016/j.neuropsychologia.2018.12.018.
     </div>
   ),
   "Structural Features": (
@@ -191,7 +209,10 @@ const PlotDescriptions = {
       <br />
       Healthy: 0.95 ± 1.16
       <br />
-      MCI: 0.64 ± 1.04
+      MCI: 0.72 ± 1.37
+      <br />
+      <br />
+      Reference: Y. Chen, R. J. Hartsuiker, and A. Pistono, “A comparison of different connected-speech tasks for detecting mild cognitive impairment using multivariate pattern analysis,” Aphasiology, vol. 39, no. 4, pp. 476–499, Apr. 2025, doi: 10.1080/02687038.2024.2358556.
     </div>
   ),
   "Fluency Metrics: processQuest": (
@@ -213,7 +234,10 @@ const PlotDescriptions = {
       <br />
       Healthy: 1.73 ± 12.33
       <br />
-      MCI: 0.55 ± 0.89
+      MCI: 0.61 ± 1.32
+      <br />
+      <br />
+      Reference: Y. Chen, R. J. Hartsuiker, and A. Pistono, “A comparison of different connected-speech tasks for detecting mild cognitive impairment using multivariate pattern analysis,” Aphasiology, vol. 39, no. 4, pp. 476–499, Apr. 2025, doi: 10.1080/02687038.2024.2358556.
     </div>
   ),
   "Lexical Content: sceneDetective": (
@@ -232,6 +256,9 @@ const PlotDescriptions = {
       <strong>Mild Cognitive Impairment</strong>
       <br />
       1.03 ± 0.37
+      <br />
+      <br />
+      Reference: Y. Chen, R. J. Hartsuiker, and A. Pistono, “A comparison of different connected-speech tasks for detecting mild cognitive impairment using multivariate pattern analysis,” Aphasiology, vol. 39, no. 4, pp. 476–499, Apr. 2025, doi: 10.1080/02687038.2024.2358556.
     </div>
   ),
   "Lexical Content: processQuest": (
@@ -250,6 +277,9 @@ const PlotDescriptions = {
       <strong>Mild Cognitive Impairment</strong>
       <br />
       0.97 ± 0.18
+      <br />
+      <br />
+      Reference: Y. Chen, R. J. Hartsuiker, and A. Pistono, “A comparison of different connected-speech tasks for detecting mild cognitive impairment using multivariate pattern analysis,” Aphasiology, vol. 39, no. 4, pp. 476–499, Apr. 2025, doi: 10.1080/02687038.2024.2358556.
     </div>
   ),
   "Semantic Features": (
@@ -275,6 +305,27 @@ const PlotDescriptions = {
       Healthy: 0.14 ± 0.06
       <br />
       MCI: 0.15 ± 0.06
+      <br />
+      <br />
+      Reference: K. D. Mueller et al., “Connected Language in Late Middle-Aged Adults at Risk for Alzheimer’s Disease,” J Alzheimers Dis, vol. 54, no. 4, pp. 1539–1550, Oct. 2016, doi: 10.3233/JAD-160252.
+    </div>
+  ),
+  "Lexical Frequency of Nouns": (
+    <div style={{ textAlign: "center" }}>
+      The median lexical frequency of the nouns used is calculated using the
+      SUBTLEX-US database, indicating how common or rare the nouns are in
+      everyday language, which can help assess lexical retrieval difficulties in
+      MCI. The expected value is:
+      <br />
+      <br />
+      <strong>Lexical Frequency of Nouns</strong>
+      <br />
+      Healthy: 34.84 ± 25.51
+      <br />
+      MCI: 52.15 ± 62.53
+      <br />
+      <br />
+      Reference: K. D. Mueller et al., “Connected Language in Late Middle-Aged Adults at Risk for Alzheimer’s Disease,” J Alzheimers Dis, vol. 54, no. 4, pp. 1539–1550, Oct. 2016, doi: 10.3233/JAD-160252.
     </div>
   ),
 };
